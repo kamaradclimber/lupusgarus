@@ -1,14 +1,31 @@
 let pause ()=
 	Sys.catch_break true;
-	Printf.printf "%s\n" "on fait la pause, ctrl+c pour arreter";
+	Printf.printf "%s\n" "on fait la pause, ctrl+c pour reprendre";
 	flush stdout;
 	let rec pause2 ()=pause2 () in
-	try  pause2 () with Sys.Break -> Printf.printf "%s\n" "on reprend";flush stdout
+	try  pause2 () with Sys.Break -> Printf.printf "%s\n" "on reprend"
+;;
+
+pause ();;
+
+
+let initialisation () (*ini du jeu:distribue les roles, demande a chaque joueur de sinitialiser*)=
+()
+;;
+
+let the_end () (*gere la fin du jeu: affiche les gagants, le role de chacun...*)=
+()
+;;
+
+let nuit () (*gere la nuit: ordre des perso à faire jouer, action de chacun*)=
+()
+;;
+
+let jour () (*gere le jour: mort des personnages, action specifique, pendaison publique, election d'un maire.../*)=
+()
 ;;
 
 
-
-	
 	
 	
 	
