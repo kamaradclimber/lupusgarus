@@ -9,8 +9,15 @@ let pause ()=
 pause ();;
 
 
+let nombrejoueurs=2;;
+open Joueur
+
+
+
 let initialisation () (*ini du jeu:distribue les roles, demande a chaque joueur de sinitialiser*)=
-()
+Printf.printf "%i\n" (!Joueur.nbjoueurs);
+Joueur.info (0,[|2;0|]);
+Printf.printf "%i\n" (!Joueur.nbjoueurs);
 ;;
 
 let the_end () (*gere la fin du jeu: affiche les gagants, le role de chacun...*)=
@@ -26,7 +33,7 @@ let jour () (*gere le jour: mort des personnages, action specifique, pendaison p
 ;;
 
 
-	
+initialisation	();
 	
 	
 	

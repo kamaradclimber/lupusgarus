@@ -1,9 +1,7 @@
-type Perso=Loup|Villageois;;
-
-
 open Conteur
 open Joueur
 
 
-
+.... nimporte quoi pour le moment....
 Conteur.ini ();;
+
