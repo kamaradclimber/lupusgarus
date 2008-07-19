@@ -8,16 +8,14 @@ let pause ()=
 
 pause ();;
 
+open Definition
+open Joueur (*nest-ce pas une faille de louvrir ??*)
 
-let nombrejoueurs=2;;
-open Joueur
-
+let c_nbjoueurs=3;;
 
 
 let initialisation () (*ini du jeu:distribue les roles, demande a chaque joueur de sinitialiser*)=
-Printf.printf "%i\n" (!Joueur.nbjoueurs);
-Joueur.info (0,[|2;0|]);
-Printf.printf "%i\n" (!Joueur.nbjoueurs);
+()
 ;;
 
 let the_end () (*gere la fin du jeu: affiche les gagants, le role de chacun...*)=
