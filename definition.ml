@@ -1,23 +1,24 @@
 (*contient les definitions de types et les parametres fondamentaux*)
 
-type perso = Loup | Villageois
-
+type perso = Unknown |Loup | Villageois
+type information=int*(int array);;
 
 
 let num2perso n=
-match n with |1->Loup|2->Villageois|_->assert false
+match n with |0->Unknown |1->Loup|2->Villageois|_->assert false
 ;;
 let perso2num pers=
-match pers with |Loup->1|Villageois->2
+match pers with |Unknown -> 0 |Loup->1|Villageois->2
 ;;
 
 
-(*la classe des joueurs: dans chaque module, le joueur definit sa sous classe avec sa maniere propre de repondre aux questions et dassimiler les informations*)
+(*la classe des joueurs: dans chaque module, le joueur definit sa sous classe avec sa manière propre de repondre aux questions et dassimiler les informations*)
 
 class virtual joueur c_nbjoueurs numjoueur=
   object (self)
     val nbjoueurs = c_nbjoueurs
 	val id = numjoueur
-	method virtual info : (int*int array)-> unit
-	method virtual question : (int*int array)-> unit
+	method virtual donne_info : information -> unit
+	method virtual pose_question : information -> information
   end;;
+ 

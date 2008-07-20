@@ -15,6 +15,7 @@ let c_nbjoueurs=3;;
 
 
 let initialisation () (*ini du jeu:distribue les roles, demande a chaque joueur de sinitialiser*)=
+let j1=new joueur_de_base c_nbjoueurs 0 and j2=new joueur_de_base c_nbjoueurs 1 in
 ()
 ;;
 
