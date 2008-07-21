@@ -1,23 +1,25 @@
 (*contient les definitions de types et les parametres fondamentaux*)
 
-type perso = Unknown |Loup | Villageois
+type perso = Unknown |Loup | Villageois|Mort of perso
 type information=int*(int array);;
 
-Random.init (int_of_float (Unix.time ()));;
 
 
 
 let int2perso n=
 	match n with |0->Unknown |1->Loup|2->Villageois|_->assert false
 ;;
-let perso2int pers=
-	match pers with |Unknown -> 0 |Loup->1|Villageois->2
+let rec perso2int pers=
+	match pers with 
+		|Unknown -> 0 |Loup->1|Villageois->2 
+		|Mort sthing ->(print_string "vous avez demandé l'identification perso2int d'un mort ATTENTION";print_newline ();perso2int sthing)
 ;;
-let perso2string pers=
-	match pers with |Unknown -> "Unknown" |Loup->"Loup"|Villageois->"Villageois"
+let rec perso2string pers=
+	match pers with |Unknown -> "Unknown" |Loup->"Loup"|Villageois->"Villageois"|Mort persbis-> (perso2string persbis)^" (Mort)"
 ;;
 let print_perso_tab tab=
-	Array.iter (fun x->Printf.printf "%s " (perso2string x) ) tab;print_newline ();;
+	Array.iter (fun x->Printf.printf "%s " (perso2string x) ) tab;print_newline ()
+;;
 
 (*la classe des joueurs: dans chaque module, le joueur definit sa sous classe avec sa manière propre de repondre aux questions et dassimiler les informations*)
 

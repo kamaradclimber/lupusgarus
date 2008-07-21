@@ -7,12 +7,15 @@ match id_info with
 |1->begin
 	objet#mod_whoswho contenu.(0) (int2perso contenu.(1))
 	end
-|_-> ();;
+|2-> assert false (*ceci est une réponse de la part des joueurs uniquement*)
+|3->objet#mod_whoswho contenu.(0) (Mort (objet#get_whoswho contenu.(0)))
+|_-> () (*to do: machin est mort*);;
 
 let rec pose_question objet ((id_info,contenu):information)=
 match id_info with
 |0-> (0,[|objet#get_nbjoueurs;objet#get_id|])
 |1-> (1, [|objet#get_id ;perso2int (objet#get_whoswho contenu.(0) )|])
+|2-> (2,[|(objet#get_id + 1) mod objet#get_nbjoueurs|]) (*qui je veux tuer*)
 |_-> ((-1),[||])
 
 
