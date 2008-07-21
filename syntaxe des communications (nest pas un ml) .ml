@@ -14,8 +14,8 @@ _attention_: le tableau ne doit contenir que des entiers (le type information es
 
 ||id info||syntaxe||signifie que: ||commentaire||
 ||idi(-1) ||(-1,...) ||erreur ! ||(peut provenir de la reponse à une question inexistante)||
-||idi0 ||(0,[|nbjoueurs:int;id:int|])|| la partie réunit %nbjoueurs%, le joueur qui recoit cette info sera désigné par le numero %id%||
-||idi1 ||(1,[|untel:int;personnalité:int|]) || %untel% est de telle %personnalité% || (NB utiliser la fonction num2perso)||
+||idi0 ||(0,[|nbjoueurs:int;id:int|])|| la partie réunit %nbjoueurs%, le joueur qui recoit cette info sera désigné par le numero %id%||depracated:les valeurs en question sont initialisées à la création de lobjet||
+||idi1 ||(1,[|untel:int;personnalité:int|]) || %untel% est de telle %personnalité% || (NB utiliser la fonction int2perso)||
 
 les questions seront sous la forme dun couple egalement: (numero de la question, information eventuelement necessaire sous la forme dun tableau)
 
@@ -37,5 +37,5 @@ c_nom : géré par le conteur
 
 (---------------------------)
 fonction qui peuvent etre utilisées
-num2perso: int->perso   : associe à un entier la personnalité correspondante
-perso2num: perso->int : la fonction reciproque (et oui la bijection !)
+int2perso: int->perso   : associe à un entier la personnalité correspondante
+perso2int: perso->int : la fonction reciproque (et oui la bijection !)

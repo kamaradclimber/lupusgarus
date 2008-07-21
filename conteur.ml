@@ -6,17 +6,24 @@ let pause ()=
 	try  pause2 () with Sys.Break -> Printf.printf "%s\n" "on reprend"
 ;;
 
-pause ();;
-
 open Definition
 open Joueur (*nest-ce pas une faille de louvrir ??*)
 
 let c_nbjoueurs=3;;
+let c_whoswho = Array.make c_nbjoueurs Unknown;;
 
 
-let initialisation () (*ini du jeu:distribue les roles, demande a chaque joueur de sinitialiser*)=
-let j1=new joueur_de_base c_nbjoueurs 0 and j2=new joueur_de_base c_nbjoueurs 1 in
-()
+let initialisation () (*ini du jeu:distribue les roles, demande a chaque joueur de sinitialiser en conséquence*) =
+let joueurs=Array.init c_nbjoueurs (fun i-> new joueur_de_base c_nbjoueurs i) in
+let reparti = repartition c_nbjoueurs in 
+print_string "Repartition des joueurs:\n";
+print_perso_tab reparti;
+for id=0 to c_nbjoueurs-1 do joueurs.(id)#donne_info (1,[|id;perso2int reparti.(id)|]) done;
+for id=0 to c_nbjoueurs-1 do 
+	let (_,reponse)=joueurs.(id)#pose_question (1,[|id|]) in
+	Printf.printf "joueur %i " id;
+	Printf.printf "s'identifie comme %i étant un %s ce qui est %b\n" reponse.(0) (perso2string ( int2perso reponse.(1))) (int2perso reponse.(1)= reparti.(id) && id=reponse.(0))
+	done
 ;;
 
 let the_end () (*gere la fin du jeu: affiche les gagants, le role de chacun...*)=
