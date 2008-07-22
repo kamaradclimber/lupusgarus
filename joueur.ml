@@ -16,6 +16,7 @@ match id_info with
 |0-> (0,[|objet#get_nbjoueurs;objet#get_id|])
 |1-> (1, [|objet#get_id ;perso2int (objet#get_whoswho contenu.(0) )|])
 |2-> (2,[|(objet#get_id + 1) mod objet#get_nbjoueurs|]) (*qui je veux tuer*)
+|3->(2,[|(objet#get_id + 1) mod objet#get_nbjoueurs|])
 |_-> ((-1),[||])
 
 
