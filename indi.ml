@@ -24,3 +24,9 @@ let vote_majorite (resultats:int array)=
 		done;
 	(!imax, resultats.(!imax) > (!sum)/2) (*joueur plébiscité, majorité absolue*)
 ;;
+
+let array_exists predicat tab=
+let i=ref 0 in
+while !i<Array.length tab && not (predicat tab.(!i)) do incr i done;
+not (!i=Array.length tab)
+;;

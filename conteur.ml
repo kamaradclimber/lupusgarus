@@ -25,71 +25,54 @@ let initialisation () (*ini du jeu: distribue les roles, demande a chaque joueur
 	done
 ;;
 
+let is_it_the_end () (*verifie si le jeu est terminé*)=
+if not (array_exists (fun joueur -> joueur#get_id = (-1)) cimetiere) 
+then (print_string "Conteur: Tout le monde est mort, le village de Salem s'est entretué !\n";true) (*tout le monde est mort*) 
+else false (*temporaire*)
+;;
+
 let the_end () (*gere la fin du jeu: affiche les gagants, le role de chacun...*)=
 ()
 ;;
 
 let nuit () (*gere la nuit: ordre des perso à faire jouer, action de chacun*)=
-print_string "La nuit tombe\n";
-print_string "les loups-garou se reveillent et rodent pendant la nuit\n";
-let vote=Array.make c_nbjoueurs 0 and tour=ref 1 and majorite=ref false and victime=ref (-1) in
-	while !tour <= 2 && (not !majorite) do
-	(*majorité absolue au 1er tour ou relative au second    [ règle n°1] *)
-		for id=0 to c_nbjoueurs-1 do
-			if not (c_is_dead id) (*corrigé: issue 5*) && (c_is_LG id) then
-				let reponse=ref (snd (joueurs.(id)#pose_question (3,[|!tour|]))) and nbessais=ref 1 in
-				while c_is_dead (!reponse).(0) && !nbessais < Regles.nb_vote_max do (*correction issue6: vote contre un mort*)
-					Printf.printf "Arbitre: %i vote contre un mort, il n'a plus que %i essais avant de voter contre lui meme\n" id (Regles.nb_vote_max- !nbessais);
-					reponse := snd (joueurs.(id)#pose_question (3,[|!tour|]));
-					incr nbessais
-					done;
-				if !nbessais = Regles.nb_vote_max (*vote contre lui meme [regle n°3] *)
-					then (vote.(id)<-vote.(id)+1;Printf.printf "Arbitre: %i vote contre lui meme car il a dépassé la barre des %i votes incorrects\n" id Regles.nb_vote_max)
-					else (vote.((!reponse).(0))<- vote.((!reponse).(0)) + 1 ;Printf.printf "Arbitre: %i (LG) vote contre %i\n" id (!reponse).(0))
-			done;
-		let (vict,maj) = vote_majorite vote in majorite:=maj ; victime:=vict;
-		Printf.printf "Arbitre: majorité: %b, tour: %i\n" !majorite !tour;
-		incr tour
-		done;
-		Stack.push !victime morgue
+print_string "Conteur:La nuit tombe\n";
+print_string "Conteur:les loups-garou se reveillent et rodent pendant la nuit\n";
+let victime=Definition.appel_au_vote (fun id -> not (c_is_dead id) (*issue 5*) && (c_is_LG id)) (fun (idq,contenu)->c_is_dead (contenu).(0) (*issue n°6*)) c_nbjoueurs joueurs 3 in
+Stack.push victime morgue;
+print_string "Conteur:Les loups-garous se rendorment\n"
+		
 ;;
 
 let jour () (*gere le jour: mort des personnages, action specifique, pendaison publique, election d'un maire.../*)=
-	print_string "conteur: Le jour se leve...\n";
-	print_string "conteur: procedons au vote\n";
-	let vote=Array.make c_nbjoueurs 0 and tour=ref 1 and majorite=ref false and suspect=ref (-1) in
-	while !tour <= 2 && (not !majorite) do
-	(*majorité absolue au 1er tour ou relative au second    [ règle n°1] *)
-		for id=0 to c_nbjoueurs-1 do vote.(id)<- 0 done; (*remise a zero des votes*)
-		for id=0 to c_nbjoueurs-1 do
-			if not (c_is_dead id) then (*corrigé: issue 5*)
-				let reponse=ref (snd (joueurs.(id)#pose_question (2,[|!tour|]))) and nbessais=ref 1 in
-				while c_is_dead (!reponse).(0) && !nbessais < Regles.nb_vote_max do (*correction issue6: vote contre un mort*)
-					Printf.printf "Arbitre: %i vote contre un mort, il n'a plus que %i essais avant de voter contre lui meme\n" id (Regles.nb_vote_max- !nbessais);
-					reponse := snd (joueurs.(id)#pose_question (2,[|!tour|]));
-					incr nbessais
-					done;
-				if !nbessais = Regles.nb_vote_max (*vote contre lui meme [regle n°3] *)
-					then (vote.(id)<-vote.(id)+1;Printf.printf "Arbitre: %i vote contre lui meme car il a dépassé la barre des %i votes incorrects\n" id Regles.nb_vote_max)
-					else (vote.((!reponse).(0))<- vote.((!reponse).(0)) + 1 ;Printf.printf "Arbitre: %i vote contre %i\n" id (!reponse).(0))
-			done;
-		let (susp,maj) = vote_majorite vote in majorite:=maj ; suspect:=susp;
-		Printf.printf "Arbitre: majorité: %b, tour: %i\n" !majorite !tour;
-		incr tour
+	print_string "Conteur: Le jour se leve...\n";
+	while not (Stack.is_empty morgue) do
+		let id_mort = Stack.pop morgue in
+		Printf.printf "Conteur: %i est mort cette nuit, %i etait %s\n" id_mort id_mort (perso2string c_whoswho.(id_mort));
+		for id=0 to c_nbjoueurs-1 do (*le conteur informe les joueurs des morts*)
+		joueurs.(id)#donne_info (1,[|id_mort;perso2int c_whoswho.(id_mort)|]);
+		joueurs.(id)#donne_info (3,[|id_mort;1|])
 		done;
-	Printf.printf "%i est donc pendu en place publique\n" !suspect;
-	Printf.printf "il revele avant de monter sur l'echafaud qu'il était %s\n" (perso2string c_whoswho.(!suspect));
+		c_whoswho.(id_mort)<- Mort c_whoswho.(id_mort); (*maj des infos du conteur*)
+		cimetiere.(id_mort)<- joueurs.(id_mort);
+		done;
+	print_string "Conteur: procedons au vote\n";
+	let suspect=Definition.appel_au_vote (fun id -> not (c_is_dead id) ) (fun (idq,contenu)->c_is_dead (contenu).(0) (*issue n°6*)) c_nbjoueurs joueurs 2 in
+	Printf.printf "Conteur: %i est donc pendu en place publique\n" suspect;
+	Printf.printf "Conteur: il revele avant de monter sur l'echafaud qu'il était %s\n" (perso2string c_whoswho.(suspect));
 	for id=0 to c_nbjoueurs-1 do (*le conteur informe les joueurs de lexecution*)
-		joueurs.(id)#donne_info (1,[|!suspect;perso2int c_whoswho.(!suspect)|]);
-		joueurs.(id)#donne_info (3,[|!suspect;2|])
+		joueurs.(id)#donne_info (1,[|suspect;perso2int c_whoswho.(suspect)|]);
+		joueurs.(id)#donne_info (3,[|suspect;2|])
 		done;
-	c_whoswho.(!suspect)<- Mort c_whoswho.(!suspect); (*maj des infos du conteur*)
-	cimetiere.(!suspect)<- joueurs.(!suspect);
+	c_whoswho.(suspect)<- Mort c_whoswho.(suspect); (*maj des infos du conteur*)
+	cimetiere.(suspect)<- joueurs.(suspect);
 ;;
 
 
 initialisation ();
-for i=0 to 3 do nuit ();jour () done;
+while not (is_it_the_end ()) do nuit ();jour ();flush stdout done;
 
+flush stdout;
 Sys.command "pause";;
+
 
