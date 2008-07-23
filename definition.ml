@@ -50,25 +50,28 @@ let repartition nbjoueurs=
 ;;
 
 let appel_au_vote (condition_de_vote: (int ->bool)) (vote_invalide:information->bool)c_nbjoueurs joueurs idq=
-	let vote=Array.make c_nbjoueurs 0 and tour=ref 1 and majorite=ref false and victime=ref (-1) in
+	let vote=Array.make c_nbjoueurs 0 and tour=ref 1 and majorite=ref false and victime=ref (-1) and nb_votants = ref 0 in
 	while !tour <= 2 && (not !majorite) do
 	(*majorité absolue au 1er tour ou relative au second    [ règle n°1] *)
 		for id=0 to c_nbjoueurs-1 do vote.(id)<- 0 done; (*remise a zero des votes*)
 		for id=0 to c_nbjoueurs-1 do
 			if condition_de_vote id then
+				begin
+				incr nb_votants;
 				let reponse=ref (joueurs.(id)#pose_question (idq,[|!tour|])) and nbessais=ref 1 in
 				while vote_invalide !reponse && !nbessais < Regles.nb_vote_max do (*correction issue6: vote contre un mort*)
-					Printf.printf "Arbitre: %i vote contre un mort, il n'a plus que %i essais avant de voter contre lui meme\n" id (Regles.nb_vote_max- !nbessais);
+					Printf.printf "Arbitre: %i vote contre un mort (%i), il n'a plus que %i essais avant de voter contre lui meme\n" id ((snd !reponse).(0)) (Regles.nb_vote_max- !nbessais);
 					reponse := joueurs.(id)#pose_question (idq,[|!tour|]);
 					incr nbessais
 					done;
 				if !nbessais = Regles.nb_vote_max (*vote contre lui meme [regle n°3] *)
 					then (vote.(id)<-vote.(id)+1;Printf.printf "Arbitre: %i vote contre lui meme car il a dépassé la barre des %i votes incorrects\n" id Regles.nb_vote_max)
 					else (vote.((snd !reponse).(0))<- vote.((snd !reponse).(0)) + 1 ;Printf.printf "Arbitre: %i (LG) vote contre %i\n" id (snd !reponse).(0))
+				end
 			done;
 		let (vict,maj) = Indi.vote_majorite vote in majorite:=maj ; victime:=vict;
 		Printf.printf "Arbitre: majorité: %b, tour: %i\n" !majorite !tour;
 		incr tour
 		done;
-	(!victime : int)
+	((!victime, !nb_votants):int*int)
 ;;

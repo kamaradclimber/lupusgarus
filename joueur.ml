@@ -15,8 +15,11 @@ let rec pose_question objet ((id_info,contenu):information)=
 match id_info with
 |0-> (0,[|objet#get_nbjoueurs;objet#get_id|])
 |1-> (1, [|objet#get_id ;perso2int (objet#get_whoswho contenu.(0) )|])
-|2-> (2,[|(objet#get_id + 1) mod objet#get_nbjoueurs|]) (*qui je veux tuer*)
-|3->(2,[|(objet#get_id + 1) mod objet#get_nbjoueurs|])
+|2-> (2,[|(Random.int objet#get_nbjoueurs)|]) (*qui je veux tuer*)
+|3->if objet#get_whoswho (objet#get_id) = Loup 
+	then  (2,[|(Random.int objet#get_nbjoueurs)|]) 
+	else failwith (Printf.sprintf "%i dit: ERREUR je ne suis pas un loup garou, une telle erreur n'aurait pas du arriver\n
+	verifier la fonction passé en argument à la procedure de vote " objet#get_id)
 |_-> ((-1),[||])
 
 

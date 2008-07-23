@@ -38,8 +38,8 @@ let the_end () (*gere la fin du jeu: affiche les gagants, le role de chacun...*)
 let nuit () (*gere la nuit: ordre des perso à faire jouer, action de chacun*)=
 print_string "Conteur:La nuit tombe\n";
 print_string "Conteur:les loups-garou se reveillent et rodent pendant la nuit\n";
-let victime=Definition.appel_au_vote (fun id -> not (c_is_dead id) (*issue 5*) && (c_is_LG id)) (fun (idq,contenu)->c_is_dead (contenu).(0) (*issue n°6*)) c_nbjoueurs joueurs 3 in
-Stack.push victime morgue;
+let (victime,nb_votants)=Definition.appel_au_vote (fun id -> not (c_is_dead id) (*issue 5*) && (c_is_LG id)) (fun (idq,contenu)->c_is_dead (contenu).(0) (*issue n°6*)) c_nbjoueurs joueurs 3 in
+if nb_votants>0 (*issue 10*) then Stack.push victime morgue else print_string "Arbitre: il n'y a eu aucun votants pour le vote des loups-garous\n";
 print_string "Conteur:Les loups-garous se rendorment\n"
 		
 ;;
@@ -57,15 +57,19 @@ let jour () (*gere le jour: mort des personnages, action specifique, pendaison p
 		cimetiere.(id_mort)<- joueurs.(id_mort);
 		done;
 	print_string "Conteur: procedons au vote\n";
-	let suspect=Definition.appel_au_vote (fun id -> not (c_is_dead id) ) (fun (idq,contenu)->c_is_dead (contenu).(0) (*issue n°6*)) c_nbjoueurs joueurs 2 in
-	Printf.printf "Conteur: %i est donc pendu en place publique\n" suspect;
-	Printf.printf "Conteur: il revele avant de monter sur l'echafaud qu'il était %s\n" (perso2string c_whoswho.(suspect));
-	for id=0 to c_nbjoueurs-1 do (*le conteur informe les joueurs de lexecution*)
-		joueurs.(id)#donne_info (1,[|suspect;perso2int c_whoswho.(suspect)|]);
-		joueurs.(id)#donne_info (3,[|suspect;2|])
-		done;
-	c_whoswho.(suspect)<- Mort c_whoswho.(suspect); (*maj des infos du conteur*)
-	cimetiere.(suspect)<- joueurs.(suspect);
+	let (suspect,nb_votants)=Definition.appel_au_vote (fun id -> not (c_is_dead id) ) (fun (idq,contenu)->c_is_dead (contenu).(0) (*issue n°6*)) c_nbjoueurs joueurs 2 in
+	if nb_votants>0 (*issue 10*)
+		then begin
+		Printf.printf "Conteur: %i est donc pendu en place publique\n" suspect;
+		Printf.printf "Conteur: il revele avant de monter sur l'echafaud qu'il était %s\n" (perso2string c_whoswho.(suspect));
+		for id=0 to c_nbjoueurs-1 do (*le conteur informe les joueurs de lexecution*)
+			joueurs.(id)#donne_info (1,[|suspect;perso2int c_whoswho.(suspect)|]);
+			joueurs.(id)#donne_info (3,[|suspect;2|])
+			done;
+		c_whoswho.(suspect)<- Mort c_whoswho.(suspect); (*maj des infos du conteur*)
+		cimetiere.(suspect)<- joueurs.(suspect);
+		end
+		else print_string "Arbitre: personne n'est mort, car il n'ya eu aucun votant, il doit yavoir un problème cf issue11\n"
 ;;
 
 
