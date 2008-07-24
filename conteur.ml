@@ -1,7 +1,7 @@
 open Indi
 open Definition
 
-let c_nbjoueurs=8;;
+let c_nbjoueurs=8;; if c_nbjoueurs<5 then print_string "Arbitre: des erreurs peuvent survenir, le nombre de joueurs est trop faible\n";;
 let c_whoswho = Array.make c_nbjoueurs Unknown;;
 let c_is_dead id=match c_whoswho.(id) with |Mort _->true|_->false;;
 let c_is_LG id=match c_whoswho.(id) with |Loup->true|_->false;;
@@ -28,20 +28,37 @@ let initialisation () (*ini du jeu: distribue les roles, demande a chaque joueur
 let is_it_the_end () (*verifie si le jeu est terminé*)=
 if not (array_exists (fun joueur -> joueur#get_id = (-1)) cimetiere) 
 then (print_string "Conteur: Tout le monde est mort, le village de Salem s'est entretué !\n";true) (*tout le monde est mort*) 
-else false (*temporaire*)
+else if not (array_exists (fun pers->pers=Loup) c_whoswho) 
+then (print_string "Conteur: Tous les loups garou sont morts, le village de Salem est sauvé !\n";true) (*tout les loups sont morts*)
+else if array_all (fun pers->pers=Loup) c_whoswho
+then (print_string "Conteur: Tous les villageois sont morts, le village de Salem est tombé aux mains du mal !\n";true) (*les loups garous gagnent la partie*)
+else false
 ;;
 
 let the_end () (*gere la fin du jeu: affiche les gagants, le role de chacun...*)=
-()
+print_string "Conteur: La partie est terminée\n les roles distribués étaient les suivants\n";
+Array.iteri (fun i-> fun pers -> Printf.printf "%i était %s\n" i (perso2string pers)) c_whoswho
 ;;
 
 let nuit () (*gere la nuit: ordre des perso à faire jouer, action de chacun*)=
-print_string "Conteur:La nuit tombe\n";
-print_string "Conteur:les loups-garou se reveillent et rodent pendant la nuit\n";
-let (victime,nb_votants)=Definition.appel_au_vote (fun id -> not (c_is_dead id) (*issue 5*) && (c_is_LG id)) (fun (idq,contenu)->c_is_dead (contenu).(0) (*issue n°6*)) c_nbjoueurs joueurs 3 in
-if nb_votants>0 (*issue 10*) then Stack.push victime morgue else print_string "Arbitre: il n'y a eu aucun votants pour le vote des loups-garous\n";
-print_string "Conteur:Les loups-garous se rendorment\n"
-		
+	print_string "Conteur:La nuit tombe\n";
+	print_string "Conteur:les loups-garou se reveillent et rodent pendant la nuit\n";
+	let (victime,nb_votants)=Definition.appel_au_vote (fun id -> not (c_is_dead id) (*issue 5*) && (c_is_LG id)) (fun (idq,contenu)->c_is_dead (contenu).(0) (*issue n°6*)) c_nbjoueurs joueurs 3 in
+	if nb_votants>0 (*issue 10*) then Stack.push victime morgue else print_string "Arbitre: il n'y a eu aucun votants pour le vote des loups-garous\n";
+	print_string "Conteur:Les loups-garous se rendorment\n";
+	for id=0 to c_nbjoueurs-1 do
+		if c_whoswho.(id)=Voyante
+		then (*on pourrait utiliser une procedure de vote un peu speciale pour economiser des lignes de code mais ca serait moins clair*)
+		begin
+			print_string "Conteur: la Voyante se réveille....\n ....et me désigne la personne dont elle veut sonder l'identité\n";
+			let (_,reponse)= joueurs.(id)#pose_question (4,[||]) in
+			match c_whoswho.(reponse.(0)) with
+				|Mort _ -> Printf.printf "Arbitre: la Voyante demande l'identité d'un mort, issue13\n"
+				|pers -> (Printf.printf "Arbitre: La Voyante demande l'identification de %i qui est %s\n" reponse.(0) (perso2string c_whoswho.(reponse.(0))) ;
+				joueurs.(id)#donne_info (1,[|reponse.(0);perso2int c_whoswho.(reponse.(0))|]));
+			print_string "Conteur: la voyante se rendort\n"
+		end
+	done;
 ;;
 
 let jour () (*gere le jour: mort des personnages, action specifique, pendaison publique, election d'un maire.../*)=
@@ -69,14 +86,15 @@ let jour () (*gere le jour: mort des personnages, action specifique, pendaison p
 		c_whoswho.(suspect)<- Mort c_whoswho.(suspect); (*maj des infos du conteur*)
 		cimetiere.(suspect)<- joueurs.(suspect);
 		end
-		else print_string "Arbitre: personne n'est mort, car il n'ya eu aucun votant, il doit yavoir un problème cf issue11\n"
+		else print_string "Arbitre: personne n'est mort, car il n'ya eu aucun votant, il doit yavoir un problème (cf issue11)\n"
 ;;
 
 
 initialisation ();
-while not (is_it_the_end ()) do nuit ();jour ();flush stdout done;
+while not (is_it_the_end ()) do nuit ();jour ();flush stdout done;;
+the_end ();;
 
-flush stdout;
-Sys.command "pause";;
+flush stdout;;
+Sys.command "pause";; (*ne marche que sous windows, a modifier pour linux*)
 
 

@@ -1,21 +1,21 @@
 (*contient les definitions de types et les parametres fondamentaux*)
 
-type perso = Unknown |Loup | Villageois|Mort of perso
+type perso = Unknown |Loup | Villageois| Voyante|Mort of perso
 type information=int*(int array);;
 
 
 
 
 let int2perso n=
-	match n with |0->Unknown |1->Loup|2->Villageois|_->assert false
+	match n with |0->Unknown |1->Loup|2->Villageois|3->Voyante |_->assert false
 ;;
 let rec perso2int pers=
 	match pers with 
-		|Unknown -> 0 |Loup->1|Villageois->2 
+		|Unknown -> 0 |Loup->1|Villageois->2 |Voyante->3
 		|Mort sthing ->(print_string "vous avez demandé l'identification perso2int d'un mort ATTENTION";print_newline ();perso2int sthing)
 ;;
 let rec perso2string pers=
-	match pers with |Unknown -> "Unknown" |Loup->"Loup"|Villageois->"Villageois"|Mort persbis-> (perso2string persbis)^" (Mort)"
+	match pers with |Unknown -> "Unknown" |Loup->"Loup"|Villageois->"Villageois"|Voyante->"Voyante"|Mort persbis-> (perso2string persbis)^" (Mort)"
 ;;
 let print_perso_tab tab=
 	Array.iter (fun x->Printf.printf "%s " (perso2string x) ) tab;print_newline ()
@@ -44,6 +44,7 @@ let repartition nbjoueurs=
 			|0->rep2.(i)<- Loup
 			|_->()
 		done;
+	rep2.(1)<- Voyante (*probleme: s'il n'ya qu'un joueur*);
 	let rep3=Array.make nbjoueurs Unknown in
 	for i=0 to nbjoueurs-1 do rep3.(rep.(i))<-rep2.(i) done;
 	rep3

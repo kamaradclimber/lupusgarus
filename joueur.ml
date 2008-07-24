@@ -5,7 +5,10 @@ let rec donne_info objet (*pour le moment il est de type 'a puis ce quon en fait
 match id_info with
 |0 ->(*deprecated*) ()
 |1->begin
-	objet#mod_whoswho contenu.(0) (int2perso contenu.(1))
+	let ce_que_je_sais=objet#get_whoswho contenu.(0) in
+	if ce_que_je_sais <> Unknown && (int2perso contenu.(1))<> ce_que_je_sais
+		then Printf.printf "%i: On me dit que %i est %s, or pour moi il est %s" (objet#get_id) (contenu.(0)) (perso2string ce_que_je_sais) (perso2string (int2perso contenu.(1)))
+		else objet#mod_whoswho contenu.(0) (int2perso contenu.(1))
 	end
 |2-> assert false (*ceci est une réponse de la part des joueurs uniquement*)
 |3->objet#mod_whoswho contenu.(0) (Mort (objet#get_whoswho contenu.(0)))
@@ -18,8 +21,10 @@ match id_info with
 |2-> (2,[|(Random.int objet#get_nbjoueurs)|]) (*qui je veux tuer*)
 |3->if objet#get_whoswho (objet#get_id) = Loup 
 	then  (2,[|(Random.int objet#get_nbjoueurs)|]) 
-	else failwith (Printf.sprintf "%i dit: ERREUR je ne suis pas un loup garou, une telle erreur n'aurait pas du arriver\n
-	verifier la fonction passé en argument à la procedure de vote " objet#get_id)
+	else failwith (Printf.sprintf "%i dit: ERREUR je ne suis pas un loup garou, une telle erreur n'aurait pas du arriver\n verifier la fonction passé en argument à la procedure de vote " objet#get_id)
+|4->if objet#get_whoswho (objet#get_id) = Voyante 
+	then  (2,[|(Random.int objet#get_nbjoueurs)|]) 
+	else failwith (Printf.sprintf "%i dit: ERREUR je ne suis pas la voyante, une telle erreur n'aurait pas du arriver\n verifier la fonction passé en argument à la procedure de vote " objet#get_id)
 |_-> ((-1),[||])
 
 

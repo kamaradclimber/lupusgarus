@@ -30,3 +30,5 @@ let i=ref 0 in
 while !i<Array.length tab && not (predicat tab.(!i)) do incr i done;
 not (!i=Array.length tab)
 ;;
+
+let array_all predicat tab= not (array_exists (fun x->not (predicat x)) tab);;
