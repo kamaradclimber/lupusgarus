@@ -25,7 +25,9 @@ match id_info with
 |4->if objet#get_whoswho (objet#get_id) = Voyante 
 	then  (2,[|(Random.int objet#get_nbjoueurs)|]) 
 	else failwith (Printf.sprintf "%i dit: ERREUR je ne suis pas la voyante, une telle erreur n'aurait pas du arriver\n verifier la fonction passé en argument à la procedure de vote " objet#get_id)
+|5->(5,[|Random.int 2;Random.int objet#get_nbjoueurs;Random.int 2|])
 |_-> ((-1),[||])
+
 
 
 class joueur_de_base c_nbjoueurs numjoueur=

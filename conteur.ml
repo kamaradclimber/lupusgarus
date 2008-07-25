@@ -3,6 +3,9 @@ open Definition
 
 let c_nbjoueurs=8;; if c_nbjoueurs<5 then print_string "Arbitre: des erreurs peuvent survenir, le nombre de joueurs est trop faible\n";;
 let c_whoswho = Array.make c_nbjoueurs Unknown;;
+let c_potions=[|1;1|];; (*potion de vie ; poison*)
+
+
 let c_is_dead id=match c_whoswho.(id) with |Mort _->true|_->false;;
 let c_is_LG id=match c_whoswho.(id) with |Loup->true|_->false;;
 let joueurs=Array.init c_nbjoueurs (fun i-> new Joueur.joueur_de_base c_nbjoueurs i);;
@@ -47,6 +50,17 @@ let nuit () (*gere la nuit: ordre des perso à faire jouer, action de chacun*)=
 	if nb_votants>0 (*issue 10*) then Stack.push victime morgue else print_string "Arbitre: il n'y a eu aucun votants pour le vote des loups-garous\n";
 	print_string "Conteur:Les loups-garous se rendorment\n";
 	for id=0 to c_nbjoueurs-1 do
+		if c_whoswho.(id)=Sorciere
+		then 
+		begin
+			print_string "Conteur: la Sorcière se reveille\n";
+			let (_,reponse)=joueurs.(id)#pose_question (5,[|victime|]) in
+			if reponse.(2)=1 && c_potions.(0)>0
+				then (c_potions.(0)<- c_potions.(0)-1; ignore(Stack.pop morgue);print_string "Arbitre: voyante utilise potions vie\n");
+			if reponse.(0)=1 && c_potions.(1)>0
+				then (c_potions.(1)<- c_potions.(1)-1; Stack.push reponse.(1) morgue;print_string "Arbitre: voyante utilise poison\n");
+			print_string "Conteur: La sorcière se rendort\n"
+		end;
 		if c_whoswho.(id)=Voyante
 		then (*on pourrait utiliser une procedure de vote un peu speciale pour economiser des lignes de code mais ca serait moins clair*)
 		begin
@@ -59,6 +73,7 @@ let nuit () (*gere la nuit: ordre des perso à faire jouer, action de chacun*)=
 			print_string "Conteur: la voyante se rendort\n"
 		end
 	done;
+
 ;;
 
 let jour () (*gere le jour: mort des personnages, action specifique, pendaison publique, election d'un maire.../*)=
