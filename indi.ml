@@ -32,3 +32,4 @@ not (!i=Array.length tab)
 ;;
 
 let array_all predicat tab= not (array_exists (fun x->not (predicat x)) tab);;
+
