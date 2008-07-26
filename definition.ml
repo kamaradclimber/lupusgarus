@@ -21,6 +21,8 @@ let print_perso_tab tab=
 	Array.iter (fun x->Printf.printf "%s " (perso2string x) ) tab;print_newline ()
 ;;
 
+let perso_is_dead  pers=match pers with Mort _->true |_->false;;
+
 (*classe des joueurs: dans chaque module, le joueur definit sa sous classe avec sa manière propre de repondre aux questions et dassimiler les informations*)
 
 class virtual joueur c_nbjoueurs numjoueur=
@@ -68,7 +70,7 @@ let appel_au_vote (condition_de_vote: (int ->bool)) (vote_invalide:information->
 					done;
 				if !nbessais = Regles.nb_vote_max (*vote contre lui meme [regle n°3] *)
 					then (vote.(id)<-vote.(id)+1;Printf.printf "Arbitre: %i vote contre lui meme car il a dépassé la barre des %i votes incorrects\n" id Regles.nb_vote_max)
-					else (vote.((snd !reponse).(0))<- vote.((snd !reponse).(0)) + 1 ;Printf.printf "Arbitre: %i (LG) vote contre %i\n" id (snd !reponse).(0))
+					else (vote.((snd !reponse).(0))<- vote.((snd !reponse).(0)) + 1 ;Printf.printf "Arbitre: %i vote contre %i\n" id (snd !reponse).(0))
 				end
 			done;
 		let (vict,maj) = Indi.vote_majorite vote in majorite:=maj ; victime:=vict;
