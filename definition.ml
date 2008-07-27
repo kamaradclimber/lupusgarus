@@ -29,6 +29,7 @@ class virtual joueur c_nbjoueurs numjoueur=
   object (self)
     val nbjoueurs = c_nbjoueurs
 	val id = numjoueur
+	val virtual classe : string
 	method virtual donne_info : information -> unit
 	method virtual pose_question : information -> information
 	method get_id = (id:int)
@@ -53,7 +54,11 @@ let repartition nbjoueurs=
 	rep3
 ;;
 
-let appel_au_vote (condition_de_vote: (int ->bool)) (vote_invalide:information->bool)c_nbjoueurs joueurs idq=
+let communication_du_vote (condition_de_vote: (int ->bool)) c_nbjoueurs joueurs info_a_transmettre=
+for id=0 to c_nbjoueurs-1 do if condition_de_vote id then joueurs.(id)#donne_info info_a_transmettre done
+;;
+
+let appel_au_vote (condition_de_vote: (int ->bool)) (vote_invalide:information->bool) c_nbjoueurs joueurs idq id_vote type_vote=
 	let vote=Array.make c_nbjoueurs 0 and tour=ref 1 and majorite=ref false and victime=ref (-1) and nb_votants = ref 0 in
 	while !tour <= 2 && (not !majorite) do
 	(*majorité absolue au 1er tour ou relative au second    [ règle n°1] *)
@@ -70,7 +75,12 @@ let appel_au_vote (condition_de_vote: (int ->bool)) (vote_invalide:information->
 					done;
 				if !nbessais = Regles.nb_vote_max (*vote contre lui meme [regle n°3] *)
 					then (vote.(id)<-vote.(id)+1;Printf.printf "Arbitre: %i vote contre lui meme car il a dépassé la barre des %i votes incorrects\n" id Regles.nb_vote_max)
-					else (vote.((snd !reponse).(0))<- vote.((snd !reponse).(0)) + 1 ;Printf.printf "Arbitre: %i vote contre %i\n" id (snd !reponse).(0))
+					else 
+						begin
+						vote.((snd !reponse).(0))<- vote.((snd !reponse).(0)) + 1 ;
+						Printf.printf "Arbitre: %i vote contre %i\n" id (snd !reponse).(0);
+						communication_du_vote (condition_de_vote) c_nbjoueurs joueurs (4,[|id_vote;type_vote;!tour; id;(snd !reponse).(0) |]) 
+						end
 				end
 			done;
 		let (vict,maj) = Indi.vote_majorite vote in majorite:=maj ; victime:=vict;

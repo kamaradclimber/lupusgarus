@@ -1,10 +1,11 @@
 open Indi
 open Definition
 
-let c_nbjoueurs=8;; if c_nbjoueurs<5 then print_string "Arbitre: des erreurs peuvent survenir, le nombre de joueurs est trop faible\n";;
+let c_nbjoueurs=10;; if c_nbjoueurs<5 then print_string "Arbitre: des erreurs peuvent survenir, le nombre de joueurs est trop faible\n";;
 let c_whoswho = Array.make c_nbjoueurs Unknown;;
 let c_potions=[|1;1|];; (*potion de vie ; poison*)
 let id_end=ref (-1);;
+let id_vote=ref 0;;
 
 let c_is_dead id=match c_whoswho.(id) with |Mort _->true|_->false;;
 let c_is_LG id=match c_whoswho.(id) with |Loup->true|_->false;;
@@ -15,7 +16,7 @@ let morgue=((Stack.create ()):int Stack.t);;
 
 let initialisation () (*ini du jeu: distribue les roles, demande a chaque joueur de s'initialiser en conséquence*) =
 	let reparti = repartition c_nbjoueurs in 
-	print_string "Repartition des joueurs:\n";
+	print_string "Conteur: Repartition des joueurs:\n";
 	print_perso_tab reparti;
 	print_newline ();
 	for id=0 to c_nbjoueurs-1 do 
@@ -26,12 +27,13 @@ let initialisation () (*ini du jeu: distribue les roles, demande a chaque joueur
 		let (_,reponse)=joueurs.(id)#pose_question (1,[|id|]) in
 		Printf.printf "Arbitre: joueur %i  s'identifie comme %i etant un %s ce qui est %b\n" id reponse.(0) (perso2string ( int2perso reponse.(1))) (int2perso reponse.(1)= reparti.(id) && id=reponse.(0))
 	done;
-	print_string "Les loups-garous vont se reconnaîtrent\n";
+	print_string "Conteur: Les loups-garous vont se reconnaîtrent\n";
 	for id=0 to c_nbjoueurs-1 do
 		for id2=id+1 to c_nbjoueurs-1 do
 			if c_is_LG id && c_is_LG id2 then (joueurs.(id)#donne_info (1,[|id2;perso2int Loup|]); joueurs.(id2)#donne_info (1,[|id;perso2int Loup|]))
 			done
-		done
+		done;
+	print_string "Conteur: Les loups-garous se sont reconnus\n"
 ;;
 
 let is_it_the_end () (*verifie si le jeu est terminé*)=
@@ -52,13 +54,14 @@ let the_end () (*gere la fin du jeu: affiche les gagants, le role de chacun...*)
 |_->print_string "Arbitre: Le jeu a quitté pour une raison inconnue"
 );
 print_string "Conteur: La partie est terminée\n les roles distribués étaient les suivants\n";
-Array.iteri (fun i-> fun pers -> Printf.printf "%i était %s\n" i (perso2string pers)) c_whoswho
+Array.iteri (fun i-> fun pers -> Printf.printf "%i était %s, de classe %s\n" i (perso2string pers) joueurs.(i)#get_classe  ) c_whoswho
 ;;
 
 let nuit () (*gere la nuit: ordre des perso à faire jouer, action de chacun*)=
 	print_string "Conteur:La nuit tombe\n";
 	print_string "Conteur:les loups-garou se reveillent et rodent pendant la nuit\n";
-	let (victime,nb_votants)=Definition.appel_au_vote (fun id -> not (c_is_dead id) (*issue 5*) && (c_is_LG id)) (fun (idq,contenu)->c_is_dead (contenu).(0) (*issue n°6*)) c_nbjoueurs joueurs 3 in
+	let (victime,nb_votants)=Definition.appel_au_vote (fun id -> not (c_is_dead id) (*issue 5*) && (c_is_LG id)) (fun (idq,contenu)->c_is_dead (contenu).(0) (*issue n°6*)) c_nbjoueurs joueurs 3 !id_vote 1 in
+	incr id_vote;
 	if nb_votants>0 (*issue 10*) then Stack.push victime morgue else print_string "Arbitre: il n'y a eu aucun votants pour le vote des loups-garous\n";
 	print_string "Conteur:Les loups-garous se rendorment\n";
 	for id=0 to c_nbjoueurs-1 do
@@ -104,7 +107,8 @@ let petit_matin ()=
 
 let jour () (*gere le jour: mort des personnages, action specifique, pendaison publique, election d'un maire.../*)=
 	print_string "Conteur: procedons au vote\n";
-	let (suspect,nb_votants)=Definition.appel_au_vote (fun id -> not (c_is_dead id) ) (fun (idq,contenu)->c_is_dead (contenu).(0) (*issue n°6*)) c_nbjoueurs joueurs 2 in
+	let (suspect,nb_votants)=Definition.appel_au_vote (fun id -> not (c_is_dead id) ) (fun (idq,contenu)->c_is_dead (contenu).(0) (*issue n°6*)) c_nbjoueurs joueurs 2 !id_vote 0 in
+	incr id_vote;
 	if nb_votants>0 (*issue 10*)
 		then begin
 		Printf.printf "Conteur: %i est donc pendu en place publique\n" suspect;

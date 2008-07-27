@@ -14,15 +14,17 @@ let pause ()=
 let print_int_tab tab= Array.iter (fun x->Printf.printf "%i " x) tab;print_newline ();;
 
 let vote_majorite (resultats:int array)=
-	let imax=ref 0 and sum=ref 0 in
+	let imaxl=ref [0] and sum=ref 0 in
 	for i=1 to Array.length resultats-1 do (*le fait de commencer à 1 causera un bug s'il n'y a qun joueur*)
 		sum:=!sum+ resultats.(i);
-		match compare resultats.(!imax) resultats.(i) with
-			|0->(*égalité, le hasard décide [règle n°2 ]*) if Random.bool () then imax:=i
-			|(-1)->imax:=i
+		match compare resultats.(List.hd !imaxl) resultats.(i) with
+			|0-> imaxl := (i::(!imaxl))
+			|(-1)->imaxl:=[i]
 			|_-> ()
 		done;
-	(!imax, resultats.(!imax) > (!sum)/2) (*joueur plébiscité, majorité absolue*)
+	let tmp=Array.of_list !imaxl in let n=Array.length tmp in 
+	let choix=tmp.(Random.int n) (*si égalité, le hasard décide [règle n°2 ] +  correction issue8 *) in
+	(choix, resultats.(choix) > (!sum)/2) (*joueur plébiscité, majorité absolue*)
 ;;
 
 let array_exists predicat tab=
