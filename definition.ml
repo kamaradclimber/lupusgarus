@@ -1,10 +1,23 @@
+let verbose=3;;
+
+Random.init (int_of_float (Unix.time ()));;
+
+let v_print_string level str=if verbose<= level then print_string str;;
+
+let print_int_tab tab= Array.iter (fun x->Printf.printf "%i " x) tab;print_newline ();;
+
+let array_exists predicat tab=
+	let i=ref 0 in
+	while !i<Array.length tab && not (predicat tab.(!i)) do incr i done;
+	not (!i=Array.length tab)
+;;
+
+let array_all predicat tab= not (array_exists (fun x->not (predicat x)) tab);;
+
 (*contient les definitions de types et les parametres fondamentaux*)
 
 type perso = Unknown |Loup | Villageois| Voyante| Sorciere|Mort of perso
 type information=int*(int array);;
-
-
-
 
 let int2perso n=
 	match n with |0->Unknown |1->Loup|2->Villageois|3->Voyante |4->Sorciere|_->assert false
@@ -12,13 +25,13 @@ let int2perso n=
 let rec perso2int pers=
 	match pers with 
 		|Unknown -> 0 |Loup->1|Villageois->2 |Voyante->3|Sorciere->4
-		|Mort sthing ->(print_string "vous avez demandé l'identification perso2int d'un mort ATTENTION";print_newline ();perso2int sthing)
+		|Mort sthing ->(v_print_string 4 "vous avez demandé l'identification perso2int d'un mort ATTENTION";print_newline ();perso2int sthing)
 ;;
 let rec perso2string pers=
 	match pers with |Unknown -> "Unknown" |Loup->"Loup"|Villageois->"Villageois"|Voyante->"Voyante"|Sorciere->"Sorciere"|Mort persbis-> (perso2string persbis)^" (Mort)"
 ;;
 let print_perso_tab tab=
-	Array.iter (fun x->Printf.printf "%s " (perso2string x) ) tab;print_newline ()
+	Array.iter (fun x->v_print_string 2 (Printf.sprintf "%s " (perso2string x)) ) tab;print_newline ()
 ;;
 
 let perso_is_dead  pers=match pers with Mort _->true |_->false;;
@@ -54,6 +67,20 @@ let repartition nbjoueurs=
 	rep3
 ;;
 
+let vote_majorite (resultats:int array)=
+	let imaxl=ref [0] and sum=ref 0 in
+	for i=1 to Array.length resultats-1 do (*le fait de commencer à 1 causera un bug s'il n'y a qun joueur*)
+		sum:=!sum+ resultats.(i);
+		match compare resultats.(List.hd !imaxl) resultats.(i) with
+			|0-> imaxl := (i::(!imaxl))
+			|(-1)->imaxl:=[i]
+			|_-> ()
+		done;
+	let tmp=Array.of_list !imaxl in let n=Array.length tmp in 
+	let choix=tmp.(Random.int n) (*si égalité, le hasard décide [règle n°2 ] +  correction issue8 *) in
+	(choix, resultats.(choix) > (!sum)/2) (*joueur plébiscité, majorité absolue*)
+;;
+
 let communication_du_vote (condition_de_vote: (int ->bool)) c_nbjoueurs joueurs info_a_transmettre=
 for id=0 to c_nbjoueurs-1 do if condition_de_vote id then joueurs.(id)#donne_info info_a_transmettre done
 ;;
@@ -69,22 +96,22 @@ let appel_au_vote (condition_de_vote: (int ->bool)) (vote_invalide:information->
 				incr nb_votants;
 				let reponse=ref (joueurs.(id)#pose_question (idq,[|!tour|])) and nbessais=ref 1 in
 				while vote_invalide !reponse && !nbessais < Regles.nb_vote_max do (*correction issue6: vote contre un mort*)
-					Printf.printf "Arbitre: %i vote contre un mort (%i), il n'a plus que %i essais avant de voter contre lui meme\n" id ((snd !reponse).(0)) (Regles.nb_vote_max- !nbessais);
+					v_print_string 2 (Printf.sprintf "Arbitre: %i vote contre un mort (%i), il n'a plus que %i essais avant de voter contre lui meme\n" id ((snd !reponse).(0)) (Regles.nb_vote_max- !nbessais));
 					reponse := joueurs.(id)#pose_question (idq,[|!tour|]);
 					incr nbessais
 					done;
 				if !nbessais = Regles.nb_vote_max (*vote contre lui meme [regle n°3] *)
-					then (vote.(id)<-vote.(id)+1;Printf.printf "Arbitre: %i vote contre lui meme car il a dépassé la barre des %i votes incorrects\n" id Regles.nb_vote_max)
+					then (vote.(id)<-vote.(id)+1;v_print_string 3 (Printf.sprintf "Arbitre: %i vote contre lui meme car il a dépassé la barre des %i votes incorrects\n" id Regles.nb_vote_max))
 					else 
 						begin
 						vote.((snd !reponse).(0))<- vote.((snd !reponse).(0)) + 1 ;
-						Printf.printf "Arbitre: %i vote contre %i\n" id (snd !reponse).(0);
+						v_print_string 3 (Printf.sprintf "Arbitre: %i vote contre %i\n" id (snd !reponse).(0));
 						communication_du_vote (condition_de_vote) c_nbjoueurs joueurs (4,[|id_vote;type_vote;!tour; id;(snd !reponse).(0) |]) 
 						end
 				end
 			done;
-		let (vict,maj) = Indi.vote_majorite vote in majorite:=maj ; victime:=vict;
-		Printf.printf "Arbitre: majorité: %b, tour: %i\n" !majorite !tour;
+		let (vict,maj) = vote_majorite vote in majorite:=maj ; victime:=vict;
+		v_print_string 2 (Printf.sprintf "Arbitre: majorité: %b, tour: %i\n" !majorite !tour);
 		incr tour
 		done;
 	((!victime, !nb_votants):int*int)

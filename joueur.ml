@@ -3,7 +3,7 @@ open Definition
 let semble_etre_de_mon_cote myperso hisperso=
 match (myperso,hisperso) with
 |Mort _,_->failwith "je suis mort ! (soulevée par la fonction \"semble_etre_de_mon_cote\""
-|_, Mort _ -> (Printf.printf "Suis-je allié à un mort ? dur de répondre.. ce genre de question ne devrait pas se poser";true)
+|_, Mort _ -> (v_print_string 4 "Suis-je allié à un mort ? dur de répondre.. ce genre de question ne devrait pas se poser";true)
 |Loup, Loup -> true
 |Loup, _ -> false
 |_, Loup -> false
@@ -18,12 +18,12 @@ match id_info with
 |1->begin
 	let ce_que_je_sais=objet#get_whoswho contenu.(0) in
 	if ce_que_je_sais <> Unknown && (int2perso contenu.(1))<> ce_que_je_sais
-		then Printf.printf "%i: On me dit que %i est %s, or pour moi il est %s\n" (objet#get_id) (contenu.(0)) (perso2string (int2perso contenu.(1))) (perso2string ce_que_je_sais) ;
+		then v_print_string 3 (Printf.sprintf "%i: On me dit que %i est %s, or pour moi il est %s\n" (objet#get_id) (contenu.(0)) (perso2string (int2perso contenu.(1))) (perso2string ce_que_je_sais) );
 		objet#mod_whoswho contenu.(0) (int2perso contenu.(1))
 	end
 |2-> assert false (*ceci est une réponse de la part des joueurs uniquement*)
 |3->objet#mod_whoswho contenu.(0) (Mort (objet#get_whoswho contenu.(0)))
-|4->() (*Printf.printf "   %i : j'ai bien recu le fait que %i a voté contre %i au vote n°%i (tour: %i) mais je nen fait rien pour le moment\n" objet#get_id contenu.(3) contenu.(4) contenu.(0) contenu.(2)*)
+|4->v_print_string 0 (Printf.sprintf "   %i : j'ai bien recu le fait que %i a voté contre %i au vote n°%i (tour: %i) mais je nen fait rien pour le moment\n" objet#get_id contenu.(3) contenu.(4) contenu.(0) contenu.(2))
 |5->failwith (Printf.sprintf "%i: j'ai recu une info concernant le conteur, il y a erreur\n" objet#get_id)
 |_-> ();;
 
