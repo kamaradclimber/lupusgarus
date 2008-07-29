@@ -8,8 +8,8 @@ let id_vote=ref 0;;
 
 let c_is_dead id=match c_whoswho.(id) with |Mort _->true|_->false;;
 let c_is_LG id=match c_whoswho.(id) with |Loup->true|_->false;;
-let joueurs=Array.init c_nbjoueurs (fun i-> new Joueur.joueur_de_base c_nbjoueurs i);;
-let cimetiere=Array.make c_nbjoueurs (new Joueur.joueur_de_base c_nbjoueurs (-1));; (*symetrique  du tableau joueur qui contient les morts*)
+let joueurs=Array.init c_nbjoueurs (fun i-> if i mod 5<>0 then new Joueur.joueur_de_base c_nbjoueurs i else new Joueur2.reliable c_nbjoueurs i);;
+
 let morgue=((Stack.create ()):int Stack.t);;
 
 
@@ -24,7 +24,7 @@ let initialisation () (*ini du jeu: distribue les roles, demande a chaque joueur
 		done;
 	for id=0 to c_nbjoueurs-1 do 
 		let (_,reponse)=joueurs.(id)#pose_question (1,[|id|]) in
-		v_print_string 2 (Printf.sprintf "Arbitre: joueur %i  s'identifie comme %i etant un %s ce qui est %b\n" id reponse.(0) (perso2string ( int2perso reponse.(1))) (int2perso reponse.(1)= reparti.(id) && id=reponse.(0)))
+		( v_print 2 "Arbitre: joueur %i  s'identifie comme %i etant un %s ce qui est %b\n" id reponse.(0) (perso2string ( int2perso reponse.(1))) (int2perso reponse.(1)= reparti.(id) && id=reponse.(0)))
 	done;
 	v_print_string 4 ("Conteur: le jeu commence\n");
 	v_print_string 3 "Conteur: Les loups-garous vont se reconnaîtrent\n";
@@ -37,7 +37,7 @@ let initialisation () (*ini du jeu: distribue les roles, demande a chaque joueur
 ;;
 
 let is_it_the_end () (*verifie si le jeu est terminé*)=
-if not (array_exists (fun joueur -> joueur#get_id = (-1)) cimetiere) 
+if array_all (fun pers->perso_is_dead pers) c_whoswho 
 then (id_end := 0; true) (*tout le monde est mort*) 
 else if array_all (fun pers->pers <> Loup) c_whoswho 
 then (id_end := 1; true) (*tout les loups sont morts*)
@@ -54,7 +54,7 @@ let the_end () (*gere la fin du jeu: affiche les gagants, le role de chacun...*)
 |_->v_print_string 4 "Arbitre: Le jeu a quitté pour une raison inconnue"
 );
 v_print_string 3 "Conteur: La partie est terminée\n les roles distribués étaient les suivants\n";
-Array.iteri (fun i-> fun pers -> v_print_string 3 (Printf.sprintf "%i était %s, de classe %s\n" i (perso2string pers) joueurs.(i)#get_classe)  ) c_whoswho
+Array.iteri (fun i-> fun pers -> ( v_print 3 "%i était %s, de classe %s\n" i (perso2string pers) joueurs.(i)#get_classe)  ) c_whoswho
 ;;
 
 let nuit () (*gere la nuit: ordre des perso à faire jouer, action de chacun*)=
@@ -83,7 +83,7 @@ let nuit () (*gere la nuit: ordre des perso à faire jouer, action de chacun*)=
 			let (_,reponse)= joueurs.(id)#pose_question (4,[||]) in
 			match c_whoswho.(reponse.(0)) with
 				|Mort _ -> v_print_string 1 "Arbitre: la Voyante demande l'identité d'un mort, issue13\n"
-				|pers -> (v_print_string 2 (Printf.sprintf "Arbitre: La Voyante demande l'identification de %i qui est %s\n" reponse.(0) (perso2string c_whoswho.(reponse.(0)))) ;
+				|pers -> (( v_print 2 "Arbitre: La Voyante demande l'identification de %i qui est %s\n" reponse.(0) (perso2string c_whoswho.(reponse.(0)))) ;
 				joueurs.(id)#donne_info (1,[|reponse.(0);perso2int c_whoswho.(reponse.(0))|]));
 			v_print_string 3 "Conteur: la voyante se rendort\n"
 		end
@@ -95,13 +95,12 @@ let petit_matin ()=
 	v_print_string 3 "Conteur: Le jour se leve...\n";
 		while not (Stack.is_empty morgue) do
 			let id_mort = Stack.pop morgue in
-			v_print_string 3 (Printf.sprintf "Conteur: %i est mort cette nuit, %i etait %s\n" id_mort id_mort (perso2string c_whoswho.(id_mort)));
+			( v_print 3 "Conteur: %i est mort cette nuit, %i etait %s\n" id_mort id_mort (perso2string c_whoswho.(id_mort)));
 			for id=0 to c_nbjoueurs-1 do (*le conteur informe les joueurs des morts*)
 			joueurs.(id)#donne_info (1,[|id_mort;perso2int c_whoswho.(id_mort)|]);
 			joueurs.(id)#donne_info (3,[|id_mort;1|])
 			done;
 			c_whoswho.(id_mort)<- Mort c_whoswho.(id_mort); (*maj des infos du conteur*)
-			cimetiere.(id_mort)<- joueurs.(id_mort);
 			done
 ;;
 
@@ -111,14 +110,13 @@ let jour () (*gere le jour: mort des personnages, action specifique, pendaison p
 	incr id_vote;
 	if nb_votants>0 (*issue 10*)
 		then begin
-		v_print_string 3 (Printf.sprintf "Conteur: %i est donc pendu en place publique\n" suspect);
-		v_print_string 3 (Printf.sprintf "Conteur: il revele avant de monter sur l'echafaud qu'il était %s\n" (perso2string c_whoswho.(suspect)));
+		( v_print 3 "Conteur: %i est donc pendu en place publique\n" suspect);
+		( v_print 3 "Conteur: il revele avant de monter sur l'echafaud qu'il était %s\n" (perso2string c_whoswho.(suspect)));
 		for id=0 to c_nbjoueurs-1 do (*le conteur informe les joueurs de lexecution*)
 			joueurs.(id)#donne_info (1,[|suspect;perso2int c_whoswho.(suspect)|]);
 			joueurs.(id)#donne_info (3,[|suspect;2|])
 			done;
 		c_whoswho.(suspect)<- Mort c_whoswho.(suspect); (*maj des infos du conteur*)
-		cimetiere.(suspect)<- joueurs.(suspect);
 		end
 		else v_print_string 4 "Arbitre: personne n'est mort, car il n'ya eu aucun votant, il doit yavoir un problème (cf issue10)\n"
 ;;

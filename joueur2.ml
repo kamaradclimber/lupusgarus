@@ -1,5 +1,16 @@
 open Definition
 
+let semble_etre_de_mon_cote myperso hisperso=
+match (myperso,hisperso) with
+|Mort _,_->failwith "je suis mort ! (soulevée par la fonction \"semble_etre_de_mon_cote\""
+|_, Mort _ -> (v_print_string 4 "Suis-je allié à un mort ? dur de répondre.. ce genre de question ne devrait pas se poser";true)
+|Loup, Loup -> true
+|Loup, _ -> false
+|_, Loup -> false
+|_,Unknown -> false
+| _,_ -> true
+;;
+
 let rec donne_info objet (*pour le moment il est de type 'a puis ce quon en fait va le specifier sans dire quil sagit dun joueur_de_base (car pas encore defini) mais lors de lutilisation il vérifiera la compatibilité ! cf https://mail.google.com/mail/?shva=1#all/11b3af0c2e14abce*) ((id_info,contenu):information)=
 (*pkoi rec ? -> si jamais une information en génère une autre... à voir: il faut peut etre distinguer les infos données par le conteur et celle déduite*)
 match id_info with
@@ -20,23 +31,43 @@ let rec pose_question objet ((id_info,contenu):information)=
 match id_info with
 |0-> (0,[|objet#get_nbjoueurs;objet#get_id|])
 |1-> (1, [|contenu.(0) ; perso2int (objet#get_whoswho contenu.(0) )|])
-|2-> (2,[|Random.int objet#get_nbjoueurs|])
+|2-> if objet#who_am_i = Loup 
+	then
+		let victime=ref (objet#get_id) and count=ref 0 in
+		while !count< 100 && (objet#get_whoswho (!victime)=Loup || perso_is_dead (objet#get_whoswho (!victime)) ) do
+			victime := Random.int objet#get_nbjoueurs;
+			incr count
+			done;
+		(2,[|!victime|])
+	else
+		let victime=ref (objet#get_id) and count=ref 0 in
+		while !count< 100 && (perso_is_dead (objet#get_whoswho (!victime)) || semble_etre_de_mon_cote objet#who_am_i (objet#get_whoswho  !victime) ) do
+			victime := Random.int objet#get_nbjoueurs;
+			incr count
+			done;
+		(2,[|!victime|])
 |3->if objet#who_am_i = Loup 
-	then (3,[|Random.int objet#get_nbjoueurs|]) 
+	then  
+		let victime=ref (objet#get_id) and count=ref 0 in
+			while !count< 100 && (objet#get_whoswho (!victime)=Loup || perso_is_dead (objet#get_whoswho (!victime)) ) do
+				victime := Random.int objet#get_nbjoueurs;
+				incr count
+				done;
+			(3,[|!victime|]) 
 	else failwith (Printf.sprintf "%i dit: ERREUR je ne suis pas un loup garou, une telle erreur n'aurait pas du arriver\n verifier la fonction passé en argument à la procedure de vote " objet#get_id)
 |4->if objet#get_whoswho (objet#get_id) = Voyante 
 	then  (2,[|(Random.int objet#get_nbjoueurs)|]) 
 	else failwith (Printf.sprintf "%i dit: ERREUR je ne suis pas la voyante, une telle erreur n'aurait pas du arriver\n verifier la fonction passé en argument à la procedure de vote " objet#get_id)
-|5->(5,[|Random.int 2;Random.int objet#get_nbjoueurs;Random.int 2|])
+|5->if contenu.(0)=objet#get_id then (5,[|0;0;1|]) else (5,[|Random.int 2;Random.int objet#get_nbjoueurs;Random.int 2|])
 |_-> ((-1),[||])
 
 
 
-class joueur_de_base c_nbjoueurs numjoueur=
+class reliable c_nbjoueurs numjoueur=
 	object (self)
 		(*methodes principales*)
 		inherit joueur c_nbjoueurs numjoueur
-		val classe = "joueur_de_base"
+		val classe = "reliable"
 		val whoswho = Array.make c_nbjoueurs (Unknown : perso)
 		method donne_info = donne_info self
 		method pose_question = pose_question self

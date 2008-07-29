@@ -1,8 +1,9 @@
-let verbose=3;;
+let verbose=1;;
 
 Random.init (int_of_float (Unix.time ()));;
 
 let v_print_string level str=if verbose<= level then print_string str;;
+let v_print level=if verbose<= level then Printf.printf else Printf.ifprintf stdout;;
 
 let print_int_tab tab= Array.iter (fun x->Printf.printf "%i " x) tab;print_newline ();;
 
@@ -31,7 +32,7 @@ let rec perso2string pers=
 	match pers with |Unknown -> "Unknown" |Loup->"Loup"|Villageois->"Villageois"|Voyante->"Voyante"|Sorciere->"Sorciere"|Mort persbis-> (perso2string persbis)^" (Mort)"
 ;;
 let print_perso_tab tab=
-	Array.iter (fun x->v_print_string 2 (Printf.sprintf "%s " (perso2string x)) ) tab;print_newline ()
+	Array.iter (fun x->( v_print 2 "%s " (perso2string x)) ) tab;print_newline ()
 ;;
 
 let perso_is_dead  pers=match pers with Mort _->true |_->false;;
@@ -53,7 +54,7 @@ let repartition nbjoueurs=
 	let rep=Array.init nbjoueurs (fun i->i) in
 	let perm tab i1 i2= let tmp=tab.(i1) in tab.(i1)<-tab.(i2); tab.(i2)<-tmp in
 	for i=0 to 2*nbjoueurs do perm rep (Random.int nbjoueurs) (Random.int nbjoueurs) done;
-	(*on a desormais un tableau ãléatoire avec les id des joueurs*)
+	(*on a desormais un tableau aléatoire avec les id des joueurs*)
 	let rep2=Array.make nbjoueurs Villageois in
 	for i=0 to nbjoueurs-1 do 
 		match i mod 3 with
@@ -96,22 +97,22 @@ let appel_au_vote (condition_de_vote: (int ->bool)) (vote_invalide:information->
 				incr nb_votants;
 				let reponse=ref (joueurs.(id)#pose_question (idq,[|!tour|])) and nbessais=ref 1 in
 				while vote_invalide !reponse && !nbessais < Regles.nb_vote_max do (*correction issue6: vote contre un mort*)
-					v_print_string 2 (Printf.sprintf "Arbitre: %i vote contre un mort (%i), il n'a plus que %i essais avant de voter contre lui meme\n" id ((snd !reponse).(0)) (Regles.nb_vote_max- !nbessais));
+					( v_print 2 "Arbitre: %i vote contre un mort (%i), il n'a plus que %i essais avant de voter contre lui meme\n" id ((snd !reponse).(0)) (Regles.nb_vote_max- !nbessais));
 					reponse := joueurs.(id)#pose_question (idq,[|!tour|]);
 					incr nbessais
 					done;
 				if !nbessais = Regles.nb_vote_max (*vote contre lui meme [regle n°3] *)
-					then (vote.(id)<-vote.(id)+1;v_print_string 3 (Printf.sprintf "Arbitre: %i vote contre lui meme car il a dépassé la barre des %i votes incorrects\n" id Regles.nb_vote_max))
+					then (vote.(id)<-vote.(id)+1;( v_print 3 "Arbitre: %i vote contre lui meme car il a dépassé la barre des %i votes incorrects\n" id Regles.nb_vote_max))
 					else 
 						begin
 						vote.((snd !reponse).(0))<- vote.((snd !reponse).(0)) + 1 ;
-						v_print_string 3 (Printf.sprintf "Arbitre: %i vote contre %i\n" id (snd !reponse).(0));
+						( v_print 3 "Arbitre: %i vote contre %i\n" id (snd !reponse).(0));
 						communication_du_vote (condition_de_vote) c_nbjoueurs joueurs (4,[|id_vote;type_vote;!tour; id;(snd !reponse).(0) |]) 
 						end
 				end
 			done;
 		let (vict,maj) = vote_majorite vote in majorite:=maj ; victime:=vict;
-		v_print_string 2 (Printf.sprintf "Arbitre: majorité: %b, tour: %i\n" !majorite !tour);
+		( v_print 2 "Arbitre: majorité: %b, tour: %i\n" !majorite !tour);
 		incr tour
 		done;
 	((!victime, !nb_votants):int*int)
