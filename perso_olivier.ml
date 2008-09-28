@@ -1,9 +1,9 @@
 open Definition
 
-let tableau_id = Array.make 10000 Unknown ;;
+let tableau_id = Array.make 10000 Unknown ;; (*jai fait un test, cette variable est partagée entre tous te joueurs, c'est un peu de la triche non ? :-) *)
 
 let nb_loups = ref 0 ;;
-let nb_villageois = ref 0 ;;
+let nb_villageois = ref 0 ;;(*idem, meme si lutilisation de cette variable nest pas vraiment de la triche !*)
 
 let init objet = (*je comprend pas bien a quoi elle sert: tu reinitialise le nombre de LG à chaque appel de pose_question cest à dire 20000 fois pas partie*)
 	print_string "je comprend pas bien a quoi elle sert\n";
@@ -25,7 +25,7 @@ let donne_info objet ((id_info,contenu):information)=
 	init objet ;
 	match id_info with
 	|0 ->(*deprecated*) ()
-	|1->tableau_id.(contenu.(0)) <- int2perso contenu.(1) (*ton match with est pas tres comprehensible je le premplace par ce que je crois quil siginifie, sinon il faudrait mettre des bein/with en plus !*)
+	|1->tableau_id.(contenu.(0)) <- int2perso contenu.(1) (*ton match with est pas tres comprehensible je le premplace par ce que je crois quil siginifie, sinon il faudrait mettre des begin/with en plus !*)
 			(*tu essaye de mettre un entier dans ton tableau_id qui contient des perso, je rajoute donc la fonction int2perso qui permet de faire la conversion*)
 	|2-> assert false (*ceci est une réponse de la part des joueurs uniquement*)
 	|3-> 	begin (match tableau_id.(contenu.(0)) with 
@@ -147,7 +147,6 @@ method pose_question = pose_question self
 (*methodes de modification*)
 method mod_whoswho indice nvelle_valeur =whoswho.(indice) <- nvelle_valeur
 (*methode d'acces aux infos (get_...) et daffichage (print_.....) *)
-method get_classe=classe
 method get_whoswho =fun indice-> whoswho.(indice)
 method who_am_i = whoswho.(self#get_id)
 end;;

@@ -1,6 +1,6 @@
 let verbose=1;;
 
-Random.init (int_of_float (Unix.time ()));;
+Random.init (int_of_float 15.0 (*Unix.time ()*));;
 
 let v_print_string level str=if verbose<= level then print_string str;;
 let v_print level=if verbose<= level then Printf.printf else Printf.ifprintf stdout;;
@@ -46,6 +46,7 @@ class virtual joueur c_nbjoueurs numjoueur=
 	val virtual classe : string
 	method virtual donne_info : information -> unit
 	method virtual pose_question : information -> information
+	method get_classe = classe
 	method get_id = (id:int)
 	method get_nbjoueurs = (nbjoueurs:int)
   end;;

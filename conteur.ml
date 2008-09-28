@@ -8,7 +8,11 @@ let id_vote=ref 0;;
 
 let c_is_dead id=match c_whoswho.(id) with |Mort _->true|_->false;;
 let c_is_LG id=match c_whoswho.(id) with |Loup->true|_->false;;
-let joueurs=Array.init c_nbjoueurs (fun i-> if i mod 5<>0 then new Joueur.joueur_de_base c_nbjoueurs i else new Joueur2.reliable c_nbjoueurs i);;
+
+let pro2j pro=(pro: Joueur3.probabiliste :> Definition.joueur);; (*cette conversion permet la coercion, cest à dire d'indiquer à ocaml que telle sousclasse de joueur sera considérée comme un joueur tout court*)
+let jdb j=(j: Joueur.joueur_de_base :> Definition.joueur);;
+
+let joueurs=Array.init c_nbjoueurs (fun i-> if i mod 5<>0 then jdb (new Joueur.joueur_de_base c_nbjoueurs i) else pro2j (new Joueur3.probabiliste c_nbjoueurs i) );;
 
 let morgue=((Stack.create ()):int Stack.t);;
 
