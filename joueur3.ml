@@ -2,7 +2,7 @@ open Definition
 
 let semble_etre_de_mon_cote myperso hisperso=
 match (myperso,hisperso) with
-|Mort _,_->failwith "je suis mort ! (soulevee par la fonction \"semble_etre_de_mon_cote\""
+|Mort _,_->failwith "je suis mort ! (soulevée par la fonction \"semble_etre_de_mon_cote\""
 |_, Mort _ -> (v_print_string 4 "Suis-je allie à un mort ? dur de repondre.. ce genre de question ne devrait pas se poser";true)
 |Loup, Loup -> true
 |Loup, _ -> false

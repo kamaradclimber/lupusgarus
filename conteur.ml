@@ -1,6 +1,6 @@
 open Definition
 
-let c_nbjoueurs = 10
+let c_nbjoueurs = 20
 ;;  
 if c_nbjoueurs<Regles.nb_joueurs_min then 
     v_print_string 4 "Arbitre: des erreurs peuvent survenir, le nombre de joueurs est trop faible\n"
@@ -19,12 +19,13 @@ let c_is_dead id = match c_whoswho.(id) with | Mort _-> true |_-> false
 let c_is_LG id = match c_whoswho.(id) with | Loup -> true |_ -> false
 ;;
 
-let conf2j conf = (conf: Joueur3.confiant :> Definition.joueur) (*cette conversion permet la coercion, cest à dire d'indiquer à ocaml que telle sousclasse de joueur sera consideree comme un joueur tout court*)
+let conf2j conf = (conf: Joueur3.confiant :> Definition.joueur) (*cette conversion permet la coercion, cest à dire d'indiquer à ocaml que telle sous-classe de joueur sera consideree comme un joueur tout court*)
 ;; 
+let reliable2j reliable = (reliable: Joueur2.reliable :> Definition.joueur)
 let jdb j = (j: Joueur.joueur_de_base :> Definition.joueur)
 ;;
 
-let joueurs = Array.init c_nbjoueurs ( fun i-> if i mod 5<>0 then jdb (new Joueur.joueur_de_base c_nbjoueurs i) else conf2j (new Joueur3.confiant c_nbjoueurs i) )
+let joueurs = Array.init c_nbjoueurs ( fun i-> if i mod 5<>0 then jdb (new Joueur.joueur_de_base c_nbjoueurs i) else if i mod 7 <>0 then conf2j (new Joueur3.confiant c_nbjoueurs i) else reliable2j (new Joueur2.reliable c_nbjoueurs i) )
 ;;
 
 let morgue=((Stack.create ()): int Stack.t)
@@ -64,16 +65,16 @@ let is_it_the_end () (*verifie si le jeu est termine*)=
 
 let the_end () (*gere la fin du jeu: affiche les gagants, le role de chacun...*)=
     (match !id_end with
-        |0 -> v_print_string 3 "Conteur: Tout le monde est mort, le village de Salem s'est entretue !\n"
-        |1 -> v_print_string 3 "Conteur: Tous les loups garou sont morts, le village de Salem est sauve !\n"
-        |2 -> v_print_string 3 "Conteur: Tous les villageois sont morts, le village de Salem est tombe aux mains du mal !\n"
-        |_ -> v_print_string 4 "Arbitre: Le jeu a quitte pour une raison inconnue"
+        |0 -> v_print_string 3 "Conteur: Tout le monde est mort, le village de Salem s'est entretué !\n"
+        |1 -> v_print_string 3 "Conteur: Tous les loups garou sont morts, le village de Salem est sauvé !\n"
+        |2 -> v_print_string 3 "Conteur: Tous les villageois sont morts, le village de Salem est tombé aux mains du mal !\n"
+        |_ -> v_print_string 4 "Arbitre: Le jeu a quitté pour une raison inconnue"
     );
     v_print_string 3 "Conteur: La partie est terminee\n les roles distribues etaient les suivants\n";
     Array.iteri (fun i-> fun pers -> ( v_print 3 "%i etait %s, de classe %s\n" i (perso2string pers) joueurs.(i)#get_classe)  ) c_whoswho
 ;;
 
-let nuit () (*gere la nuit: ordre des perso à faire jouer, action de chacun*)=
+let nuit () (*gere la nuit: ordre des perso à faire jouer, actions de chacun*)=
     v_print_string 3 "Conteur:La nuit tombe\n";
     v_print_string 3 "Conteur:les loups-garou se reveillent et rodent pendant la nuit\n";
     let (victime,nb_votants)=Definition.appel_au_vote (fun id -> not (c_is_dead id) (*issue 5*) && (c_is_LG id)) (fun (idq,contenu)->c_is_dead (contenu).(0) (*issue n°6*)) c_nbjoueurs joueurs 3 !id_vote 1 in
@@ -147,6 +148,8 @@ let jour () (*gere le jour: mort des personnages, action specifique, pendaison p
 ;;
 
 
+(*Début du jeu*)
+
 initialisation ();
 
 while not (is_it_the_end ()) do 
@@ -158,8 +161,15 @@ while not (is_it_the_end ()) do
     done
 ;;
 the_end ();;
+(*Fin du jeu*)
+v_print_string 4 "Conteur: le jeu se termine\n";;
 
 flush stdout;;
-Sys.command "pause";; (*ne marche que sous windows, a modifier pour linux*)
+if Sys.os_type = "Unix"
+then print_float (Sys.time ())
+else ignore(Sys.command "pause")
+;;
+print_string "\n"
+;;
 
 

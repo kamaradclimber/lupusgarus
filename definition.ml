@@ -1,9 +1,16 @@
 let verbose=3;;
 
-Random.init (int_of_float (Unix.time ()));;
+let seed = int_of_float (Unix.time ());;
 
+Random.init (seed);;
+
+
+(*fonctions d'affichage*)
 let v_print_string level str=if verbose<= level then print_string str;;
 let v_print level=if verbose<= level then Printf.printf else Printf.ifprintf stdout;;
+
+v_print 4 "Arbitre: L'initialisation aléatoire est %i" seed;;
+(*Ainsi si un problème apparait, on peut récréer exactement les mêmes conditions pour vérifier si on l'a bien corrigé, il suffit d'imposer la seed à la valeur problématique*)
 
 let print_int_tab tab= Array.iter (fun x->Printf.printf "%i " x) tab;print_newline ();;
 
@@ -26,7 +33,7 @@ let int2perso n=
 let rec perso2int pers=
     match pers with 
         |Unknown -> 0 |Loup->1|Villageois->2 |Voyante->3|Sorciere->4
-        |Mort sthing ->(v_print_string 4 "vous avez demande l'identification perso2int d'un mort ATTENTION";print_newline ();perso2int sthing)
+        |Mort sthing ->(v_print_string 4 "vous avez demandé l'identification perso2int d'un mort attention, (issue19 ?)\n";perso2int sthing)
 ;;
 let rec perso2string pers=
     match pers with |Unknown -> "Unknown" | Loup ->"Loup"|Villageois->"Villageois"|Voyante->"Voyante"|Sorciere->"Sorciere"|Mort persbis-> (perso2string persbis)^" (Mort)"
@@ -37,7 +44,7 @@ let print_perso_tab tab=
 
 let perso_is_dead  pers=match pers with Mort _->true |_->false;;
 
-(*classe des joueurs: dans chaque module, le joueur definit sa sous classe avec sa manière propre de repondre aux questions et dassimiler les informations*)
+(*classe des joueurs: dans chaque module, le joueur définit sa sous classe avec sa manière propre de répondre aux questions et d'assimiler les informations*)
 
 class virtual joueur c_nbjoueurs numjoueur=
   object (self)
@@ -52,17 +59,18 @@ class virtual joueur c_nbjoueurs numjoueur=
   end;;
  
 let repartition nbjoueurs=
+(* Attribue aléatoirement une personnalité à chacun des joueurs*)
     let rep=Array.init nbjoueurs (fun i->i) in
     let perm tab i1 i2= let tmp=tab.(i1) in tab.(i1)<-tab.(i2); tab.(i2)<-tmp in
-    for i=0 to 2*nbjoueurs do perm rep (Random.int nbjoueurs) (Random.int nbjoueurs) done;
-    (*on a desormais un tableau aleatoire avec les id des joueurs*)
+    for i=0 to 2*nbjoueurs do perm rep (Random.int nbjoueurs) (Random.int nbjoueurs) done; (*Permutations, on l'espère, aléatoires pour mélanger les joueurs*)
+    (*on a desormais un tableau aléatoire avec les id des joueurs*)
     let rep2=Array.make nbjoueurs Villageois in
     for i=0 to nbjoueurs-1 do 
         match i mod 3 with
-            |0->rep2.(i)<- Loup
+            |0->rep2.(i)<- Loup (*Un joueur sur 3 est un Loup*)
             |_->()
         done;
-    rep2.(1)<- Voyante (*probleme: s'il n'ya qu'un joueur*);
+    rep2.(1)<- Voyante (*probleme: s'il n'ya qu'un joueur (issue20) *);
     rep2.(2)<- Sorciere (*probleme: s'il n'ya que deux joueurs*);
     let rep3=Array.make nbjoueurs Unknown in
     for i=0 to nbjoueurs-1 do rep3.(rep.(i))<-rep2.(i) done;
