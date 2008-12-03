@@ -60,6 +60,8 @@ class virtual joueur c_nbjoueurs numjoueur=
  
 let repartition nbjoueurs=
 (* Attribue aléatoirement une personnalité à chacun des joueurs*)
+    if nbjoueurs < Regles.nb_joueurs_min
+        then failwith (Printf.sprintf "Le nombre de joueurs est insuffisant pour attribuer correctement les rôles") (*Règle n°6*);
     let rep=Array.init nbjoueurs (fun i->i) in
     let perm tab i1 i2= let tmp=tab.(i1) in tab.(i1)<-tab.(i2); tab.(i2)<-tmp in
     for i=0 to 2*nbjoueurs do perm rep (Random.int nbjoueurs) (Random.int nbjoueurs) done; (*Permutations, on l'espère, aléatoires pour mélanger les joueurs*)
@@ -70,17 +72,18 @@ let repartition nbjoueurs=
             |0->rep2.(i)<- Loup (*Un joueur sur 3 est un Loup*)
             |_->()
         done;
-    rep2.(1)<- Voyante (*probleme: s'il n'ya qu'un joueur (issue20) *);
-    rep2.(2)<- Sorciere (*probleme: s'il n'ya que deux joueurs*);
+    rep2.(1)<- Voyante;
+    rep2.(2)<- Sorciere;
     let rep3=Array.make nbjoueurs Unknown in
     for i=0 to nbjoueurs-1 do rep3.(rep.(i))<-rep2.(i) done;
     rep3
 ;;
 
 let vote_majorite (resultats:int array)=
-    let imaxl=ref [0] and sum=ref 0 in
-    for i=1 to Array.length resultats-1 do (*le fait de commencer à 1 causera un bug s'il n'y a qun joueur*)
-        sum:=!sum+ resultats.(i);
+(* détermine si le vote se conclue par une majorité absolue et de toute façon le joueur plébiscité*)
+    let imaxl=ref [0] and sum=ref 0 in (*on stocke la liste des joueurs les plus plébiscités, qui comporte eventuellement des joueurs à égalité*)
+    for i=1 to Array.length resultats-1 do
+        sum:=!sum+ resultats.(i); (*on stocke le nombre de votes au total*)
         match compare resultats.(List.hd !imaxl) resultats.(i) with
             |0-> imaxl := (i::(!imaxl))
             |(-1)->imaxl:=[i]
@@ -88,41 +91,48 @@ let vote_majorite (resultats:int array)=
         done;
     let tmp=Array.of_list !imaxl in let n=Array.length tmp in 
     let choix=tmp.(Random.int n) (*si egalite, le hasard decide [règle n°2 ] +  correction issue8 *) in
-    (choix, resultats.(choix) > (!sum)/2) (*joueur plebiscite, majorite absolue*)
+    (choix, resultats.(choix) > (!sum)/2) (*joueur plébiscité, majorité absolue*)
 ;;
 
 let communication_du_vote (condition_de_vote: (int ->bool)) c_nbjoueurs joueurs info_a_transmettre=
+(*transmet aux votants les résultats du vote*)
 for id=0 to c_nbjoueurs-1 do if condition_de_vote id then joueurs.(id)#donne_info info_a_transmettre done
 ;;
 
 let appel_au_vote (condition_de_vote: (int ->bool)) (vote_invalide:information->bool) c_nbjoueurs joueurs idq id_vote type_vote=
-    let vote=Array.make c_nbjoueurs 0 and tour=ref 1 and majorite=ref false and victime=ref (-1) and nb_votants = ref 0 in
-    while !tour <= 2 && (not !majorite) do
+(*gère l'intégralité d'un vote*)
+    let urne = Array.make c_nbjoueurs 0 and tour=ref 1 and majorite_absolue = ref false and victime=ref (-1) and nb_votants = ref 0 in
+    for id=0 to c_nbjoueurs -1 do if condition_de_vote id then joueurs.(id)#donne_info (6,[|0|]) done; (*on informe que le vote commence*)
+
+    while !tour <= 2 && (not !majorite_absolue) do
     (*majorite absolue au 1er tour ou relative au second    [ règle n°1] *)
-        for id=0 to c_nbjoueurs-1 do vote.(id)<- 0 done; (*remise a zero des votes après un eventuel premier tour*)
-        for id=0 to c_nbjoueurs -1 do if condition_de_vote id then joueurs.(id)#donne_info (6,[|0|]) done; (*on informe que le vote commence*)
+        for id=0 to c_nbjoueurs-1 do urne.(id)<- 0 done; (*remise a zéro des votes après un eventuel premier tour*)
+
         for id=0 to c_nbjoueurs-1 do
             if condition_de_vote id then
                 begin
                 incr nb_votants;
                 let reponse=ref (joueurs.(id)#pose_question (idq,[|!tour|])) and nbessais=ref 1 in
                 while vote_invalide !reponse && !nbessais < Regles.nb_vote_max do (*correction issue6: vote contre un mort*)
-                    ( v_print 2 "Arbitre: %i vote contre un mort (%i), il n'a plus que %i essais avant de voter contre lui meme\n" id ((snd !reponse).(0)) (Regles.nb_vote_max- !nbessais));
+                    ( v_print 2 "Arbitre: %i vote de façon invalide (contre %i), il n'a plus que %i essais avant de voter contre lui même\n" id ((snd !reponse).(0)) (Regles.nb_vote_max- !nbessais));
                     reponse := joueurs.(id)#pose_question (idq,[|!tour|]);
                     incr nbessais
                     done;
-                if !nbessais = Regles.nb_vote_max (*vote contre lui meme [regle n°3] *)
-                    then (vote.(id)<-vote.(id)+1;( v_print 3 "Arbitre: %i vote contre lui meme car il a depasse la barre des %i votes incorrects\n" id Regles.nb_vote_max))
+                if !nbessais = Regles.nb_vote_max (*vote contre lui meme [règle n°3] *)
+                    then (urne.(id)<-urne.(id)+1;( v_print 3 "Arbitre: %i vote contre lui-même car il a dépassé la barre des %i votes incorrects\n" id Regles.nb_vote_max))
                     else 
-                        begin
-                        vote.((snd !reponse).(0))<- vote.((snd !reponse).(0)) + 1 ;
+                        begin (*prise en compte du vote*)
+                        urne.((snd !reponse).(0))<- urne.((snd !reponse).(0)) + 1 ;
                         ( v_print 2 "Arbitre: %i vote contre %i\n" id (snd !reponse).(0));
                         communication_du_vote (condition_de_vote) c_nbjoueurs joueurs (4,[|id_vote;type_vote;!tour; id;(snd !reponse).(0) |]) 
                         end
                 end
             done;
-        let (vict,maj) = vote_majorite vote in majorite:=maj ; victime:=vict;
-        ( v_print 3 "Arbitre: majorite: %b, tour: %i\n" !majorite !tour);
+
+        let (vict,maj) = vote_majorite urne in 
+        majorite_absolue :=maj ; 
+        victime:=vict;
+        ( v_print 3 "Arbitre: majorité: %b, tour: %i\n" !majorite_absolue !tour);
         for id=0 to c_nbjoueurs -1 do if condition_de_vote id then joueurs.(id)#donne_info (6,[|!tour|]) done; (*on informe que le tour est fini*)
         incr tour
         done;
