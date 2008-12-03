@@ -66,14 +66,21 @@ let carte_LG nb_joueurs =
     |_ when nb_joueurs < 22 -> (>) 7
     |_ -> (>) (2+(nb_joueurs-2)/5)
 
+let generer_ordre_aleatoire nb_joueurs =
+    let ordre = Array.init nb_joueurs (fun i->i) in
+    let permut i1 i2= (let tmp=ordre.(i1) in ordre.(i1) <- ordre.(i2); ordre.(i2) <- tmp) in
+    for i=0 to nb_joueurs* 2 do 
+         permut (Random.int nb_joueurs) (Random.int nb_joueurs) (*Permutations, on l'espère, aléatoires pour mélanger les joueurs*)
+        done;
+    ordre
+;;
+
 
 let repartition nb_joueurs=
 (* Attribue aléatoirement une personnalité à chacun des joueurs*)
     if nb_joueurs < Regles.nb_joueurs_min
         then failwith (Printf.sprintf "Le nombre de joueurs est insuffisant pour attribuer correctement les rôles") (*Règle n°6*);
-    let rep=Array.init nb_joueurs (fun i->i) in
-    let perm tab i1 i2= let tmp=tab.(i1) in tab.(i1)<-tab.(i2); tab.(i2)<-tmp in
-    for i=0 to 2*nb_joueurs do perm rep (Random.int nb_joueurs) (Random.int nb_joueurs) done; (*Permutations, on l'espère, aléatoires pour mélanger les joueurs*)
+    let rep= generer_ordre_aleatoire nb_joueurs in
     (*on a desormais un tableau aléatoire avec les id des joueurs*)
     let rep2=Array.make nb_joueurs Villageois in
     for i=0 to nb_joueurs-1 do 

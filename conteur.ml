@@ -31,6 +31,8 @@ let joueurs = Array.init c_nbjoueurs ( fun i-> if i mod 5<>0 then jdb (new Joueu
 let morgue=((Stack.create ()): int Stack.t)
 ;;
 
+let ordre = Definition.generer_ordre_aleatoire c_nbjoueurs;; (* correction issue14*)
+
 
 let initialisation () (*ini du jeu: distribue les roles, demande a chaque joueur de s'initialiser en consequence*) =
     let reparti = repartition c_nbjoueurs in 
@@ -76,34 +78,38 @@ let the_end () (*gere la fin du jeu: affiche les gagants, le role de chacun...*)
 
 let nuit () (*gere la nuit: ordre des perso à faire jouer, actions de chacun*)=
     v_print_string 3 "Conteur:La nuit tombe\n";
-    v_print_string 3 "Conteur:les loups-garou se réveillent et rodent pendant la nuit\n";
-    let (victime,nb_votants)=Definition.appel_au_vote (fun id -> not (c_is_dead id) (*issue 5*) && (c_is_LG id)) (fun (idq,contenu)->c_is_dead (contenu).(0) (*issue n°6*)) c_nbjoueurs joueurs 3 !id_vote 1 in
+    v_print_string 3 "Conteur:les loups-garous se réveillent et rodent pendant la nuit\n";
+    let (victime,nb_votants)=Definition.appel_au_vote (fun id -> not (c_is_dead id) (*issue 5*) && (c_is_LG id)) (fun (_,contenu)->c_is_dead (contenu).(0) (*issue n°6*)) c_nbjoueurs joueurs 3 !id_vote 1 in
     incr id_vote;
     if nb_votants>0 (*issue 10*) 
         then Stack.push victime morgue 
         else v_print_string 4 "Arbitre: il n'y a eu aucun votants pour le vote des loups-garous, la partie devrait être terminée\n";
     v_print_string 3 "Conteur:Les loups-garous se rendorment\n";
-    for id=0 to c_nbjoueurs-1 do
-        if c_whoswho.(id)=Sorciere
+
+    (*Réveil des joueurs qui jouent la nuit*)
+    let id = ref 0 in
+    for i=0 to c_nbjoueurs - 1 do
+        id := ordre.(i);
+        if c_whoswho.(!id) = Sorciere
             then 
             begin
                 v_print_string 3 "Conteur: la Sorcière se réveille\n";
-                let (_,reponse)=joueurs.(id)#pose_question (5,[|victime|]) in
-                if reponse.(2)=1 && c_potions.(0)>0
-                    then (c_potions.(0)<- c_potions.(0)-1; ignore(Stack.pop morgue);v_print_string 2 "Arbitre: Sorcière utilise potions vie\n");
-                if reponse.(0)=1 && c_potions.(1)>0
-                    then (c_potions.(1)<- c_potions.(1)-1; Stack.push reponse.(1) morgue;v_print_string 2 "Arbitre: Sorcière utilise poison\n");
+                let (_,reponse) = joueurs.(!id)#pose_question (5,[|victime|]) in
+                if reponse.(2)=1 && c_potions.(0) > 0
+                    then (c_potions.(0)<- c_potions.(0) - 1; ignore(Stack.pop morgue);v_print_string 2 "Arbitre: Sorcière utilise potions vie\n");
+                if reponse.(0)=1 && c_potions.(1) > 0
+                    then (c_potions.(1)<- c_potions.(1) - 1; Stack.push reponse.(1) morgue;v_print_string 2 "Arbitre: Sorcière utilise poison\n");
                 v_print_string 3 "Conteur: La sorcière se rendort\n"
             end;
-        if c_whoswho.(id)=Voyante
+        if c_whoswho.(!id)=Voyante
             then (*on pourrait utiliser une procedure de vote un peu speciale pour economiser des lignes de code mais ca serait moins clair*)
             begin
                 v_print_string 3 "Conteur: la Voyante se reveille.. ....et me designe la personne dont elle veut sonder l'identité\n";
-                let (_,reponse)= joueurs.(id)#pose_question (4,[||]) in
+                let (_,reponse)= joueurs.(!id)#pose_question (4,[||]) in
                 match c_whoswho.(reponse.(0)) with
                     |Mort _ -> v_print_string 1 "Arbitre: la Voyante demande l'identité d'un mort, issue13\n"
                     |pers -> (( v_print 2 "Arbitre: La Voyante demande l'identification de %i qui est %s\n" reponse.(0) (perso2string c_whoswho.(reponse.(0)))) ;
-                    joueurs.(id)#donne_info (1,[|reponse.(0);perso2int c_whoswho.(reponse.(0))|]));
+                    joueurs.(!id)#donne_info (1,[|reponse.(0);perso2int c_whoswho.(reponse.(0))|]));
                 v_print_string 3 "Conteur: la voyante se rendort\n"
             end
     done;
