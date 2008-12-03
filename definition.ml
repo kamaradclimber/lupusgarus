@@ -58,24 +58,31 @@ class virtual joueur c_nbjoueurs numjoueur=
     method get_nbjoueurs = (nbjoueurs:int)
   end;;
  
-let repartition nbjoueurs=
+let carte_LG nb_joueurs =
+    (* je sais cette  manière d'écrire est contraire à l'idée CaMLique du match...with mais cets plus lisible*)
+    match nb_joueurs with
+    |_ when nb_joueurs < 12 -> (>) 5 
+    |_ when nb_joueurs < 17 -> (>) 6
+    |_ when nb_joueurs < 22 -> (>) 7
+    |_ -> (>) (2+(nb_joueurs-2)/5)
+
+
+let repartition nb_joueurs=
 (* Attribue aléatoirement une personnalité à chacun des joueurs*)
-    if nbjoueurs < Regles.nb_joueurs_min
+    if nb_joueurs < Regles.nb_joueurs_min
         then failwith (Printf.sprintf "Le nombre de joueurs est insuffisant pour attribuer correctement les rôles") (*Règle n°6*);
-    let rep=Array.init nbjoueurs (fun i->i) in
+    let rep=Array.init nb_joueurs (fun i->i) in
     let perm tab i1 i2= let tmp=tab.(i1) in tab.(i1)<-tab.(i2); tab.(i2)<-tmp in
-    for i=0 to 2*nbjoueurs do perm rep (Random.int nbjoueurs) (Random.int nbjoueurs) done; (*Permutations, on l'espère, aléatoires pour mélanger les joueurs*)
+    for i=0 to 2*nb_joueurs do perm rep (Random.int nb_joueurs) (Random.int nb_joueurs) done; (*Permutations, on l'espère, aléatoires pour mélanger les joueurs*)
     (*on a desormais un tableau aléatoire avec les id des joueurs*)
-    let rep2=Array.make nbjoueurs Villageois in
-    for i=0 to nbjoueurs-1 do 
-        match i mod 3 with
-            |0->rep2.(i)<- Loup (*Un joueur sur 3 est un Loup*)
-            |_->()
+    let rep2=Array.make nb_joueurs Villageois in
+    for i=0 to nb_joueurs-1 do 
+        if carte_LG nb_joueurs i then rep2.(i)<- Loup else () (*si le joueur pioche les premières cartes du paquet, il est LG !*)
         done;
     rep2.(1)<- Voyante;
     rep2.(2)<- Sorciere;
-    let rep3=Array.make nbjoueurs Unknown in
-    for i=0 to nbjoueurs-1 do rep3.(rep.(i))<-rep2.(i) done;
+    let rep3=Array.make nb_joueurs Unknown in
+    for i=0 to nb_joueurs-1 do rep3.(rep.(i))<-rep2.(i) done;
     rep3
 ;;
 
