@@ -23,7 +23,7 @@ match id_info with
 |1-> (1, [|contenu.(0) ; perso2int (objet#get_whoswho contenu.(0) )|])
 |2-> (2,[|Random.int objet#get_nbjoueurs|])
 |3->if objet#who_am_i = Loup 
-	then (3,[|Random.int objet#get_nbjoueurs|]) 
+	then (2,[|Random.int objet#get_nbjoueurs|]) 
 	else failwith (Printf.sprintf "%i dit: ERREUR je ne suis pas un loup garou, une telle erreur n'aurait pas du arriver\n verifier la fonction passé en argument à la procedure de vote " objet#get_id)
 |4->if objet#get_whoswho (objet#get_id) = Voyante 
 	then  (2,[|(Random.int objet#get_nbjoueurs)|]) 

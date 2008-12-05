@@ -53,7 +53,7 @@ match id_info with
                 victime := Random.int objet#get_nbjoueurs;
                 incr count
                 done;
-            (3,[|!victime|])
+            (2,[|!victime|])
     else failwith (Printf.sprintf "%i dit: ERREUR je ne suis pas un loup garou, une telle erreur n'aurait pas du arriver\n verifier la fonction passe en argument à la procedure de vote " objet#get_id)
 |4->if objet#get_whoswho (objet#get_id) = Voyante
     then  (2,[|(Random.int objet#get_nbjoueurs)|])
