@@ -78,7 +78,7 @@ let action_LG objet tour_de_vote=
                 victime := Random.int objet#get_nbjoueurs;
                 incr count
                 done;
-            (3,[|!victime|]) 
+            (2,[|!victime|]) 
         else 
             failwith (Printf.sprintf "%i dit: ERREUR je ne suis pas un loup garou, une telle erreur n'aurait pas du arriver\n vérifier la fonction passée en argument à la procédure de vote " objet#get_id)
 ;;

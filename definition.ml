@@ -9,7 +9,7 @@ Random.init (seed);;
 let v_print_string level str=if verbose<= level then print_string str;;
 let v_print level=if verbose<= level then Printf.printf else Printf.ifprintf stdout;;
 
-v_print 4 "Arbitre: L'initialisation aléatoire est %i" seed;;
+v_print 4 "Arbitre: L'initialisation aléatoire est %i\n" seed;;
 (*Ainsi si un problème apparait, on peut récréer exactement les mêmes conditions pour vérifier si on l'a bien corrigé, il suffit d'imposer la seed à la valeur problématique*)
 
 let print_int_tab tab= Array.iter (fun x->Printf.printf "%i " x) tab;print_newline ();;
