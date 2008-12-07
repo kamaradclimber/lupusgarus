@@ -3,7 +3,7 @@
 let semble_etre_de_mon_cote myperso hisperso=
 match (myperso,hisperso) with
 |Mort _,_->failwith "je suis mort ! (soulevee par la fonction \"semble_etre_de_mon_cote\""
-|_, Mort _ -> (v_print_string 4 "Suis-je allie à un mort ? dur de repondre.. ce genre de question ne devrait pas se poser";true)
+|_, Mort _ -> (v_print_string 4 "Suis-je allie Ã  un mort ? dur de repondre.. ce genre de question ne devrait pas se poser";true)
 |Loup, Loup -> true
 |Loup, _ -> false
 |_, Loup -> false
@@ -12,7 +12,7 @@ match (myperso,hisperso) with
 ;;
 
 let rec donne_info objet (*pour le moment il est de type 'a puis ce quon en fait va le specifier sans dire quil sagit dun joueur_de_base (car pas encore defini) mais lors de lutilisation il verifiera la compatibilite ! cf https://mail.google.com/mail/?shva=1#all/11b3af0c2e14abce*) ((id_info,contenu):information)=
-(*pkoi rec ? -> si jamais une information en genère une autre... à voir: il faut peut etre distinguer les infos donnees par le conteur et celle deduite*)
+(*pkoi rec ? -> si jamais une information en genÃ¨re une autre... Ã  voir: il faut peut etre distinguer les infos donnees par le conteur et celle deduite*)
 match id_info with
 |0 ->(*deprecated*) ()
 |1->begin
@@ -23,7 +23,7 @@ match id_info with
     end
 |2-> assert false (*ceci est une reponse de la part des joueurs uniquement*)
 |3->objet#mod_whoswho contenu.(0) (Mort (objet#get_whoswho contenu.(0)))
-|4->( v_print 0 "   %i : j'ai bien recu le fait que %i a vote contre %i au vote n°%i (tour: %i) mais je nen fait rien pour le moment\n" objet#get_id contenu.(3) contenu.(4) contenu.(0) contenu.(2))
+|4->( v_print 0 "   %i : j'ai bien recu le fait que %i a vote contre %i au vote nÂ°%i (tour: %i) mais je nen fait rien pour le moment\n" objet#get_id contenu.(3) contenu.(4) contenu.(0) contenu.(2))
 |5->failwith (Printf.sprintf "%i: j'ai recu une info concernant le conteur, il y a erreur\n" objet#get_id)
 |_-> ();;
 
@@ -54,10 +54,10 @@ match id_info with
                 incr count
                 done;
             (2,[|!victime|])
-    else failwith (Printf.sprintf "%i dit: ERREUR je ne suis pas un loup garou, une telle erreur n'aurait pas du arriver\n verifier la fonction passe en argument à la procedure de vote " objet#get_id)
+    else failwith (Printf.sprintf "%i dit: ERREUR je ne suis pas un loup garou, une telle erreur n'aurait pas du arriver\n verifier la fonction passe en argument Ã  la procedure de vote " objet#get_id)
 |4->if objet#get_whoswho (objet#get_id) = Voyante
     then  (2,[|(Random.int objet#get_nbjoueurs)|])
-    else failwith (Printf.sprintf "%i dit: ERREUR je ne suis pas la voyante, une telle erreur n'aurait pas du arriver\n verifier la fonction passe en argument à la procedure de vote " objet#get_id)
+    else failwith (Printf.sprintf "%i dit: ERREUR je ne suis pas la voyante, une telle erreur n'aurait pas du arriver\n verifier la fonction passe en argument Ã  la procedure de vote " objet#get_id)
 |5->if contenu.(0)=objet#get_id then (5,[|0;0;1|]) else (5,[|Random.int 2;Random.int objet#get_nbjoueurs;Random.int 2|])
 |_-> ((-1),[||])
 

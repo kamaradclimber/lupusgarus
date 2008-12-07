@@ -21,7 +21,7 @@ print_string "ok\n"
 with _->print_string "erreur lors du traitement de l'information\n"
 ;;
 
-print_string "idi2....na pas besoin detre testée\n";;
+print_string "idi2....na pas besoin detre testÃ©e\n";;
 
 print_string "idi3....";;
 try
@@ -44,7 +44,7 @@ with _->print_string "erreur lors du traitement de l'information\n"
 ;;
 
 
-print_string "idi5....na pas besoin detre testée\n";;
+print_string "idi5....na pas besoin detre testÃ©e\n";;
 
 print_string "idi6....";;
 try
@@ -62,7 +62,7 @@ print_string "idq0....";;
 try
 let (idi,reponse)=taupin#pose_question (0,[||]) in
 if idi<>0  then print_string "echec : mauvaise idi\n" 
-else if Array.length reponse <>2 then print_string "echec: mauvais format de réponse\n"
+else if Array.length reponse <>2 then print_string "echec: mauvais format de rÃ©ponse\n"
 else if reponse.(0)<>nbjoueurs then print_string "echec: mauvais nb de joueurs\n"
 else if reponse.(1)<>id then print_string "echec: mauvais id\n"
 else (decr erreurs_questions ;print_string "ok\n") with _->print_string "erreur lors du traitement de la question\n"
@@ -75,7 +75,7 @@ let (idi,reponse)=taupin#pose_question (1,[|untel|]) in
 if idi<>1  then print_string "echec : mauvaise idi\n" 
 else if Array.length reponse <>2 then print_string "echec: mauvais format de reponse\n"
 else if reponse.(0)<>untel then print_string "echec: mauvais %untel%\n"
-else try (ignore (Definition.int2perso reponse.(1));decr erreurs_questions ; print_string "ok\n") with _-> print_string "echec: personnalité inconnue\n" with _->print_string "erreur lors du traitement de la question\n"
+else try (ignore (Definition.int2perso reponse.(1));decr erreurs_questions ; print_string "ok\n") with _-> print_string "echec: personnalitÃ© inconnue\n" with _->print_string "erreur lors du traitement de la question\n"
 ;;
 
 print_string "idq2....";;
@@ -125,12 +125,14 @@ else (decr erreurs_questions ;print_string "ok\n") with _->print_string "erreur 
 Printf.printf "Erreurs questions: %i\n\n" !erreurs_questions;;
 Printf.printf "Erreurs information: %i\n\n" !erreurs_info;;
 
-print_string "Tests avancés\n";;
+print_string "Tests avancÃ©s\n";;
 
-print_string "Test n°1...";;
-try ignore (new Joueur.joueur_de_base nbjoueurs (-1));ignore (new Joueur.joueur_de_base nbjoueurs nbjoueurs );print_string "echec\n" with _->print_string "ok\n";;
+print_string "Test nÂ°1...";;
+try ignore (new Joueur.joueur_de_base nbjoueurs (-1));ignore (new Joueur.joueur_de_base nbjoueurs nbjoueurs );print_string "echec\n" with _->print_string "ok\n";;
 
-
+
+
+
 
 flush stdout;;
 

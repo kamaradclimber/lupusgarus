@@ -1,11 +1,11 @@
 open Definition
 
-let tableau_id = Array.make 10000 Unknown ;; (*jai fait un test, cette variable est partagée entre tous te joueurs, c'est un peu de la triche non ? :-) *)
+let tableau_id = Array.make 10000 Unknown ;; (*jai fait un test, cette variable est partagÃ©e entre tous te joueurs, c'est un peu de la triche non ? :-) *)
 
 let nb_loups = ref 0 ;;
 let nb_villageois = ref 0 ;;(*idem, meme si lutilisation de cette variable nest pas vraiment de la triche !*)
 
-let init objet = (*je comprend pas bien a quoi elle sert: tu reinitialise le nombre de LG à chaque appel de pose_question cest à dire 20000 fois pas partie*)
+let init objet = (*je comprend pas bien a quoi elle sert: tu reinitialise le nombre de LG Ã  chaque appel de pose_question cest Ã  dire 20000 fois pas partie*)
 	print_string "je comprend pas bien a quoi elle sert\n";
 	if !nb_loups = 0 
 	then nb_loups:= (objet#get_nbjoueurs)/3 ;
@@ -14,7 +14,7 @@ let init objet = (*je comprend pas bien a quoi elle sert: tu reinitialise le nom
 			| Loup ->  tableau_id.(objet#get_id) <- Loup
 			| Voyante -> tableau_id.(objet#get_id) <- Voyante
 			| Sorciere -> tableau_id.(objet#get_id) <- Sorciere
-			|_->() (*pour eviter les warning: this pattern matching is not exhausitive, rajoute une ligne attrape-tout: |_->.....quitte à afficher une erreur*)
+			|_->() (*pour eviter les warning: this pattern matching is not exhausitive, rajoute une ligne attrape-tout: |_->.....quitte Ã  afficher une erreur*)
 ;;
 
 let historique_votes = Array.make_matrix 1000 10000 (-1);; (*a la ieme ligne, on lit les votes du ieme tour*)	
@@ -27,16 +27,16 @@ let donne_info objet ((id_info,contenu):information)=
 	|0 ->(*deprecated*) ()
 	|1->tableau_id.(contenu.(0)) <- int2perso contenu.(1) (*ton match with est pas tres comprehensible je le premplace par ce que je crois quil siginifie, sinon il faudrait mettre des begin/with en plus !*)
 			(*tu essaye de mettre un entier dans ton tableau_id qui contient des perso, je rajoute donc la fonction int2perso qui permet de faire la conversion*)
-	|2-> assert false (*ceci est une réponse de la part des joueurs uniquement*)
+	|2-> assert false (*ceci est une rÃ©ponse de la part des joueurs uniquement*)
 	|3-> 	begin (match tableau_id.(contenu.(0)) with 
 					|Loup -> nb_loups:=(!nb_loups) - 1
 					|_ -> nb_villageois:= (!nb_villageois) - 1); (*tu peux remplacer cette ligne apr la fonction decr nb_villageois, cest plus court !*) 
 					tableau_id.(contenu.(0)) <- Mort tableau_id.(contenu.(0)) (*attention Mort nexiste pas tout seul: cest par ex Mort Voyante (cest un type reccursif, mais peut etre que ca evoluera, faudra en discutter)*)
-			end (*ya  un truc pas clair avec les points virgules ici: dès que tu mets un point virgule tu sors du match, si tout le bloc pécédent concerne le |_ ->... mets un begin... end*)
+			end (*ya  un truc pas clair avec les points virgules ici: dÃ¨s que tu mets un point virgule tu sors du match, si tout le bloc pÃ©cÃ©dent concerne le |_ ->... mets un begin... end*)
 	                 
 	|4->
 		begin 
-		( v_print 0 " %i : j'ai bien recu le fait que %i a voté contre %i au vote n°%i (tour: %i) mais je nen fait rien pour le moment\n" objet#get_id contenu.(3) contenu.(4) contenu.(0) contenu.(2)); (*oublie pas les points virgules !*)
+		( v_print 0 " %i : j'ai bien recu le fait que %i a votÃ© contre %i au vote nÂ°%i (tour: %i) mais je nen fait rien pour le moment\n" objet#get_id contenu.(3) contenu.(4) contenu.(0) contenu.(2)); (*oublie pas les points virgules !*)
 		if contenu.(1) = 0 
 			then 
 				begin
@@ -69,7 +69,7 @@ let rec pose_question objet ((id_info,contenu):information)=
 						|[] -> (while tableau_id.(!victime)=Loup || perso_is_dead tableau_id.(!victime) do victime:= Random.int objet#get_nbjoueurs done ;
 								(2,[|!victime|]))
 						| h::t -> begin
-									if historique_votes.(0).(h) = (-1) (*jai remplacé la match par un if ca marche mieux*)
+									if historique_votes.(0).(h) = (-1) (*jai remplacÃ© la match par un if ca marche mieux*)
 										then (while tableau_id.(!victime)=Loup || perso_is_dead tableau_id.(!victime) do victime := Random.int objet#get_nbjoueurs done ;
 													(2,[|!victime|]))
 										else begin let numdervote = ref 0 in while historique_votes.(!numdervote).(h)<>(-1) do numdervote:=(!numdervote)+1 done ; numdervote:=(!numdervote) -1 ;
@@ -112,7 +112,7 @@ let rec pose_question objet ((id_info,contenu):information)=
 									if (!occ) > (!occurences) 
 										then occurences:=(!occ) ; 
 									loup1:=i ; 
-									loup2:=j (*attention je te lai mis comme ça sera intrprété par ocaml, mais peut etre quil manque un begin ...end*)
+									loup2:=j (*attention je te lai mis comme Ã§a sera intrprÃ©tÃ© par ocaml, mais peut etre quil manque un begin ...end*)
 									done ; 
 							done ;
 						victime:= !loup1 ; 

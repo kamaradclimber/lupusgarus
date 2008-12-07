@@ -2,8 +2,8 @@ open Definition
 
 let semble_etre_de_mon_cote myperso hisperso=
 match (myperso,hisperso) with
-|Mort _,_->failwith "je suis mort ! (soulevée par la fonction \"semble_etre_de_mon_cote\""
-|_, Mort _ -> (v_print_string 4 "Suis-je allie à un mort ? dur de repondre.. ce genre de question ne devrait pas se poser";true)
+|Mort _,_->failwith "je suis mort ! (soulevÃ©e par la fonction \"semble_etre_de_mon_cote\""
+|_, Mort _ -> (v_print_string 4 "Suis-je allie Ã  un mort ? dur de repondre.. ce genre de question ne devrait pas se poser";true)
 |Loup, Loup -> true
 |Loup, _ -> false
 |_, Loup -> false
@@ -18,20 +18,20 @@ match (myperso,hisperso) with
     puis arbres malades sur leur parents en ajoutant plus ou moins et le nombre de amrquage (pour detecter les idiots
 ;;*)
 
-let assimilation_identité objet id_autre id_identité=
-    let identité= int2perso id_identité and ce_que_je_sais = objet#get_whoswho id_autre in
-    if ce_que_je_sais <> Unknown && identité <> ce_que_je_sais
-        then ( v_print 3 "%i: On me dit que %i est %s, or pour moi il est %s\n" (objet#get_id) id_autre (perso2string identité) (perso2string ce_que_je_sais) );
-    objet#mod_whoswho id_autre identité;
-    if semble_etre_de_mon_cote objet#who_am_i identité
+let assimilation_identitÃ© objet id_autre id_identitÃ©=
+    let identitÃ©= int2perso id_identitÃ© and ce_que_je_sais = objet#get_whoswho id_autre in
+    if ce_que_je_sais <> Unknown && identitÃ© <> ce_que_je_sais
+        then ( v_print 3 "%i: On me dit que %i est %s, or pour moi il est %s\n" (objet#get_id) id_autre (perso2string identitÃ©) (perso2string ce_que_je_sais) );
+    objet#mod_whoswho id_autre identitÃ©;
+    if semble_etre_de_mon_cote objet#who_am_i identitÃ©
         then objet#mod_conf id_autre 10
         else objet#mod_conf id_autre (-10)
 ;;
 
 let assimilation_vote objet id_vote type_vote tour_de_vote votant cible=
-    v_print 0 "   %i : j'ai bien recu le fait que %i a vote contre %i au vote n°%i (tour: %i)\n" objet#get_id votant cible id_vote tour_de_vote;
+    v_print 0 "   %i : j'ai bien recu le fait que %i a vote contre %i au vote nÂ°%i (tour: %i)\n" objet#get_id votant cible id_vote tour_de_vote;
     objet#mod_vote votant cible
-    (*insérer ici le code pour l'analyse du vote*)
+    (*insÃ©rer ici le code pour l'analyse du vote*)
 ;;
 
 let gestion_vote objet moment_du_vote=
@@ -44,7 +44,7 @@ let gestion_vote objet moment_du_vote=
 
 let rec donne_info objet ((id_info,contenu):information) =
     match id_info with
-        |1-> assimilation_identité objet contenu.(0) contenu.(1)
+        |1-> assimilation_identitÃ© objet contenu.(0) contenu.(1)
         |2-> assert false
         |5-> failwith (Printf.sprintf "%i: j'ai recu une info concernant le conteur, il y a erreur\n" objet#get_id)
         |3-> objet#mod_whoswho contenu.(0) (Mort (objet#get_whoswho contenu.(0)))
@@ -80,16 +80,16 @@ let action_LG objet tour_de_vote=
                 done;
             (2,[|!victime|]) 
         else 
-            failwith (Printf.sprintf "%i dit: ERREUR je ne suis pas un loup garou, une telle erreur n'aurait pas du arriver\n vérifier la fonction passée en argument à la procédure de vote " objet#get_id)
+            failwith (Printf.sprintf "%i dit: ERREUR je ne suis pas un loup garou, une telle erreur n'aurait pas du arriver\n vÃ©rifier la fonction passÃ©e en argument Ã  la procÃ©dure de vote " objet#get_id)
 ;;
 
 let action_voyante objet=
     if objet#get_whoswho (objet#get_id) = Voyante 
         then  (2,[|(Random.int objet#get_nbjoueurs)|]) 
-        else failwith (Printf.sprintf "%i dit: ERREUR je ne suis pas la voyante, une telle erreur n'aurait pas du arriver\n verifier la fonction passe en argument à la procedure de vote " objet#get_id)
+        else failwith (Printf.sprintf "%i dit: ERREUR je ne suis pas la voyante, une telle erreur n'aurait pas du arriver\n verifier la fonction passe en argument Ã  la procedure de vote " objet#get_id)
 ;;
 
-let action_sorcière objet victime=
+let action_sorciÃ¨re objet victime=
     if victime=objet#get_id then (5,[|0;0;1|]) else (5,[|Random.int 2;Random.int objet#get_nbjoueurs;Random.int 2|])
 ;;
 
@@ -100,7 +100,7 @@ match id_info with
 |2-> mon_vote objet
 |3-> action_LG objet contenu.(0)
 |4-> action_voyante objet
-|5->action_sorcière objet contenu.(0)
+|5->action_sorciÃ¨re objet contenu.(0)
 |_-> ((-1),[||])
 
 
@@ -111,7 +111,7 @@ class confiant c_nbjoueurs numjoueur=
         inherit Definition.joueur c_nbjoueurs numjoueur
         val classe = "confiant"
         val whoswho = Array.make c_nbjoueurs (Unknown : perso)
-        val conf = Array.make c_nbjoueurs 0 (*de -10 à +10 *)
+        val conf = Array.make c_nbjoueurs 0 (*de -10 Ã  +10 *)
         val vote = Array.make c_nbjoueurs [] 
         method donne_info = donne_info self
         method pose_question = pose_question self
