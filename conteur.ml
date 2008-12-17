@@ -1,6 +1,6 @@
 open Definition
 
-let c_nbjoueurs = 20
+let c_nbjoueurs = 10
 ;;  
 if c_nbjoueurs<Regles.nb_joueurs_min then 
     v_print_string 4 "Arbitre: des erreurs peuvent survenir, le nombre de joueurs est trop faible\n"
@@ -18,10 +18,10 @@ let c_is_dead id = match c_whoswho.(id) with | Mort _-> true |_-> false
 ;;
 let c_is_LG id = match c_whoswho.(id) with | Loup -> true |_ -> false
 ;;
-
-let conf2j conf = (conf: Joueur3.confiant :> Definition.joueur) (*cette conversion permet la coercion, cest à dire d'indiquer à ocaml que telle sous-classe de joueur sera consideree comme un joueur tout court*)
-;; 
 let reliable2j reliable = (reliable: Joueur2.reliable :> Definition.joueur)
+let conf2j confiant = (confiant: Joueur3.confiant :> Definition.joueur) (*cette conversion permet la coercion, cest à dire d'indiquer à ocaml que telle sous-classe de joueur sera consideree comme un joueur tout court*)
+;; 
+
 let jdb j = (j: Joueur.joueur_de_base :> Definition.joueur)
 ;;
 
