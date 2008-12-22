@@ -24,53 +24,19 @@ let get_participants objet=
 ;;
 
 let analyse_du_vote objet is_participant_au_vote=
+    (*to do*)
     
-    (*let get_amis pred = (*détermine les joueurs vérifiant un certain prédicat dans le tableau conf*)
-        begin
-        let candidates = ref [] in
-        for id=0 to objet#get_nbjoueurs -1 do
-            if pred objet#get_conf.(id) then candidates := id :: !candidates
-            done;   
-        !candidates
-        end in
-
-    (*On va déterminer chaque fois que nécessairela liste des meilleurs amis, c'est à dire ceux qui sont qualifiés de la best_conf *)
-    let best_friends = ref [] and best_conf = ref 10 in
     
-    (*Initialisation des tableaux des gens dont les votes contre eux ont déjà étés analysés*)
-    let bonus_conf = Array.make objet#get_nbjoueurs 0 and marques = Array.init objet#get_nbjoueurs (fun id -> not (is_participant_au_vote id) || is_dead objet id) in
     
-    (*Algorithme des arbres malades*)
-    while marques <> Array.make objet#get_nbjoueurs true do
-        let a_traiter = (Stack.create () : int Stack.t) in
     
-        while List.length (List.filter (fun id -> not (is_dead objet id) ) !best_friends) = 0 do 
-            best_friends := get_amis ( (=) !best_conf ); 
-            decr best_conf 
-            done;
-        (*On a désormais une liste avec les meilleurs amis marqués ou non, sachant que la confiance diminue à chaque fois*)
-        
-        (*les amis qui sont non marqués sont ajoutés dans la liste des gens à traiter et on les honore d'un +1 dans la confiance temporaire*)
-        List.iter (fun id ->if not marques.(id) then (Stack.push id a_traiter; bonus_conf.(id) <- bonus_conf.(id) +1)) !best_friends;
-        
-        (*Enfin on traite tout les gens à traiter !*)
-        while not (Stack.is_empty a_traiter) do
-            let a_examiner = Stack.pop a_traiter in
-            List.iter (
-                fun votant ->
-                    let modifiant = compare 0 bonus_conf.(a_examiner) in
-                    Stack.push votant a_traiter;
-                    bonus_conf.(votant) <- bonus_conf.(votant) + modifiant
-                ) objet#get_vote.(a_examiner);
-            marques.(a_examiner) <- true
-            done
-        done;
-    Definition.print_int_tab bonus_conf;
-    print_int objet#get_nbjoueurs;
-    print_int (Array.length objet#get_conf);
+    
+    
+    
+    
+    
+    
     Array.iteri (fun id conf_now -> objet#mod_conf id (conf_now + bonus_conf.(id))  ) objet#get_conf;
-    print_int 1789*)
-  ()
+
 ;;
 
 let assimilation_identité objet id_autre id_identité=
@@ -93,7 +59,7 @@ let gestion_vote objet moment_du_vote=
     let is_participant = (get_participants objet) in
     match moment_du_vote with
         |0->objet#reset_vote
-        |1|2-> (analyse_du_vote objet is_participant); objet#reset_vote
+        |1|2-> (analyse_du_vote objet is_participant); print_int 198; flush stdout;objet#reset_vote
         |3 -> ()
         |_ -> Printf.printf "%i: le vote est dit au %i -ieme moment, ca me parait bizarre\n" objet#get_id moment_du_vote
 ;;
@@ -105,7 +71,7 @@ let rec donne_info objet ((id_info,contenu):information) =
         |5-> failwith (Printf.sprintf "%i: j'ai recu une info concernant le conteur, il y a erreur\n" objet#get_id)
         |3-> objet#mod_whoswho contenu.(0) (Mort (objet#get_whoswho.(contenu.(0))))
         |4-> assimilation_vote objet contenu.(0) contenu.(1) contenu.(2) contenu.(3) contenu.(4)
-        |6-> gestion_vote objet contenu.(0)
+        |6-> gestion_vote objet contenu.(0);print_int 222; flush stdout
         | _ -> ();;
 
 let mon_vote objet=

@@ -132,7 +132,7 @@ let petit_matin ()=
             done
 ;;
 
-let jour () (*gere le jour: mort des personnages, action specifique, pendaison publique, election d'un maire.../*)=
+let jour () (*gere le jour: mort des personnages, action specifique, pendaison publique.../*)=
     v_print_string 3 "Conteur: procédons au vote\n";
     let (suspect,nb_votants)=Definition.appel_au_vote (fun id -> not (c_is_dead id) ) (fun (idq,contenu)->c_is_dead (contenu).(0) (*issue n°6*)) c_nbjoueurs joueurs 2 !id_vote 0 in
     incr id_vote;
