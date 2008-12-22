@@ -1,0 +1,55 @@
+<html><head>
+<link rel="stylesheet" href="style.css" type="text/css">
+<meta content="text/html; charset=iso-8859-1" http-equiv="Content-Type">
+<link rel="Start" href="index.html">
+<link title="Index of values" rel=Appendix href="index_values.html">
+<link title="Index of class attributes" rel=Appendix href="index_attributes.html">
+<link title="Index of class methods" rel=Appendix href="index_methods.html">
+<link title="Index of classes" rel=Appendix href="index_classes.html">
+<link title="Index of modules" rel=Appendix href="index_modules.html">
+<link title="Conteur" rel="Chapter" href="Conteur.html">
+<link title="Ds_commun" rel="Chapter" href="Ds_commun.html">
+<link title="Joueur" rel="Chapter" href="Joueur.html">
+<link title="Joueur2" rel="Chapter" href="Joueur2.html">
+<link title="Joueur3" rel="Chapter" href="Joueur3.html">
+<link title="Perso_olivier" rel="Chapter" href="Perso_olivier.html">
+<link title="Regles" rel="Chapter" href="Regles.html"><title>Conteur.nuit</title>
+</head>
+<body>
+<code class="code"><span class="keyword">let</span>&nbsp;nuit&nbsp;()&nbsp;<span class="comment">(*gere&nbsp;la&nbsp;nuit:&nbsp;ordre&nbsp;des&nbsp;perso&nbsp;à&nbsp;faire&nbsp;jouer,&nbsp;actions&nbsp;de&nbsp;chacun*)</span>=<br>
+&nbsp;&nbsp;&nbsp;&nbsp;v_print_string&nbsp;3&nbsp;<span class="string">"Conteur:La&nbsp;nuit&nbsp;tombe\n"</span>;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;v_print_string&nbsp;3&nbsp;<span class="string">"Conteur:les&nbsp;loups-garous&nbsp;se&nbsp;réveillent&nbsp;et&nbsp;rodent&nbsp;pendant&nbsp;la&nbsp;nuit\n"</span>;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">let</span>&nbsp;(victime,nb_votants)=<span class="constructor">Definition</span>.appel_au_vote&nbsp;(<span class="keyword">fun</span>&nbsp;id&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;not&nbsp;(c_is_dead&nbsp;id)&nbsp;<span class="comment">(*issue&nbsp;5*)</span>&nbsp;<span class="keywordsign">&amp;&amp;</span>&nbsp;(c_is_LG&nbsp;id))&nbsp;(<span class="keyword">fun</span>&nbsp;(_,contenu)<span class="keywordsign">-&gt;</span>c_is_dead&nbsp;(contenu).(0)&nbsp;<span class="comment">(*issue&nbsp;n°6*)</span>)&nbsp;c_nbjoueurs&nbsp;joueurs&nbsp;3&nbsp;!id_vote&nbsp;1&nbsp;<span class="keyword">in</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;incr&nbsp;id_vote;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span>&nbsp;nb_votants&gt;0&nbsp;<span class="comment">(*issue&nbsp;10*)</span>&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">then</span>&nbsp;<span class="constructor">Stack</span>.push&nbsp;victime&nbsp;morgue&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">else</span>&nbsp;v_print_string&nbsp;4&nbsp;<span class="string">"Arbitre:&nbsp;il&nbsp;n'y&nbsp;a&nbsp;eu&nbsp;aucun&nbsp;votants&nbsp;pour&nbsp;le&nbsp;vote&nbsp;des&nbsp;loups-garous,&nbsp;la&nbsp;partie&nbsp;devrait&nbsp;être&nbsp;terminée\n"</span>;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;v_print_string&nbsp;3&nbsp;<span class="string">"Conteur:Les&nbsp;loups-garous&nbsp;se&nbsp;rendorment\n"</span>;<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">(*Réveil&nbsp;des&nbsp;joueurs&nbsp;qui&nbsp;jouent&nbsp;la&nbsp;nuit*)</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">let</span>&nbsp;id&nbsp;=&nbsp;ref&nbsp;0&nbsp;<span class="keyword">in</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">for</span>&nbsp;i=0&nbsp;<span class="keyword">to</span>&nbsp;c_nbjoueurs&nbsp;-&nbsp;1&nbsp;<span class="keyword">do</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;id&nbsp;:=&nbsp;ordre.(i);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span>&nbsp;c_whoswho.(!id)&nbsp;=&nbsp;<span class="constructor">Sorciere</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">then</span>&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">begin</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;v_print_string&nbsp;3&nbsp;<span class="string">"Conteur:&nbsp;la&nbsp;Sorcière&nbsp;se&nbsp;réveille\n"</span>;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">let</span>&nbsp;(_,reponse)&nbsp;=&nbsp;joueurs.(!id)<span class="keywordsign">#</span>pose_question&nbsp;(5,[|victime|])&nbsp;<span class="keyword">in</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span>&nbsp;reponse.(2)=1&nbsp;<span class="keywordsign">&amp;&amp;</span>&nbsp;c_potions.(0)&nbsp;&gt;&nbsp;0<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">then</span>&nbsp;(c_potions.(0)&lt;-&nbsp;c_potions.(0)&nbsp;-&nbsp;1;&nbsp;ignore(<span class="constructor">Stack</span>.pop&nbsp;morgue);v_print_string&nbsp;2&nbsp;<span class="string">"Arbitre:&nbsp;Sorcière&nbsp;utilise&nbsp;potions&nbsp;vie\n"</span>);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span>&nbsp;reponse.(0)=1&nbsp;<span class="keywordsign">&amp;&amp;</span>&nbsp;c_potions.(1)&nbsp;&gt;&nbsp;0<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">then</span>&nbsp;(c_potions.(1)&lt;-&nbsp;c_potions.(1)&nbsp;-&nbsp;1;&nbsp;<span class="constructor">Stack</span>.push&nbsp;reponse.(1)&nbsp;morgue;v_print_string&nbsp;2&nbsp;<span class="string">"Arbitre:&nbsp;Sorcière&nbsp;utilise&nbsp;poison\n"</span>);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;v_print_string&nbsp;3&nbsp;<span class="string">"Conteur:&nbsp;La&nbsp;sorcière&nbsp;se&nbsp;rendort\n"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">end</span>;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span>&nbsp;c_whoswho.(!id)=<span class="constructor">Voyante</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">then</span>&nbsp;<span class="comment">(*on&nbsp;pourrait&nbsp;utiliser&nbsp;une&nbsp;procedure&nbsp;de&nbsp;vote&nbsp;un&nbsp;peu&nbsp;speciale&nbsp;pour&nbsp;economiser&nbsp;des&nbsp;lignes&nbsp;de&nbsp;code&nbsp;mais&nbsp;ca&nbsp;serait&nbsp;moins&nbsp;clair*)</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">begin</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;v_print_string&nbsp;3&nbsp;<span class="string">"Conteur:&nbsp;la&nbsp;Voyante&nbsp;se&nbsp;reveille..&nbsp;....et&nbsp;me&nbsp;designe&nbsp;la&nbsp;personne&nbsp;dont&nbsp;elle&nbsp;veut&nbsp;sonder&nbsp;l'identité\n"</span>;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">let</span>&nbsp;(_,reponse)=&nbsp;joueurs.(!id)<span class="keywordsign">#</span>pose_question&nbsp;(4,[||])&nbsp;<span class="keyword">in</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">match</span>&nbsp;c_whoswho.(reponse.(0))&nbsp;<span class="keyword">with</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">|</span><span class="constructor">Mort</span>&nbsp;_&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;v_print_string&nbsp;1&nbsp;<span class="string">"Arbitre:&nbsp;la&nbsp;Voyante&nbsp;demande&nbsp;l'identité&nbsp;d'un&nbsp;mort,&nbsp;issue13\n"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">|</span>pers&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;((&nbsp;v_print&nbsp;2&nbsp;<span class="string">"Arbitre:&nbsp;La&nbsp;Voyante&nbsp;demande&nbsp;l'identification&nbsp;de&nbsp;%i&nbsp;qui&nbsp;est&nbsp;%s\n"</span>&nbsp;reponse.(0)&nbsp;(perso2string&nbsp;c_whoswho.(reponse.(0))))&nbsp;;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;joueurs.(!id)<span class="keywordsign">#</span>donne_info&nbsp;(1,[|reponse.(0);perso2int&nbsp;c_whoswho.(reponse.(0))|]));<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;v_print_string&nbsp;3&nbsp;<span class="string">"Conteur:&nbsp;la&nbsp;voyante&nbsp;se&nbsp;rendort\n"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">end</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">done</span>;</code></body></html>

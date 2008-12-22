@@ -25,7 +25,7 @@ let conf2j confiant = (confiant: Joueur3.confiant :> Definition.joueur) (*cette 
 let jdb j = (j: Joueur.joueur_de_base :> Definition.joueur)
 ;;
 
-let joueurs = Array.init c_nbjoueurs ( fun i-> if i mod 5<>0 then jdb (new Joueur.joueur_de_base c_nbjoueurs i) else if i mod 7 <>0 then conf2j (new Joueur3.confiant c_nbjoueurs i) else reliable2j (new Joueur2.reliable c_nbjoueurs i) )
+let joueurs = Array.init c_nbjoueurs ( fun i-> conf2j (new Joueur3.confiant c_nbjoueurs i))
 ;;
 
 let morgue=((Stack.create ()): int Stack.t)

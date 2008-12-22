@@ -13,19 +13,19 @@ match (myperso,hisperso) with
 
 let is_dead objet id = match objet#get_whoswho.(id) with | Mort _-> true |_-> false
 
-let get_participants objet=
-	let participants =
-		match objet#get_type_vote with
-		| 0 -> Array.make objet#get_nbjoueurs true
-		| 1 -> Array.init objet#get_nbjoueurs (fun id -> objet#get_whoswho.(id) = Loup)
-		| _ -> (v_print_string 4 "Type de vote inconnu (soulevé par joueur3 dans get_participants)";Array.make objet#get_nbjoueurs true)
-	in
-	fun id -> participants.(id)
+let get_participants objet= 
+    let participants =
+        match objet#get_type_vote with
+        | 0 -> Array.make objet#get_nbjoueurs true
+        | 1 -> Array.init objet#get_nbjoueurs (fun id -> objet#get_whoswho.(id) = Loup)
+        | _ -> (v_print_string 4 "Type de vote inconnu (soulevé par joueur3 dans get_participants)";Array.make objet#get_nbjoueurs true)
+    in
+    (fun id -> participants.(id))
 ;;
 
 let analyse_du_vote objet is_participant_au_vote=
-	
-    let get_amis pred = (*détermine les joueurs vérifiant un certain prédicat dans le tableau conf*)
+    
+    (*let get_amis pred = (*détermine les joueurs vérifiant un certain prédicat dans le tableau conf*)
         begin
         let candidates = ref [] in
         for id=0 to objet#get_nbjoueurs -1 do
@@ -34,39 +34,43 @@ let analyse_du_vote objet is_participant_au_vote=
         !candidates
         end in
 
-	(*On va déterminer chaque fois que nécessairela liste des meilleurs amis, c'est à dire ceux qui sont qualifiés de la best_conf *)
+    (*On va déterminer chaque fois que nécessairela liste des meilleurs amis, c'est à dire ceux qui sont qualifiés de la best_conf *)
     let best_friends = ref [] and best_conf = ref 10 in
-	
-	(*Initialisation des tableaux des gens dont les votes contre eux ont déjà étés analysés*)
+    
+    (*Initialisation des tableaux des gens dont les votes contre eux ont déjà étés analysés*)
     let bonus_conf = Array.make objet#get_nbjoueurs 0 and marques = Array.init objet#get_nbjoueurs (fun id -> not (is_participant_au_vote id) || is_dead objet id) in
-	
-	(*Algorithme des arbres malades*)
+    
+    (*Algorithme des arbres malades*)
     while marques <> Array.make objet#get_nbjoueurs true do
         let a_traiter = (Stack.create () : int Stack.t) in
-	
+    
         while List.length (List.filter (fun id -> not (is_dead objet id) ) !best_friends) = 0 do 
-			best_friends := get_amis ( (=) !best_conf ); 
-			decr best_conf 
-			done;
+            best_friends := get_amis ( (=) !best_conf ); 
+            decr best_conf 
+            done;
         (*On a désormais une liste avec les meilleurs amis marqués ou non, sachant que la confiance diminue à chaque fois*)
-		
-		(*les amis qui sont non marqués sont ajoutés dans la liste des gens à traiter et on les honore d'un +1 dans la confiance temporaire*)
+        
+        (*les amis qui sont non marqués sont ajoutés dans la liste des gens à traiter et on les honore d'un +1 dans la confiance temporaire*)
         List.iter (fun id ->if not marques.(id) then (Stack.push id a_traiter; bonus_conf.(id) <- bonus_conf.(id) +1)) !best_friends;
         
-		(*Enfin on traite tout les gens à traiter !*)
+        (*Enfin on traite tout les gens à traiter !*)
         while not (Stack.is_empty a_traiter) do
             let a_examiner = Stack.pop a_traiter in
             List.iter (
                 fun votant ->
-					let modifiant = compare 0 bonus_conf.(a_examiner) in
-					Stack.push votant a_traiter;
-					bonus_conf.(votant) <- bonus_conf.(votant) + modifiant
+                    let modifiant = compare 0 bonus_conf.(a_examiner) in
+                    Stack.push votant a_traiter;
+                    bonus_conf.(votant) <- bonus_conf.(votant) + modifiant
                 ) objet#get_vote.(a_examiner);
             marques.(a_examiner) <- true
             done
         done;
-	Definition.print_int_tab bonus_conf;
-	Array.iteri (fun id-> objet#mod_conf (id + bonus_conf.(id))) objet#get_conf
+    Definition.print_int_tab bonus_conf;
+    print_int objet#get_nbjoueurs;
+    print_int (Array.length objet#get_conf);
+    Array.iteri (fun id conf_now -> objet#mod_conf id (conf_now + bonus_conf.(id))  ) objet#get_conf;
+    print_int 1789*)
+  ()
 ;;
 
 let assimilation_identité objet id_autre id_identité=
@@ -82,14 +86,14 @@ let assimilation_identité objet id_autre id_identité=
 let assimilation_vote objet id_vote type_vote tour_de_vote votant cible=
     v_print 0 "   %i : j'ai bien recu le fait que %i a vote contre %i au vote n°%i (tour: %i)\n" objet#get_id votant cible id_vote tour_de_vote;
     objet#mod_vote votant cible;
-	objet#mod_type_vote type_vote
+    objet#mod_type_vote type_vote
 ;;
 
 let gestion_vote objet moment_du_vote=
-	let is_participant = get_participants objet in
+    let is_participant = (get_participants objet) in
     match moment_du_vote with
         |0->objet#reset_vote
-        |1|2-> analyse_du_vote objet is_participant; objet#reset_vote
+        |1|2-> (analyse_du_vote objet is_participant); objet#reset_vote
         |3 -> ()
         |_ -> Printf.printf "%i: le vote est dit au %i -ieme moment, ca me parait bizarre\n" objet#get_id moment_du_vote
 ;;
@@ -165,7 +169,7 @@ class confiant c_nbjoueurs numjoueur=
         val whoswho = Array.make c_nbjoueurs (Unknown : perso)
         val conf = Array.make c_nbjoueurs 0 (*de -10 à +10 *)
         val vote = Array.make c_nbjoueurs []
-		val type_vote = ref 0
+        val type_vote = ref 0
         method donne_info = donne_info self
         method pose_question = pose_question self
         (*methodes de modification*)
@@ -173,11 +177,11 @@ class confiant c_nbjoueurs numjoueur=
         method mod_conf indice nvelle_valeur                        = conf.(indice) <- max (min nvelle_valeur 10) (-10)
         method mod_vote indice nw                                   = vote.(indice) <-  nw::vote.(indice)
         method reset_vote                                           = for i=0 to c_nbjoueurs -1 do vote.(i) <- [] done
-		method mod_type_vote nw_type_vote							= type_vote := nw_type_vote
+        method mod_type_vote nw_type_vote                            = type_vote := nw_type_vote
             (*methode d'acces aux infos (get_...) et daffichage (print_.....) *)
         method get_whoswho                                          = whoswho
-        method  who_am_i                                            = whoswho.(self#get_id)
+        method who_am_i                                             = whoswho.(self#get_id)
         method get_conf                                             = conf
-        method get_vote                                             = vote
-		method get_type_vote										= !type_vote
+        method get_vote                                             = (vote: int list array)
+        method get_type_vote                                        = !type_vote
     end;;

@@ -1,0 +1,27 @@
+<html><head>
+<link rel="stylesheet" href="style.css" type="text/css">
+<meta content="text/html; charset=iso-8859-1" http-equiv="Content-Type">
+<link rel="Start" href="index.html">
+<link title="Index of values" rel=Appendix href="index_values.html">
+<link title="Index of class attributes" rel=Appendix href="index_attributes.html">
+<link title="Index of class methods" rel=Appendix href="index_methods.html">
+<link title="Index of classes" rel=Appendix href="index_classes.html">
+<link title="Index of modules" rel=Appendix href="index_modules.html">
+<link title="Conteur" rel="Chapter" href="Conteur.html">
+<link title="Ds_commun" rel="Chapter" href="Ds_commun.html">
+<link title="Joueur" rel="Chapter" href="Joueur.html">
+<link title="Joueur2" rel="Chapter" href="Joueur2.html">
+<link title="Joueur3" rel="Chapter" href="Joueur3.html">
+<link title="Perso_olivier" rel="Chapter" href="Perso_olivier.html">
+<link title="Regles" rel="Chapter" href="Regles.html"><title>Joueur2.semble_etre_de_mon_cote</title>
+</head>
+<body>
+<code class="code"><span class="keyword">let</span>&nbsp;semble_etre_de_mon_cote&nbsp;myperso&nbsp;hisperso=<br>
+<span class="keyword">match</span>&nbsp;(myperso,hisperso)&nbsp;<span class="keyword">with</span><br>
+<span class="keywordsign">|</span><span class="constructor">Mort</span>&nbsp;_,_<span class="keywordsign">-&gt;</span>failwith&nbsp;<span class="string">"je&nbsp;suis&nbsp;mort&nbsp;!&nbsp;(soulevee&nbsp;par&nbsp;la&nbsp;fonction&nbsp;\"semble_etre_de_mon_cote\""</span><br>
+<span class="keywordsign">|</span>_,&nbsp;<span class="constructor">Mort</span>&nbsp;_&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;(v_print_string&nbsp;4&nbsp;<span class="string">"Suis-je&nbsp;allie&nbsp;à&nbsp;un&nbsp;mort&nbsp;?&nbsp;dur&nbsp;de&nbsp;repondre..&nbsp;ce&nbsp;genre&nbsp;de&nbsp;question&nbsp;ne&nbsp;devrait&nbsp;pas&nbsp;se&nbsp;poser"</span>;<span class="keyword">true</span>)<br>
+<span class="keywordsign">|</span><span class="constructor">Loup</span>,&nbsp;<span class="constructor">Loup</span>&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="keyword">true</span><br>
+<span class="keywordsign">|</span><span class="constructor">Loup</span>,&nbsp;_&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="keyword">false</span><br>
+<span class="keywordsign">|</span>_,&nbsp;<span class="constructor">Loup</span>&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="keyword">false</span><br>
+<span class="keywordsign">|</span>_,<span class="constructor">Unknown</span>&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="keyword">false</span><br>
+<span class="keywordsign">|</span>&nbsp;_,_&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="keyword">true</span></code></body></html>

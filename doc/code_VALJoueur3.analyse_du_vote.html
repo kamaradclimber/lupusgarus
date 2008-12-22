@@ -1,0 +1,65 @@
+<html><head>
+<link rel="stylesheet" href="style.css" type="text/css">
+<meta content="text/html; charset=iso-8859-1" http-equiv="Content-Type">
+<link rel="Start" href="index.html">
+<link title="Index of values" rel=Appendix href="index_values.html">
+<link title="Index of class attributes" rel=Appendix href="index_attributes.html">
+<link title="Index of class methods" rel=Appendix href="index_methods.html">
+<link title="Index of classes" rel=Appendix href="index_classes.html">
+<link title="Index of modules" rel=Appendix href="index_modules.html">
+<link title="Conteur" rel="Chapter" href="Conteur.html">
+<link title="Ds_commun" rel="Chapter" href="Ds_commun.html">
+<link title="Joueur" rel="Chapter" href="Joueur.html">
+<link title="Joueur2" rel="Chapter" href="Joueur2.html">
+<link title="Joueur3" rel="Chapter" href="Joueur3.html">
+<link title="Perso_olivier" rel="Chapter" href="Perso_olivier.html">
+<link title="Regles" rel="Chapter" href="Regles.html"><title>Joueur3.analyse_du_vote</title>
+</head>
+<body>
+<code class="code"><span class="keyword">let</span>&nbsp;analyse_du_vote&nbsp;objet&nbsp;is_participant_au_vote=<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">let</span>&nbsp;get_amis&nbsp;pred&nbsp;=&nbsp;<span class="comment">(*détermine&nbsp;les&nbsp;joueurs&nbsp;vérifiant&nbsp;un&nbsp;certain&nbsp;prédicat&nbsp;dans&nbsp;le&nbsp;tableau&nbsp;conf*)</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">begin</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">let</span>&nbsp;candidates&nbsp;=&nbsp;ref&nbsp;[]&nbsp;<span class="keyword">in</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">for</span>&nbsp;id=0&nbsp;<span class="keyword">to</span>&nbsp;objet<span class="keywordsign">#</span>get_nbjoueurs&nbsp;-1&nbsp;<span class="keyword">do</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span>&nbsp;pred&nbsp;objet<span class="keywordsign">#</span>get_conf.(id)&nbsp;<span class="keyword">then</span>&nbsp;candidates&nbsp;:=&nbsp;id&nbsp;::&nbsp;!candidates<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">done</span>;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;!candidates<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">end</span>&nbsp;<span class="keyword">in</span><br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">(*On&nbsp;va&nbsp;déterminer&nbsp;chaque&nbsp;fois&nbsp;que&nbsp;nécessairela&nbsp;liste&nbsp;des&nbsp;meilleurs&nbsp;amis,&nbsp;c'est&nbsp;à&nbsp;dire&nbsp;ceux&nbsp;qui&nbsp;sont&nbsp;qualifiés&nbsp;de&nbsp;la&nbsp;best_conf&nbsp;*)</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">let</span>&nbsp;best_friends&nbsp;=&nbsp;ref&nbsp;[]&nbsp;<span class="keyword">and</span>&nbsp;best_conf&nbsp;=&nbsp;ref&nbsp;10&nbsp;<span class="keyword">in</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">(*Initialisation&nbsp;des&nbsp;tableaux&nbsp;des&nbsp;gens&nbsp;dont&nbsp;les&nbsp;votes&nbsp;contre&nbsp;eux&nbsp;ont&nbsp;déjà&nbsp;étés&nbsp;analysés*)</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">let</span>&nbsp;bonus_conf&nbsp;=&nbsp;<span class="constructor">Array</span>.make&nbsp;objet<span class="keywordsign">#</span>get_nbjoueurs&nbsp;0&nbsp;<span class="keyword">and</span>&nbsp;marques&nbsp;=&nbsp;<span class="constructor">Array</span>.init&nbsp;objet<span class="keywordsign">#</span>get_nbjoueurs&nbsp;(<span class="keyword">fun</span>&nbsp;id&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;not&nbsp;(is_participant_au_vote&nbsp;id)&nbsp;<span class="keywordsign">||</span>&nbsp;is_dead&nbsp;objet&nbsp;id)&nbsp;<span class="keyword">in</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">(*Algorithme&nbsp;des&nbsp;arbres&nbsp;malades*)</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">while</span>&nbsp;marques&nbsp;&lt;&gt;&nbsp;<span class="constructor">Array</span>.make&nbsp;objet<span class="keywordsign">#</span>get_nbjoueurs&nbsp;<span class="keyword">true</span>&nbsp;<span class="keyword">do</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">let</span>&nbsp;a_traiter&nbsp;=&nbsp;(<span class="constructor">Stack</span>.create&nbsp;()&nbsp;:&nbsp;int&nbsp;<span class="constructor">Stack</span>.t)&nbsp;<span class="keyword">in</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">while</span>&nbsp;<span class="constructor">List</span>.length&nbsp;(<span class="constructor">List</span>.filter&nbsp;(<span class="keyword">fun</span>&nbsp;id&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;not&nbsp;(is_dead&nbsp;objet&nbsp;id)&nbsp;)&nbsp;!best_friends)&nbsp;=&nbsp;0&nbsp;<span class="keyword">do</span>&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;best_friends&nbsp;:=&nbsp;get_amis&nbsp;(&nbsp;(=)&nbsp;!best_conf&nbsp;);&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;decr&nbsp;best_conf&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">done</span>;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">(*On&nbsp;a&nbsp;désormais&nbsp;une&nbsp;liste&nbsp;avec&nbsp;les&nbsp;meilleurs&nbsp;amis&nbsp;marqués&nbsp;ou&nbsp;non,&nbsp;sachant&nbsp;que&nbsp;la&nbsp;confiance&nbsp;diminue&nbsp;à&nbsp;chaque&nbsp;fois*)</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">(*les&nbsp;amis&nbsp;qui&nbsp;sont&nbsp;non&nbsp;marqués&nbsp;sont&nbsp;ajoutés&nbsp;dans&nbsp;la&nbsp;liste&nbsp;des&nbsp;gens&nbsp;à&nbsp;traiter&nbsp;et&nbsp;on&nbsp;les&nbsp;honore&nbsp;d'un&nbsp;+1&nbsp;dans&nbsp;la&nbsp;confiance&nbsp;temporaire*)</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">List</span>.iter&nbsp;(<span class="keyword">fun</span>&nbsp;id&nbsp;<span class="keywordsign">-&gt;</span><span class="keyword">if</span>&nbsp;not&nbsp;marques.(id)&nbsp;<span class="keyword">then</span>&nbsp;(<span class="constructor">Stack</span>.push&nbsp;id&nbsp;a_traiter;&nbsp;bonus_conf.(id)&nbsp;&lt;-&nbsp;bonus_conf.(id)&nbsp;+1))&nbsp;!best_friends;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">(*Enfin&nbsp;on&nbsp;traite&nbsp;tout&nbsp;les&nbsp;gens&nbsp;à&nbsp;traiter&nbsp;!*)</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">while</span>&nbsp;not&nbsp;(<span class="constructor">Stack</span>.is_empty&nbsp;a_traiter)&nbsp;<span class="keyword">do</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">let</span>&nbsp;a_examiner&nbsp;=&nbsp;<span class="constructor">Stack</span>.pop&nbsp;a_traiter&nbsp;<span class="keyword">in</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">List</span>.iter&nbsp;(<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">fun</span>&nbsp;votant&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">let</span>&nbsp;modifiant&nbsp;=&nbsp;compare&nbsp;0&nbsp;bonus_conf.(a_examiner)&nbsp;<span class="keyword">in</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">Stack</span>.push&nbsp;votant&nbsp;a_traiter;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;bonus_conf.(votant)&nbsp;&lt;-&nbsp;bonus_conf.(votant)&nbsp;+&nbsp;modifiant<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;)&nbsp;objet<span class="keywordsign">#</span>get_vote.(a_examiner);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;marques.(a_examiner)&nbsp;&lt;-&nbsp;<span class="keyword">true</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">done</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">done</span>;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">Definition</span>.print_int_tab&nbsp;bonus_conf;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;print_int&nbsp;objet<span class="keywordsign">#</span>get_nbjoueurs;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;print_int&nbsp;(<span class="constructor">Array</span>.length&nbsp;objet<span class="keywordsign">#</span>get_conf);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">Array</span>.iteri&nbsp;(<span class="keyword">fun</span>&nbsp;id&nbsp;conf_now&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;objet<span class="keywordsign">#</span>mod_conf&nbsp;id&nbsp;(conf_now&nbsp;+&nbsp;bonus_conf.(id))&nbsp;&nbsp;)&nbsp;objet<span class="keywordsign">#</span>get_conf;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;print_int&nbsp;1789</code></body></html>

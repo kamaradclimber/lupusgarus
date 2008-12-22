@@ -1,4 +1,4 @@
-let verbose=3;;
+let verbose=2;;
 
 let seed = int_of_float (Unix.time ());;
 
