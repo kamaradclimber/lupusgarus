@@ -23,18 +23,59 @@ let get_participants objet=
     (fun id -> participants.(id))
 ;;
 
-let analyse_du_vote objet is_participant_au_vote=
-    (*to do*)
+let analyse_du_vote objet is_participant_au_vote= 
+    
+    let marques = Array.make objet#get_nbjoueurs false in
+    let bonus_conf = Array.make objet#get_nbjoueurs 0 in
+    
+    let en_cours = ref (Stack.create () : int Stack.t) and a_traiter = (Stack.create () : int Stack.t) in
+    
+    while marques <> Array.make objet#get_nbjoueurs true do
+        if Stack.is_empty a_traiter 
+        then
+            (*On remplit la pile des gens à traiter avec 'nos meilleurs amis' non traités *)
+            begin
+            (*Au début, les meilleurs amis sont les pires...*)
+            let best_conf_non_marquée = ref (-10) in
+            for ami_potentiel=0 to objet#get_nbjoueurs -1 do
+                match marques.(ami_potentiel), (compare objet#get_conf.(ami_potentiel) !best_conf_non_marquée) with
+                (*Puis on en découvre d'autres ou des meilleurs*)
+                | false,0 -> Stack.push ami_potentiel a_traiter
+                | false,1 -> begin best_conf_non_marquée := objet#get_conf.(ami_potentiel) ; Stack.clear a_traiter; Stack.push ami_potentiel a_traiter end
+                | _ -> () (*ou pas*)
+                done;
+            (*On aime un peu plus nos 'meilleurs amis' *)
+            Stack.iter (fun friend -> objet#mod_conf friend (objet#get_conf.(friend) + 1) ) a_traiter;
+            end;
+            
+        (*On se met au boulot, il faut traiter toute la pile*)
+        en_cours := a_traiter ;
+        Stack.clear a_traiter;
+    
+        while not (Stack.is_empty !en_cours) do
+            let désigné = Stack.pop !en_cours in
+            if not marques.(désigné) then 
+                marques.(désigné) <- true;
+                (* Il faut prendre en compte tout ceux qui ont voté contre ce type là*)
+                List.iter 
+                (fun votant -> 
+                    if votant != désigné then (*supprime l'interpretation des votes idiots*)
+                    begin
+                    (*On les aime plus ou moins selon qu'on aime ou non la personne contre laquelle ils ont voté*)
+                    bonus_conf.(votant) <- bonus_conf.(votant) + 2 * (compare 0 bonus_conf.(désigné));
+                    (* Si en plus ils n'ont pas étés traités, on s'y met*)
+                    (*mais pourquoi les ymets on ? on devrait peut etre attendre qu'ils soient nos meilleurs amis ...*)
+                    (*il s'agit peut etre d'une erreur que d'utiliser un parcours de graphe au lieu d'un parcours de liste, triée dns l'ordre décroissant de la confiance*)
+                    (*cependant le sys actuel repose sur la confiance temporaire et indirectement seulement sur la confiance,*)
+                    (*donc il est plus 'up-to-date'...*)
+                    (*il vaut mieux le laisser comme tel*)
+                    if not marques.(votant) then Stack.push votant a_traiter
+                    end) objet#get_vote.(désigné)
+            done
+        done;
     
     
-    
-    
-    
-    
-    
-    
-    
-    
+    (*Enfin, on modifie la confiance en accord avec le vote de tout le monde*)
     Array.iteri (fun id conf_now -> objet#mod_conf id (conf_now + bonus_conf.(id))  ) objet#get_conf;
 
 ;;
@@ -59,7 +100,7 @@ let gestion_vote objet moment_du_vote=
     let is_participant = (get_participants objet) in
     match moment_du_vote with
         |0->objet#reset_vote
-        |1|2-> (analyse_du_vote objet is_participant); print_int 198; flush stdout;objet#reset_vote
+        |1|2-> (analyse_du_vote objet is_participant);objet#reset_vote
         |3 -> ()
         |_ -> Printf.printf "%i: le vote est dit au %i -ieme moment, ca me parait bizarre\n" objet#get_id moment_du_vote
 ;;
@@ -71,7 +112,7 @@ let rec donne_info objet ((id_info,contenu):information) =
         |5-> failwith (Printf.sprintf "%i: j'ai recu une info concernant le conteur, il y a erreur\n" objet#get_id)
         |3-> objet#mod_whoswho contenu.(0) (Mort (objet#get_whoswho.(contenu.(0))))
         |4-> assimilation_vote objet contenu.(0) contenu.(1) contenu.(2) contenu.(3) contenu.(4)
-        |6-> gestion_vote objet contenu.(0);print_int 222; flush stdout
+        |6-> gestion_vote objet contenu.(0);
         | _ -> ();;
 
 let mon_vote objet=
