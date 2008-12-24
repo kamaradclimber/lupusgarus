@@ -72,7 +72,7 @@ let the_end () (*gere la fin du jeu: affiche les gagants, le role de chacun...*)
         |2 -> v_print_string 3 "Conteur: Tous les villageois sont morts, le village de Salem est tombé aux mains du mal !\n"
         |_ -> v_print_string 4 "Arbitre: Le jeu a quitté pour une raison inconnue"
     );
-    v_print_string 3 "Conteur: La partie est terminée\n les roles distribues etaient les suivants\n";
+    v_print_string 3 "Conteur: La partie est terminée\n les roles distribués étaient les suivants\n";
     Array.iteri (fun i-> fun pers -> ( v_print 3 "%i etait %s, de classe %s\n" i (perso2string pers) joueurs.(i)#get_classe)  ) c_whoswho
 ;;
 

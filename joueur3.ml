@@ -24,7 +24,6 @@ let get_participants objet=
 ;;
 
 let analyse_du_vote objet is_participant_au_vote= 
-    
     let marques = Array.make objet#get_nbjoueurs false in
     let bonus_conf = Array.make objet#get_nbjoueurs 0 in
     
@@ -44,14 +43,14 @@ let analyse_du_vote objet is_participant_au_vote=
                 | false,1 -> begin best_conf_non_marquée := objet#get_conf.(ami_potentiel) ; Stack.clear a_traiter; Stack.push ami_potentiel a_traiter end
                 | _ -> () (*ou pas*)
                 done;
+            
             (*On aime un peu plus nos 'meilleurs amis' *)
             Stack.iter (fun friend -> objet#mod_conf friend (objet#get_conf.(friend) + 1) ) a_traiter;
             end;
             
         (*On se met au boulot, il faut traiter toute la pile*)
-        en_cours := a_traiter ;
+        en_cours := Stack.copy a_traiter ;
         Stack.clear a_traiter;
-    
         while not (Stack.is_empty !en_cours) do
             let désigné = Stack.pop !en_cours in
             if not marques.(désigné) then 
@@ -64,14 +63,14 @@ let analyse_du_vote objet is_participant_au_vote=
                     (*On les aime plus ou moins selon qu'on aime ou non la personne contre laquelle ils ont voté*)
                     bonus_conf.(votant) <- bonus_conf.(votant) + 2 * (compare 0 bonus_conf.(désigné));
                     (* Si en plus ils n'ont pas étés traités, on s'y met*)
-                    (*mais pourquoi les ymets on ? on devrait peut etre attendre qu'ils soient nos meilleurs amis ...*)
-                    (*il s'agit peut etre d'une erreur que d'utiliser un parcours de graphe au lieu d'un parcours de liste, triée dns l'ordre décroissant de la confiance*)
+                    (*mais pourquoi les y mets on ? on devrait peut etre attendre qu'ils soient nos meilleurs amis ...*)
+                    (*il s'agit peut être d'une erreur que d'utiliser un parcours de graphe au lieu d'un parcours de liste, triée dns l'ordre décroissant de la confiance*)
                     (*cependant le sys actuel repose sur la confiance temporaire et indirectement seulement sur la confiance,*)
                     (*donc il est plus 'up-to-date'...*)
                     (*il vaut mieux le laisser comme tel*)
                     if not marques.(votant) then Stack.push votant a_traiter
                     end) objet#get_vote.(désigné)
-            done
+            done;
         done;
     
     

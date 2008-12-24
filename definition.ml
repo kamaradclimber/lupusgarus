@@ -22,7 +22,8 @@ let array_exists predicat tab=
 
 let print_bool_array tab=
     for i=0 to Array.length tab -1 do if tab.(i) then print_string "true " else print_string "false " done;
-    print_string "\n"
+    print_string "\n";
+    flush stdout
     ;;
 
 (*Autres fonctions inutiles*)
