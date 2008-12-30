@@ -16,12 +16,12 @@
 <link title="Regles" rel="Chapter" href="Regles.html"><title>Joueur3.donne_info</title>
 </head>
 <body>
-<code class="code"><span class="keyword">let</span>&nbsp;<span class="keyword">rec</span>&nbsp;donne_info&nbsp;objet&nbsp;((id_info,contenu):information)&nbsp;=<br>
+<code class="code"><span class="keyword">let</span>&nbsp;<span class="keyword">rec</span>&nbsp;donne_info&nbsp;moi&nbsp;((id_info,contenu):information)&nbsp;=<br>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">match</span>&nbsp;id_info&nbsp;<span class="keyword">with</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">|</span>1<span class="keywordsign">-&gt;</span>&nbsp;assimilation_identité&nbsp;objet&nbsp;contenu.(0)&nbsp;contenu.(1)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">|</span>1<span class="keywordsign">-&gt;</span>&nbsp;assimilation_identité&nbsp;moi&nbsp;contenu.(0)&nbsp;contenu.(1)<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">|</span>2<span class="keywordsign">-&gt;</span>&nbsp;<span class="keyword">assert</span>&nbsp;<span class="keyword">false</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">|</span>5<span class="keywordsign">-&gt;</span>&nbsp;failwith&nbsp;(<span class="constructor">Printf</span>.sprintf&nbsp;<span class="string">"%i:&nbsp;j'ai&nbsp;recu&nbsp;une&nbsp;info&nbsp;concernant&nbsp;le&nbsp;conteur,&nbsp;il&nbsp;y&nbsp;a&nbsp;erreur\n"</span>&nbsp;objet<span class="keywordsign">#</span>get_id)<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">|</span>3<span class="keywordsign">-&gt;</span>&nbsp;objet<span class="keywordsign">#</span>mod_whoswho&nbsp;contenu.(0)&nbsp;(<span class="constructor">Mort</span>&nbsp;(objet<span class="keywordsign">#</span>get_whoswho.(contenu.(0))))<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">|</span>4<span class="keywordsign">-&gt;</span>&nbsp;assimilation_vote&nbsp;objet&nbsp;contenu.(0)&nbsp;contenu.(1)&nbsp;contenu.(2)&nbsp;contenu.(3)&nbsp;contenu.(4)<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">|</span>6<span class="keywordsign">-&gt;</span>&nbsp;gestion_vote&nbsp;objet&nbsp;contenu.(0)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">|</span>5<span class="keywordsign">-&gt;</span>&nbsp;failwith&nbsp;(<span class="constructor">Printf</span>.sprintf&nbsp;<span class="string">"%i:&nbsp;j'ai&nbsp;recu&nbsp;une&nbsp;info&nbsp;concernant&nbsp;le&nbsp;conteur,&nbsp;il&nbsp;y&nbsp;a&nbsp;erreur\n"</span>&nbsp;moi<span class="keywordsign">#</span>get_id)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">|</span>3<span class="keywordsign">-&gt;</span>&nbsp;moi<span class="keywordsign">#</span>mod_whoswho&nbsp;contenu.(0)&nbsp;(<span class="constructor">Mort</span>&nbsp;(moi<span class="keywordsign">#</span>get_whoswho.(contenu.(0))))<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">|</span>4<span class="keywordsign">-&gt;</span>&nbsp;assimilation_vote&nbsp;moi&nbsp;contenu.(0)&nbsp;contenu.(1)&nbsp;contenu.(2)&nbsp;contenu.(3)&nbsp;contenu.(4)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">|</span>6<span class="keywordsign">-&gt;</span>&nbsp;gestion_vote&nbsp;moi&nbsp;contenu.(0);<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">|</span>&nbsp;_&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;()</code></body></html>

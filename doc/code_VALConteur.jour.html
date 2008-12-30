@@ -16,7 +16,7 @@
 <link title="Regles" rel="Chapter" href="Regles.html"><title>Conteur.jour</title>
 </head>
 <body>
-<code class="code"><span class="keyword">let</span>&nbsp;jour&nbsp;()&nbsp;<span class="comment">(*gere&nbsp;le&nbsp;jour:&nbsp;mort&nbsp;des&nbsp;personnages,&nbsp;action&nbsp;specifique,&nbsp;pendaison&nbsp;publique,&nbsp;election&nbsp;d'un&nbsp;maire.../*)</span>=<br>
+<code class="code"><span class="keyword">let</span>&nbsp;jour&nbsp;()&nbsp;=<br>
 &nbsp;&nbsp;&nbsp;&nbsp;v_print_string&nbsp;3&nbsp;<span class="string">"Conteur:&nbsp;procédons&nbsp;au&nbsp;vote\n"</span>;<br>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">let</span>&nbsp;(suspect,nb_votants)=<span class="constructor">Definition</span>.appel_au_vote&nbsp;(<span class="keyword">fun</span>&nbsp;id&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;not&nbsp;(c_is_dead&nbsp;id)&nbsp;)&nbsp;(<span class="keyword">fun</span>&nbsp;(idq,contenu)<span class="keywordsign">-&gt;</span>c_is_dead&nbsp;(contenu).(0)&nbsp;<span class="comment">(*issue&nbsp;n°6*)</span>)&nbsp;c_nbjoueurs&nbsp;joueurs&nbsp;2&nbsp;!id_vote&nbsp;0&nbsp;<span class="keyword">in</span><br>
 &nbsp;&nbsp;&nbsp;&nbsp;incr&nbsp;id_vote;<br>
@@ -24,8 +24,8 @@
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">then</span>&nbsp;<span class="keyword">begin</span><br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(&nbsp;v_print&nbsp;3&nbsp;<span class="string">"Conteur:&nbsp;%i&nbsp;est&nbsp;donc&nbsp;pendu&nbsp;en&nbsp;place&nbsp;publique\n"</span>&nbsp;suspect);<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(&nbsp;v_print&nbsp;3&nbsp;<span class="string">"Conteur:&nbsp;il&nbsp;révèle&nbsp;avant&nbsp;de&nbsp;monter&nbsp;sur&nbsp;l'échafaud&nbsp;qu'il&nbsp;était&nbsp;%s\n"</span>&nbsp;(perso2string&nbsp;c_whoswho.(suspect)));<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">(*Le&nbsp;conteur&nbsp;informe&nbsp;les&nbsp;joueurs&nbsp;vivant&nbsp;de&nbsp;la&nbsp;mort&nbsp;et&nbsp;de&nbsp;l'identité&nbsp;de&nbsp;la&nbsp;personne&nbsp;exécutée*)</span><br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">for</span>&nbsp;id=0&nbsp;<span class="keyword">to</span>&nbsp;c_nbjoueurs-1&nbsp;<span class="keyword">do</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">(*le&nbsp;conteur&nbsp;informe&nbsp;les&nbsp;joueurs&nbsp;de&nbsp;lexecution,&nbsp;il&nbsp;faut&nbsp;faire&nbsp;attention&nbsp;&nbsp;à&nbsp;ne&nbsp;pas&nbsp;informer&nbsp;les&nbsp;joueurs&nbsp;morts&nbsp;ce&nbsp;qui&nbsp;pourrait&nbsp;declencher&nbsp;une&nbsp;exception&nbsp;si&nbsp;l'un&nbsp;d'entre&nbsp;eux&nbsp;utilise&nbsp;par&nbsp;exemple&nbsp;semble_etre_de_mon_cote*)</span><br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span>&nbsp;not&nbsp;(c_is_dead&nbsp;id)&nbsp;<span class="keyword">then</span><br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">begin</span><br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;joueurs.(id)<span class="keywordsign">#</span>donne_info&nbsp;(1,[|suspect;perso2int&nbsp;c_whoswho.(suspect)|]);<br>

@@ -16,11 +16,11 @@
 <link title="Regles" rel="Chapter" href="Regles.html"><title>Joueur3.assimilation_identité</title>
 </head>
 <body>
-<code class="code"><span class="keyword">let</span>&nbsp;assimilation_identité&nbsp;objet&nbsp;id_autre&nbsp;id_identité=<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">let</span>&nbsp;identité=&nbsp;int2perso&nbsp;id_identité&nbsp;<span class="keyword">and</span>&nbsp;ce_que_je_sais&nbsp;=&nbsp;objet<span class="keywordsign">#</span>get_whoswho.(id_autre)&nbsp;<span class="keyword">in</span><br>
+<code class="code"><span class="keyword">let</span>&nbsp;assimilation_identité&nbsp;moi&nbsp;id_autre&nbsp;id_identité=<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">let</span>&nbsp;identité=&nbsp;int2perso&nbsp;id_identité&nbsp;<span class="keyword">and</span>&nbsp;ce_que_je_sais&nbsp;=&nbsp;moi<span class="keywordsign">#</span>get_whoswho.(id_autre)&nbsp;<span class="keyword">in</span><br>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span>&nbsp;ce_que_je_sais&nbsp;&lt;&gt;&nbsp;<span class="constructor">Unknown</span>&nbsp;<span class="keywordsign">&amp;&amp;</span>&nbsp;identité&nbsp;&lt;&gt;&nbsp;ce_que_je_sais<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">then</span>&nbsp;(&nbsp;v_print&nbsp;3&nbsp;<span class="string">"%i:&nbsp;On&nbsp;me&nbsp;dit&nbsp;que&nbsp;%i&nbsp;est&nbsp;%s,&nbsp;or&nbsp;pour&nbsp;moi&nbsp;il&nbsp;est&nbsp;%s\n"</span>&nbsp;(objet<span class="keywordsign">#</span>get_id)&nbsp;id_autre&nbsp;(perso2string&nbsp;identité)&nbsp;(perso2string&nbsp;ce_que_je_sais)&nbsp;);<br>
-&nbsp;&nbsp;&nbsp;&nbsp;objet<span class="keywordsign">#</span>mod_whoswho&nbsp;id_autre&nbsp;identité;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span>&nbsp;semble_etre_de_mon_cote&nbsp;objet<span class="keywordsign">#</span>who_am_i&nbsp;identité<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">then</span>&nbsp;objet<span class="keywordsign">#</span>mod_conf&nbsp;id_autre&nbsp;10<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">else</span>&nbsp;objet<span class="keywordsign">#</span>mod_conf&nbsp;id_autre&nbsp;(-10)</code></body></html>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">then</span>&nbsp;(&nbsp;v_print&nbsp;3&nbsp;<span class="string">"%i:&nbsp;On&nbsp;me&nbsp;dit&nbsp;que&nbsp;%i&nbsp;est&nbsp;%s,&nbsp;or&nbsp;pour&nbsp;moi&nbsp;il&nbsp;est&nbsp;%s\n"</span>&nbsp;(moi<span class="keywordsign">#</span>get_id)&nbsp;id_autre&nbsp;(perso2string&nbsp;identité)&nbsp;(perso2string&nbsp;ce_que_je_sais)&nbsp;);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;moi<span class="keywordsign">#</span>mod_whoswho&nbsp;id_autre&nbsp;identité;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span>&nbsp;semble_etre_de_mon_cote&nbsp;moi<span class="keywordsign">#</span>who_am_i&nbsp;identité<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">then</span>&nbsp;moi<span class="keywordsign">#</span>mod_conf&nbsp;id_autre&nbsp;10<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">else</span>&nbsp;moi<span class="keywordsign">#</span>mod_conf&nbsp;id_autre&nbsp;(-10)</code></body></html>

@@ -11,7 +11,8 @@ match (myperso,hisperso) with
 | _,_ -> true
 ;;
 
-let rec donne_info objet (*pour le moment il est de type 'a puis ce quon en fait va le specifier sans dire quil sagit dun joueur_de_base (car pas encore defini) mais lors de lutilisation il verifiera la compatibilite ! cf https://mail.google.com/mail/?shva=1#all/11b3af0c2e14abce*) ((id_info,contenu):information)=
+let rec donne_info objet ((id_info,contenu):information)=
+(*pour le moment il est de type 'a puis ce quon en fait va le specifier sans dire qu'il s'agit dun joueur_de_base (car pas encore defini) mais lors de l'utilisation il verifiera la compatibilite ! cf https://mail.google.com/mail/?shva=1#all/11b3af0c2e14abce*)
 (*pkoi rec ? -> si jamais une information en genère une autre... à voir: il faut peut etre distinguer les infos donnees par le conteur et celle deduite*)
 match id_info with
 |0 ->(*deprecated*) ()

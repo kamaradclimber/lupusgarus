@@ -16,7 +16,8 @@
 <link title="Regles" rel="Chapter" href="Regles.html"><title>Joueur2.donne_info</title>
 </head>
 <body>
-<code class="code"><span class="keyword">let</span>&nbsp;<span class="keyword">rec</span>&nbsp;donne_info&nbsp;objet&nbsp;<span class="comment">(*pour&nbsp;le&nbsp;moment&nbsp;il&nbsp;est&nbsp;de&nbsp;type&nbsp;'a&nbsp;puis&nbsp;ce&nbsp;quon&nbsp;en&nbsp;fait&nbsp;va&nbsp;le&nbsp;specifier&nbsp;sans&nbsp;dire&nbsp;quil&nbsp;sagit&nbsp;dun&nbsp;joueur_de_base&nbsp;(car&nbsp;pas&nbsp;encore&nbsp;defini)&nbsp;mais&nbsp;lors&nbsp;de&nbsp;lutilisation&nbsp;il&nbsp;verifiera&nbsp;la&nbsp;compatibilite&nbsp;!&nbsp;cf&nbsp;https://mail.google.com/mail/?shva=1#all/11b3af0c2e14abce*)</span>&nbsp;((id_info,contenu):information)=<br>
+<code class="code"><span class="keyword">let</span>&nbsp;<span class="keyword">rec</span>&nbsp;donne_info&nbsp;objet&nbsp;((id_info,contenu):information)=<br>
+<span class="comment">(*pour&nbsp;le&nbsp;moment&nbsp;il&nbsp;est&nbsp;de&nbsp;type&nbsp;'a&nbsp;puis&nbsp;ce&nbsp;quon&nbsp;en&nbsp;fait&nbsp;va&nbsp;le&nbsp;specifier&nbsp;sans&nbsp;dire&nbsp;qu'il&nbsp;s'agit&nbsp;dun&nbsp;joueur_de_base&nbsp;(car&nbsp;pas&nbsp;encore&nbsp;defini)&nbsp;mais&nbsp;lors&nbsp;de&nbsp;l'utilisation&nbsp;il&nbsp;verifiera&nbsp;la&nbsp;compatibilite&nbsp;!&nbsp;cf&nbsp;https://mail.google.com/mail/?shva=1#all/11b3af0c2e14abce*)</span><br>
 <span class="comment">(*pkoi&nbsp;rec&nbsp;?&nbsp;-&gt;&nbsp;si&nbsp;jamais&nbsp;une&nbsp;information&nbsp;en&nbsp;genère&nbsp;une&nbsp;autre...&nbsp;à&nbsp;voir:&nbsp;il&nbsp;faut&nbsp;peut&nbsp;etre&nbsp;distinguer&nbsp;les&nbsp;infos&nbsp;donnees&nbsp;par&nbsp;le&nbsp;conteur&nbsp;et&nbsp;celle&nbsp;deduite*)</span><br>
 <span class="keyword">match</span>&nbsp;id_info&nbsp;<span class="keyword">with</span><br>
 <span class="keywordsign">|</span>0&nbsp;<span class="keywordsign">-&gt;</span><span class="comment">(*deprecated*)</span>&nbsp;()<br>

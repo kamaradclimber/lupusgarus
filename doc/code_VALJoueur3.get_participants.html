@@ -16,11 +16,11 @@
 <link title="Regles" rel="Chapter" href="Regles.html"><title>Joueur3.get_participants</title>
 </head>
 <body>
-<code class="code"><span class="keyword">let</span>&nbsp;get_participants&nbsp;objet=&nbsp;<br>
+<code class="code"><span class="keyword">let</span>&nbsp;get_participants&nbsp;moi=&nbsp;<br>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">let</span>&nbsp;participants&nbsp;=<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">match</span>&nbsp;objet<span class="keywordsign">#</span>get_type_vote&nbsp;<span class="keyword">with</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">|</span>&nbsp;0&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Array</span>.make&nbsp;objet<span class="keywordsign">#</span>get_nbjoueurs&nbsp;<span class="keyword">true</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">|</span>&nbsp;1&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Array</span>.init&nbsp;objet<span class="keywordsign">#</span>get_nbjoueurs&nbsp;(<span class="keyword">fun</span>&nbsp;id&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;objet<span class="keywordsign">#</span>get_whoswho.(id)&nbsp;=&nbsp;<span class="constructor">Loup</span>)<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">|</span>&nbsp;_&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;(v_print_string&nbsp;4&nbsp;<span class="string">"Type&nbsp;de&nbsp;vote&nbsp;inconnu&nbsp;(soulevé&nbsp;par&nbsp;joueur3&nbsp;dans&nbsp;get_participants)"</span>;<span class="constructor">Array</span>.make&nbsp;objet<span class="keywordsign">#</span>get_nbjoueurs&nbsp;<span class="keyword">true</span>)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">match</span>&nbsp;moi<span class="keywordsign">#</span>get_type_vote&nbsp;<span class="keyword">with</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">|</span>&nbsp;0&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Array</span>.make&nbsp;moi<span class="keywordsign">#</span>get_nbjoueurs&nbsp;<span class="keyword">true</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">|</span>&nbsp;1&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Array</span>.init&nbsp;moi<span class="keywordsign">#</span>get_nbjoueurs&nbsp;(<span class="keyword">fun</span>&nbsp;id&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;moi<span class="keywordsign">#</span>get_whoswho.(id)&nbsp;=&nbsp;<span class="constructor">Loup</span>)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">|</span>&nbsp;_&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;(v_print_string&nbsp;4&nbsp;<span class="string">"Type&nbsp;de&nbsp;vote&nbsp;inconnu&nbsp;(soulevé&nbsp;par&nbsp;joueur3&nbsp;dans&nbsp;get_participants)"</span>;<span class="constructor">Array</span>.make&nbsp;moi<span class="keywordsign">#</span>get_nbjoueurs&nbsp;<span class="keyword">true</span>)<br>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">in</span><br>
 &nbsp;&nbsp;&nbsp;&nbsp;(<span class="keyword">fun</span>&nbsp;id&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;participants.(id))</code></body></html>

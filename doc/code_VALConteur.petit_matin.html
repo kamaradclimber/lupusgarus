@@ -21,12 +21,14 @@
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">while</span>&nbsp;not&nbsp;(<span class="constructor">Stack</span>.is_empty&nbsp;morgue)&nbsp;<span class="keyword">do</span><br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">let</span>&nbsp;id_mort&nbsp;=&nbsp;<span class="constructor">Stack</span>.pop&nbsp;morgue&nbsp;<span class="keyword">in</span><br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(&nbsp;v_print&nbsp;3&nbsp;<span class="string">"Conteur:&nbsp;%i&nbsp;est&nbsp;mort&nbsp;cette&nbsp;nuit,&nbsp;%i&nbsp;était&nbsp;%s\n"</span>&nbsp;id_mort&nbsp;id_mort&nbsp;(perso2string&nbsp;c_whoswho.(id_mort)));<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">for</span>&nbsp;id=0&nbsp;<span class="keyword">to</span>&nbsp;c_nbjoueurs-1&nbsp;<span class="keyword">do</span>&nbsp;<span class="comment">(*le&nbsp;conteur&nbsp;informe&nbsp;les&nbsp;joueurs&nbsp;des&nbsp;morts*)</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">(*le&nbsp;conteur&nbsp;informe&nbsp;les&nbsp;joueurs&nbsp;des&nbsp;morts*)</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">for</span>&nbsp;id=0&nbsp;<span class="keyword">to</span>&nbsp;c_nbjoueurs-1&nbsp;<span class="keyword">do</span>&nbsp;<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span>&nbsp;not&nbsp;(c_is_dead&nbsp;id)&nbsp;<span class="keyword">then</span><br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">begin</span><br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;joueurs.(id)<span class="keywordsign">#</span>donne_info&nbsp;(1,[|id_mort;perso2int&nbsp;c_whoswho.(id_mort)|]);<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;joueurs.(id)<span class="keywordsign">#</span>donne_info&nbsp;(3,[|id_mort;1|])<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">end</span><br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">done</span>;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;c_whoswho.(id_mort)&lt;-&nbsp;<span class="constructor">Mort</span>&nbsp;c_whoswho.(id_mort);&nbsp;<span class="comment">(*maj&nbsp;des&nbsp;infos&nbsp;du&nbsp;conteur*)</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">(*maj&nbsp;des&nbsp;infos&nbsp;du&nbsp;conteur*)</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;c_whoswho.(id_mort)&lt;-&nbsp;<span class="constructor">Mort</span>&nbsp;c_whoswho.(id_mort);&nbsp;<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">done</span></code></body></html>

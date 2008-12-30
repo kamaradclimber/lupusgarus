@@ -16,5 +16,12 @@
 <link title="Regles" rel="Chapter" href="Regles.html"><title>Joueur3.action_sorcière</title>
 </head>
 <body>
-<code class="code"><span class="keyword">let</span>&nbsp;action_sorcière&nbsp;objet&nbsp;victime=<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span>&nbsp;victime=objet<span class="keywordsign">#</span>get_id&nbsp;<span class="keyword">then</span>&nbsp;(5,[|0;0;1|])&nbsp;<span class="keyword">else</span>&nbsp;(5,[|<span class="constructor">Random</span>.int&nbsp;2;<span class="constructor">Random</span>.int&nbsp;objet<span class="keywordsign">#</span>get_nbjoueurs;<span class="constructor">Random</span>.int&nbsp;2|])</code></body></html>
+<code class="code"><span class="keyword">let</span>&nbsp;action_sorcière&nbsp;moi&nbsp;victime=<br>
+<span class="comment">(*La&nbsp;stratégie&nbsp;de&nbsp;la&nbsp;sorcière&nbsp;est&nbsp;de&nbsp;se&nbsp;sauver&nbsp;elle&nbsp;même&nbsp;et&nbsp;de&nbsp;tuer&nbsp;si&nbsp;possible&nbsp;son&nbsp;pire&nbsp;ennemi&nbsp;si&nbsp;elle&nbsp;le&nbsp;hait&nbsp;vraiment*)</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">let</span>&nbsp;vict_potentielle&nbsp;=&nbsp;get_min_array&nbsp;(<span class="keyword">fun</span>&nbsp;id<span class="keywordsign">-&gt;</span>&nbsp;not&nbsp;(is_dead&nbsp;moi&nbsp;id)&nbsp;&nbsp;)&nbsp;(&lt;)&nbsp;moi<span class="keywordsign">#</span>get_conf&nbsp;<span class="keyword">in</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">match</span>&nbsp;vict_potentielle&nbsp;<span class="keyword">with</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">|</span>&nbsp;<span class="constructor">None</span>&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="keyword">assert</span>&nbsp;<span class="keyword">false</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">|</span>&nbsp;<span class="constructor">Some</span>&nbsp;victime_potentielle&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">let</span>&nbsp;empoisonner&nbsp;=&nbsp;(<span class="keyword">if</span>&nbsp;moi<span class="keywordsign">#</span>get_conf.(victime_potentielle)&nbsp;&lt;&nbsp;(-3)&nbsp;<span class="keyword">then</span>&nbsp;1&nbsp;<span class="keyword">else</span>&nbsp;0)&nbsp;<span class="keyword">and</span>&nbsp;sauver&nbsp;=&nbsp;(<span class="keyword">if</span>&nbsp;victime=moi<span class="keywordsign">#</span>get_id&nbsp;<span class="keyword">then</span>&nbsp;1&nbsp;<span class="keyword">else</span>&nbsp;0)&nbsp;<span class="keyword">in</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;(5,[|empoisonner;victime_potentielle;sauver|])</code></body></html>

@@ -13,7 +13,7 @@
 <link title="Joueur2" rel="Chapter" href="Joueur2.html">
 <link title="Joueur3" rel="Chapter" href="Joueur3.html">
 <link title="Perso_olivier" rel="Chapter" href="Perso_olivier.html">
-<link title="Regles" rel="Chapter" href="Regles.html"><title>Joueur3.is_dead</title>
+<link title="Regles" rel="Chapter" href="Regles.html"><title>Joueur3.is_unknown</title>
 </head>
 <body>
-<code class="code"><span class="keyword">let</span>&nbsp;is_dead&nbsp;moi&nbsp;id&nbsp;=&nbsp;<span class="keyword">match</span>&nbsp;moi<span class="keywordsign">#</span>get_whoswho.(id)&nbsp;<span class="keyword">with</span>&nbsp;<span class="keywordsign">|</span>&nbsp;<span class="constructor">Mort</span>&nbsp;_<span class="keywordsign">-&gt;</span>&nbsp;<span class="keyword">true</span>&nbsp;<span class="keywordsign">|</span>_<span class="keywordsign">-&gt;</span>&nbsp;<span class="keyword">false</span></code></body></html>
+<code class="code"><span class="keyword">let</span>&nbsp;is_unknown&nbsp;moi&nbsp;id&nbsp;=&nbsp;<span class="keyword">match</span>&nbsp;moi<span class="keywordsign">#</span>get_whoswho.(id)&nbsp;<span class="keyword">with</span>&nbsp;<span class="keywordsign">|</span>&nbsp;<span class="constructor">Unknown</span>&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="keyword">true</span>&nbsp;<span class="keywordsign">|</span>_&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="keyword">false</span></code></body></html>
