@@ -1,0 +1,11 @@
+==Règles du jeu implémentées==
+
+les règles complètes sont [http://mediaplan.ovh.net/~objectif/loups-garous/base/htm/reglesv3.html disponibles]
+
+Voici quelques règles réaffirmées ici, auxquelles il est fait référence (par leurs numéros) dans les programmes.
+
+  # Deux tours de vote (majorité absolue au 1er tour, relative au second).
+  # Lors d'un vote, en cas d'égalité entre deux personnes , le hasard décide.
+  # Au bout de 10 votes invalides, le conteur considère que le joueur vote contre lui même (cf Regles.nb_vote_max)
+  # les joueurs tués pendant la nuit peuvent quand meme agir durant cette nuit (leur mort n'est effective qu'au matin)
+  # Quelque soit la question posée par la voyante, la réponse lui est donnée (y compris s'il s'agit d'elle même ou d'un mort) 

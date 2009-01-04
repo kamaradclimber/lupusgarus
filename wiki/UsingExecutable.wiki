@@ -1,0 +1,17 @@
+#summary Utilisation du programme
+
+
+==Modes d'affichage==
+
+
+Il existe différents modes d'affichage des informations. 
+Le mode choisi est défini dans definition.ml, chaque affichage possède une catégorie et selon le mode est affich� ou non.
+
+L'ordre est décroissant: plus le mode est faible, plus le nombre d'information est élevé.
+
+0 correspond à un affichage total et n'est recommandé que pour la recherche d'erreur.
+1 correspond à 'affichage de tous les affichages proposés par l'arbitre.
+2 correspond à ne utilisation standard pour observer une partie et ses dessous.
+3 correspond à n affichage selon un point de vue d'un joueur standard.
+4 correspond à n affichage minimal pour verifier qu'une partie se déroule bien (avec avertissements)
+5 n'affiche rien sauf messages d'erreurs. (sans avertissements)

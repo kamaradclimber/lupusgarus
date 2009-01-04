@@ -1,0 +1,1 @@
+let nb_vote_max=10;; (*regle n°3*)

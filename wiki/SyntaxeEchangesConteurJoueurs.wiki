@@ -1,0 +1,67 @@
+#summary Résumé de la syntaxe des échanges d'information entre conteur et joueurs
+#labels Phase-Implementation
+
+== Introduction ==
+
+Vous trouverez une version plus à jour dans la source dans le ficher "syntaxe des communications (nest pas un ml) .ml"
+
+= Details =
+
+Les informations se font sous la forme dun couple (num de linfo,info sous la forme dun tableau)
+
+_attention_: le tableau ne doit contenir que des entiers (le type information est defini)
+
+||id info||syntaxe||signifie que: ||commentaire||
+||idi(-1) ||(-1,...) ||erreur ! ||(peut provenir de la reponse à une question inexistante)||Liste des erreurs à venir||
+||idi0 ||(0,[|nbjoueurs;id|])|| la partie réunit %nbjoueurs%, le joueur qui recoit cette info sera désigné par le numero %id%||depracated:les valeurs en question sont initialisées à la création de lobjet||
+||idi1 ||(1,[|untel;personnalité|]) || %untel% est de telle %personnalité% || (NB utiliser la fonction int2perso)||
+||idi2 ||(2,[|untel|]) ||je vote pour eliminer %untel% / je veux connaitre l'identité de %untel%|| ceci est uniquement une réponse de la part des joueurs||
+||idi3 ||(3,[|untel;cause_de_la_mort|]) ||%untel% est mort de la facon %cause_de_la_mort%||la liste des causes de mortalité est dispo plus bas||
+||idi4 || (4,[|num_vote;type_vote;num_tour;untel;untel2 |]) || Au %num_tour% du vote de type %type_vote% n°%num_vote%, %untel% a voté contre %untel2%|| permet de mettre au courant les joueurs du vote des autres joueurs, type_vote est defini plus bas||
+||idi5 ||(5,[|tuer;untel;sauver|]) || %tuer% (0 ou 1) untel et/ou %sauver% (0 ou 1) la victime des loups||
+
+les questions seront sous la forme dun couple egalement: (numero de la question, information eventuelement necessaire sous la forme dun tableau)
+
+
+  * les questions portent des numeros qui essayent de correspondre à une info du meme genre donnée par le conteur
+  * la réponse doit se faire sous la forme dun type information (num de l'info, info sous la forme dun tableau)
+
+|| id de la question||syntaxe||signifie:||réponse appropriée:||commentaire||
+||idq0 ||(0,[| |])|| "donne moi nb joueur & ton numero"|| idi0||
+||idq1 ||(1,[|untel|])|| "donne moi lidentité de untel selon toi"|| idi1||
+||idq2 ||(2,[| |]) || "qui veux-tu tuer "|| idi2|| question (à tous les joueurs) posée le jour _pour lexecution_||
+||idq3 ||(3,[|num_tour|]) || "%num_tour%eme tour de vote , qui veux tu dévorer ?" || idi2 || question (aux loups-garous) posée la nuit||
+||idq4 ||(4,[| |] || "Voyante, de qui veux tu connaitre l'identité ?" || idi2|| Question posée à la Voyante||
+||idq5 || (5,[|untel|]) || "Sorciere, %untel% a été tué par les loups garou, veux tu le ressuciter et/ou tuer qq1 dautre ."|| idi5||
+
+----
+
+==Liste des causes de la mort (identifiants pour idi3)==
+
+||id de la mort||Cause de la mort||
+||1||Tué pendant la nuit||
+||2||Exécuté par les villageois||
+
+==Liste des types de votes (identifiants pour idi4)==
+
+||type_vote||Type du vote||
+||0|| Vote des villageois pour l'execution||
+||1|| Vote des LG la nuit pour désigner leur victime||
+
+----
+
+==a propos des noms de variables ==
+
+Les variables précédées de c_... sont des informations gérées par le conteur.
+
+  * c_whoswho : 'annuaire' des personnages donnant leur identité en fonction de leur id
+  * c_nbjoueurs: nbre de joueurs dans la partie
+  * c_potions: tableau contenant les potions de la sorcière
+
+----
+
+==fonction qui peuvent etre utilisées==
+
+  * int2perso: int->perso   : associe à un entier la personnalité correspondante
+  * perso2int: perso->int : la fonction reciproque (et oui la bijection !)
+  * perso2string: perso->string: la fonction permettant d'afficher sous forme de chaine les noms de personnalités
