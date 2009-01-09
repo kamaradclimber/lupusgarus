@@ -13,7 +13,7 @@ Le type joueur est défini ici, tous les joueurs doivent hériter de cette class
 
 Cette liste est à jour dans la page du wiki UsingExecutable
 *)
-let verbose=1;;
+let verbose=0;;
 
 (**Initialisation de l'aléatoire*)
 let seed = int_of_float (Unix.time ()) ;;

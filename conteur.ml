@@ -75,9 +75,14 @@ let initialisation () =
         ( v_print 1 "Arbitre: joueur %i  s'identifie comme %i etant un %s ce qui est %b\n" id reponse.(0) (perso2string ( int2perso reponse.(1))) (int2perso reponse.(1)= reparti.(id) && id=reponse.(0)))
         done;
     
-        
-    v_print_string 4 "--------------------------\nConteur: le jeu commence |\n--------------------------\n";
-    
+    if Definition.verbose <= 4 
+    then
+        let chaine= "Conteur: le jeu commence" in
+        let n = String.length chaine in
+        let cadre = String.make (n+2) '-' in
+        print_string (cadre^"\n"^chaine^" |\n"^cadre^"\n")
+        ;
+
     (*Les LG se reconnaissent entre eux, c'est à dire qu'on les informe de l'identité des autres LG*)
     v_print_string 3 "Conteur: Les loups-garous vont se reconnaîtrent, ils ouvrent les yeux\n";
     for id=0 to c_nbjoueurs-1 do
@@ -103,7 +108,7 @@ let is_it_the_end () =
 
 
 (** Fonction gèrant la fin du jeu: affiche les gagants, le rôle de chacun...*)
-let the_end () =
+let epilogue () =
     (match !id_end with
         |0 -> v_print_string 3 "\nConteur: Tout le monde est mort, le village de Salem s'est entretué !\n"
         |1 -> v_print_string 3 "\nConteur: Tous les loups garou sont morts, le village de Salem est sauvé !\n"
@@ -112,8 +117,19 @@ let the_end () =
     );
     
     (*Affichage des rôles des participants*)
-    v_print_string 3 "Conteur: La partie est terminée\n les rôles distribués étaient les suivants\n";
-    Array.iteri (fun i-> fun pers -> ( v_print 3 "%i était %s, de classe %s\n" i (perso2string pers) joueurs.(i)#get_classe)  ) c_whoswho
+    if Definition.verbose <= 3 
+    then
+        let chaine= "Conteur: La partie est terminée\n les rôles distribués étaient les suivants" in
+        let n = String.length chaine in
+        let cadre = String.make (n+2) '-' in
+        print_string (cadre^"\n"^chaine^" |\n"^cadre^"\n")
+        ;
+    
+    (*Affichage équipe par équipe*)
+    Array.iteri (fun i-> fun perso ->( if perso = Mort Loup || perso = Loup then v_print 3 "%i était %s, de classe %s\n" i (perso2string perso) joueurs.(i)#get_classe) ) c_whoswho;
+    v_print_string 3 "------------------\n";
+    Array.iteri (fun i-> fun perso ->( if  not (perso = Mort Loup || perso = Loup) then v_print 3 "%i était %s, de classe %s\n" i (perso2string perso) joueurs.(i)#get_classe) ) c_whoswho;
+    
 ;;
 
 
@@ -255,7 +271,7 @@ while not (is_it_the_end ()) do
 ;;
 
 (**Fin de la partie*)
-the_end ();;
+epilogue ();;
 v_print_string 4 "Conteur: le jeu se termine\n";;
 
 (**Fin du programme*)
