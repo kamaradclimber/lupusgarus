@@ -1,28 +1,0 @@
-<html><head>
-<link rel="stylesheet" href="style.css" type="text/css">
-<meta content="text/html; charset=iso-8859-1" http-equiv="Content-Type">
-<link rel="Start" href="index.html">
-<link title="Index of values" rel=Appendix href="index_values.html">
-<link title="Index of class attributes" rel=Appendix href="index_attributes.html">
-<link title="Index of class methods" rel=Appendix href="index_methods.html">
-<link title="Index of classes" rel=Appendix href="index_classes.html">
-<link title="Index of modules" rel=Appendix href="index_modules.html">
-<link title="Conteur" rel="Chapter" href="Conteur.html">
-<link title="Ds_commun" rel="Chapter" href="Ds_commun.html">
-<link title="Joueur" rel="Chapter" href="Joueur.html">
-<link title="Joueur2" rel="Chapter" href="Joueur2.html">
-<link title="Joueur3" rel="Chapter" href="Joueur3.html">
-<link title="Perso_olivier" rel="Chapter" href="Perso_olivier.html">
-<link title="Regles" rel="Chapter" href="Regles.html"><title>Joueur3.action_LG</title>
-</head>
-<body>
-<code class="code"><span class="keyword">let</span>&nbsp;action_LG&nbsp;moi&nbsp;tour_de_vote=<br>
-</code><table><tr><td></td><td><span class="comment">(**c'est presque un doublon de mon_vote, peut etre faut-il la supprimer?*)</span></td></tr></table><code class="code"><br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span>&nbsp;moi<span class="keywordsign">#</span>who_am_i&nbsp;=&nbsp;<span class="constructor">Loup</span>&nbsp;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">then</span>&nbsp;&nbsp;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">let</span>&nbsp;vict&nbsp;=&nbsp;get_min_array&nbsp;(<span class="keyword">fun</span>&nbsp;id<span class="keywordsign">-&gt;</span>&nbsp;not&nbsp;(is_dead&nbsp;moi&nbsp;id)&nbsp;<span class="keywordsign">&amp;&amp;</span>&nbsp;not&nbsp;(is_LG&nbsp;moi&nbsp;id)&nbsp;)&nbsp;(&lt;)&nbsp;moi<span class="keywordsign">#</span>get_conf&nbsp;<span class="keyword">in</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">match</span>&nbsp;vict&nbsp;<span class="keyword">with</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">|</span>&nbsp;<span class="constructor">Some</span>&nbsp;victime&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;(2,[|victime|])&nbsp;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">|</span>&nbsp;<span class="constructor">None</span>&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="keyword">assert</span>&nbsp;<span class="keyword">false</span>&nbsp;</code><table><tr><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td><span class="comment">(**Aucun risque, il y a toujours des joueurs non-LG vivants sinon c'est la fin de la partie*)</span></td></tr></table><code class="code"><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">else</span>&nbsp;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;failwith&nbsp;(<span class="constructor">Printf</span>.sprintf&nbsp;<span class="string">"%i&nbsp;dit:&nbsp;ERREUR&nbsp;je&nbsp;ne&nbsp;suis&nbsp;pas&nbsp;un&nbsp;loup&nbsp;garou,&nbsp;une&nbsp;telle&nbsp;erreur&nbsp;n'aurait&nbsp;pas&nbsp;du&nbsp;arriver\n&nbsp;vérifier&nbsp;la&nbsp;fonction&nbsp;passée&nbsp;en&nbsp;argument&nbsp;à&nbsp;la&nbsp;procédure&nbsp;de&nbsp;vote&nbsp;"</span>&nbsp;moi<span class="keywordsign">#</span>get_id)</code></body></html>

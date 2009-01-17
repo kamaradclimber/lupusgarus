@@ -1,46 +1,0 @@
-<html><head>
-<link rel="stylesheet" href="style.css" type="text/css">
-<meta content="text/html; charset=iso-8859-1" http-equiv="Content-Type">
-<link rel="Start" href="index.html">
-<link title="Index of values" rel=Appendix href="index_values.html">
-<link title="Index of class attributes" rel=Appendix href="index_attributes.html">
-<link title="Index of class methods" rel=Appendix href="index_methods.html">
-<link title="Index of classes" rel=Appendix href="index_classes.html">
-<link title="Index of modules" rel=Appendix href="index_modules.html">
-<link title="Conteur" rel="Chapter" href="Conteur.html">
-<link title="Ds_commun" rel="Chapter" href="Ds_commun.html">
-<link title="Joueur" rel="Chapter" href="Joueur.html">
-<link title="Joueur2" rel="Chapter" href="Joueur2.html">
-<link title="Joueur3" rel="Chapter" href="Joueur3.html">
-<link title="Perso_olivier" rel="Chapter" href="Perso_olivier.html">
-<link title="Regles" rel="Chapter" href="Regles.html"><title>Conteur.initialisation</title>
-</head>
-<body>
-<code class="code"><span class="keyword">let</span>&nbsp;initialisation&nbsp;()&nbsp;=<br>
-&nbsp;&nbsp;&nbsp;&nbsp;</code><table><tr><td>&nbsp;&nbsp;&nbsp;&nbsp;</td><td><span class="comment">(**Répartition des joueurs*)</span></td></tr></table><code class="code"><br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">let</span>&nbsp;reparti&nbsp;=&nbsp;repartition&nbsp;c_nbjoueurs&nbsp;<span class="keyword">in</span>&nbsp;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;v_print_string&nbsp;2&nbsp;<span class="string">"Conteur:&nbsp;Répartition&nbsp;des&nbsp;joueurs:\n"</span>;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;print_perso_array&nbsp;reparti;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">(*Information&nbsp;des&nbsp;joueurs&nbsp;de&nbsp;leur&nbsp;affectation*)</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">for</span>&nbsp;id=0&nbsp;<span class="keyword">to</span>&nbsp;c_nbjoueurs-1&nbsp;<span class="keyword">do</span>&nbsp;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;joueurs.(id)<span class="keywordsign">#</span>donne_info&nbsp;(1,[|id;perso2int&nbsp;reparti.(id)|]);<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;c_whoswho.(id)&nbsp;&lt;-&nbsp;reparti.(id);<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">(*et&nbsp;vérification&nbsp;qu'ils&nbsp;ont&nbsp;bien&nbsp;compris<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cependant&nbsp;cette&nbsp;vérification&nbsp;n'est&nbsp;pas&nbsp;suivie&nbsp;d'une&nbsp;exception&nbsp;en&nbsp;cas&nbsp;d'erreur*)</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">let</span>&nbsp;(_,reponse)=joueurs.(id)<span class="keywordsign">#</span>pose_question&nbsp;(1,[|id|])&nbsp;<span class="keyword">in</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(&nbsp;v_print&nbsp;1&nbsp;<span class="string">"Arbitre:&nbsp;joueur&nbsp;%i&nbsp;&nbsp;s'identifie&nbsp;comme&nbsp;%i&nbsp;etant&nbsp;un&nbsp;%s&nbsp;ce&nbsp;qui&nbsp;est&nbsp;%b\n"</span>&nbsp;id&nbsp;reponse.(0)&nbsp;(perso2string&nbsp;(&nbsp;int2perso&nbsp;reponse.(1)))&nbsp;(int2perso&nbsp;reponse.(1)=&nbsp;reparti.(id)&nbsp;<span class="keywordsign">&amp;&amp;</span>&nbsp;id=reponse.(0)))<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">done</span>;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;v_print_string&nbsp;4&nbsp;<span class="string">"--------------------------\nConteur:&nbsp;le&nbsp;jeu&nbsp;commence&nbsp;|\n--------------------------\n"</span>;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">(*Les&nbsp;LG&nbsp;se&nbsp;reconnaissent&nbsp;entre&nbsp;eux,&nbsp;c'est&nbsp;à&nbsp;dire&nbsp;qu'on&nbsp;les&nbsp;informe&nbsp;de&nbsp;l'identité&nbsp;des&nbsp;autres&nbsp;LG*)</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;v_print_string&nbsp;3&nbsp;<span class="string">"Conteur:&nbsp;Les&nbsp;loups-garous&nbsp;vont&nbsp;se&nbsp;reconnaîtrent,&nbsp;ils&nbsp;ouvrent&nbsp;les&nbsp;yeux\n"</span>;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">for</span>&nbsp;id=0&nbsp;<span class="keyword">to</span>&nbsp;c_nbjoueurs-1&nbsp;<span class="keyword">do</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">for</span>&nbsp;id2=id+1&nbsp;<span class="keyword">to</span>&nbsp;c_nbjoueurs-1&nbsp;<span class="keyword">do</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span>&nbsp;c_is_LG&nbsp;id&nbsp;<span class="keywordsign">&amp;&amp;</span>&nbsp;c_is_LG&nbsp;id2&nbsp;<span class="keyword">then</span>&nbsp;(joueurs.(id)<span class="keywordsign">#</span>donne_info&nbsp;(1,[|id2;perso2int&nbsp;<span class="constructor">Loup</span>|]);&nbsp;joueurs.(id2)<span class="keywordsign">#</span>donne_info&nbsp;(1,[|id;perso2int&nbsp;<span class="constructor">Loup</span>|]))<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">done</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">done</span>;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;v_print_string&nbsp;3&nbsp;<span class="string">"Conteur:&nbsp;Les&nbsp;loups-garous&nbsp;se&nbsp;sont&nbsp;reconnus,&nbsp;ils&nbsp;se&nbsp;rendorment&nbsp;en&nbsp;se&nbsp;léchant&nbsp;les&nbsp;babines&nbsp;à&nbsp;la&nbsp;pensée&nbsp;des&nbsp;festins&nbsp;futurs\n"</span></code></body></html>

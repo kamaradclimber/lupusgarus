@@ -1,26 +1,0 @@
-<html><head>
-<link rel="stylesheet" href="style.css" type="text/css">
-<meta content="text/html; charset=utf-8" http-equiv="Content-Type">
-<link rel="Start" href="index.html">
-<link title="Index of types" rel=Appendix href="index_types.html">
-<link title="Index of values" rel=Appendix href="index_values.html">
-<link title="Index of class attributes" rel=Appendix href="index_attributes.html">
-<link title="Index of class methods" rel=Appendix href="index_methods.html">
-<link title="Index of classes" rel=Appendix href="index_classes.html">
-<link title="Index of modules" rel=Appendix href="index_modules.html">
-<link title="Definition" rel="Chapter" href="Definition.html">
-<link title="Ds_commun" rel="Chapter" href="Ds_commun.html">
-<link title="Joueur" rel="Chapter" href="Joueur.html">
-<link title="Joueur2" rel="Chapter" href="Joueur2.html">
-<link title="Joueur3" rel="Chapter" href="Joueur3.html">
-<link title="Perso_olivier" rel="Chapter" href="Perso_olivier.html">
-<link title="Regles" rel="Chapter" href="Regles.html"><title>Definition.generer_ordre_aleatoire</title>
-</head>
-<body>
-<code class="code"><span class="keyword">let</span>&nbsp;generer_ordre_aleatoire&nbsp;nb_joueurs&nbsp;=<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">let</span>&nbsp;ordre&nbsp;=&nbsp;<span class="constructor">Array</span>.init&nbsp;nb_joueurs&nbsp;(<span class="keyword">fun</span>&nbsp;i<span class="keywordsign">-&gt;</span>i)&nbsp;<span class="keyword">in</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">let</span>&nbsp;permut&nbsp;i1&nbsp;i2=&nbsp;(<span class="keyword">let</span>&nbsp;tmp=ordre.(i1)&nbsp;<span class="keyword">in</span>&nbsp;ordre.(i1)&nbsp;&lt;-&nbsp;ordre.(i2);&nbsp;ordre.(i2)&nbsp;&lt;-&nbsp;tmp)&nbsp;<span class="keyword">in</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">for</span>&nbsp;i=0&nbsp;<span class="keyword">to</span>&nbsp;nb_joueurs*&nbsp;2&nbsp;<span class="keyword">do</span>&nbsp;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;permut&nbsp;(<span class="constructor">Random</span>.int&nbsp;nb_joueurs)&nbsp;(<span class="constructor">Random</span>.int&nbsp;nb_joueurs)&nbsp;<span class="comment">(*Permutations,&nbsp;on&nbsp;l'espère,&nbsp;aléatoires&nbsp;pour&nbsp;mélanger&nbsp;les&nbsp;joueurs*)</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">done</span>;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;ordre</code></body></html>
