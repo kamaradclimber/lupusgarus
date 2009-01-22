@@ -13,7 +13,7 @@ Le type joueur est défini ici, tous les joueurs doivent hériter de cette class
 
 Cette liste est à jour dans la page du wiki UsingExecutable
 *)
-let verbose=0;;
+let verbose=2;;
 
 (**Initialisation de l'aléatoire*)
 let seed = int_of_float (Unix.time ()) ;;
@@ -78,7 +78,7 @@ v_print 4 "Arbitre: L'initialisation aléatoire est %i\n" seed;;
 (*Ainsi si un problème apparait, on peut récréer exactement les mêmes conditions pour vérifier si on l'a bien corrigé, il suffit d'imposer la seed à la valeur problématique*)
 
 (**Définition du type des personnalités des joueurs*)
-type perso = Unknown |Loup | Villageois| Voyante| Sorciere|Mort of perso;;
+type perso = Unknown |Loup | Villageois| Voyante| Sorciere|Mort of perso| Amoureux of perso;;
 
 (**Définition de la structure d'une information échangée de la forme id_information * information*)
 type information=int*(int array);;
@@ -92,11 +92,18 @@ let rec perso2int pers=
     match pers with 
         |Unknown -> 0 |Loup->1|Villageois->2 |Voyante->3|Sorciere->4
         |Mort sthing ->(v_print_string 4 "vous avez demandé l'identification perso2int d'un mort attention, (issue19 ?)\n";perso2int sthing)
+        |Amoureux sthing->perso2int sthing
 ;;
 
 (**Conversion d'une personnalité en la chaîne associée*)
 let rec perso2string pers=
-    match pers with |Unknown -> "Unknown" | Loup ->"Loup"|Villageois->"Villageois"|Voyante->"Voyante"|Sorciere->"Sorciere"|Mort persbis-> (perso2string persbis)^" (Mort)"
+    match pers with 
+    |Unknown -> "Unknown" 
+    | Loup ->"Loup"|Villageois->"Villageois"
+    |Voyante->"Voyante"
+    |Sorciere->"Sorciere"
+    |Mort persbis-> (perso2string persbis)^" (Mort)" 
+    | Amoureux persbis -> (perso2string persbis)^" (Amoureux)"
 ;;
 
 (**Affichage d'un tableau de personnalités*)
@@ -106,6 +113,12 @@ let print_perso_array tab=
 
 (**Teste si une personnalité est morte ou non*)
 let perso_is_dead  pers=match pers with Mort _->true |_->false;;
+
+(**Teste si une personnalité est loup ou non*)
+let perso_is_LG pers= match pers with Loup -> true | Amoureux Loup -> true | _ -> false;;
+
+(**Teste si une personnalité est un amoureux ou non*)
+let perso_is_amoureux perso=match perso with Amoureux _ -> true | Mort Amoureux _ -> true | _ -> false (*attention à l'identification des morts*)
 
 (**Classe des joueurs: dans chaque module, le joueur définit sa sous classe avec sa manière propre de répondre aux questions et d'assimiler les informations 
 ici sont définies les éléments essentiels utilisés par le conteur
@@ -243,4 +256,15 @@ let appel_au_vote (condition_de_vote: (int ->bool)) (vote_invalide:information->
 
     (*Renvoi du résultat*)
     ((!victime, !nb_votants):int*int)
+;;
+
+let rec stack_push_sans_doublon id pile=
+(**Insère sans doublon un élément dans une pile \n ceci se fait en placant en O(n) l'élément en bas de la pile*)
+    if Stack.is_empty pile 
+        then Stack.push id pile
+        else
+            let premier = Stack.pop pile in
+            if premier = id 
+            then Stack.push premier pile
+            else (stack_push_sans_doublon id pile; Stack.push premier pile)
 ;;

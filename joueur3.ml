@@ -1,9 +1,12 @@
 open Definition
 
-let semble_etre_de_mon_cote myperso hisperso=
+let rec semble_etre_de_mon_cote myperso hisperso=
 match (myperso,hisperso) with
+|Amoureux _, Amoureux _ -> true
+|Amoureux perso, _ |_, Amoureux perso -> false (*Les deux cas peuvent arriver (penser à cupidon qui sait qui sont les amoureux sans forcément en être un)
+avec ce système un amoureux va considérer tout de suite tout le monde comme son ennemi et donc va voter contre les gens sensé être dans son équipe donc se faire reperer, il faudrait donc subtiliser un peu le traitement de cette fonction*) 
 |Mort _,_->failwith "je suis mort ! (soulevée par la fonction \"semble_etre_de_mon_cote\""
-|_, Mort _ -> (v_print_string 4 "Suis-je allie à un mort ? dur de repondre.. ce genre de question ne devrait pas se poser";true)
+|_, Mort _ -> (v_print_string 4 "Suis-je allié à un mort ? dur de repondre.. ce genre de question ne devrait pas se poser";true)
 |Loup, Loup -> true
 |Loup, _ -> false
 |_, Loup -> false
