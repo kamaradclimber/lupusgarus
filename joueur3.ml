@@ -144,9 +144,37 @@ let get_min_array predicat comp tab=
         None
 ;;
 
+(**Renvoie l'indice de l'élément minimum vérifiant un prédicat d'un tableau;
+s'il y en a plusieurs alors le hasard décide*)
+let get_min_array_2 predicat tab=
+(*Cette fonction est illisible, les commentaires expliquent tout*)
+(*On recherche s'il y au moins un indice qui vérifie le prédicat*)
+    if array_exists_2 predicat tab 
+        then
+            (*Si oui on cherche lequel*)
+            let au_moins_un = ref 0 in
+            while not (predicat !au_moins_un) do incr au_moins_un done;
+            (*on stocke la liste des indices les plus petits pour le moment*)
+            let iminl=ref [!au_moins_un]  in
+            (*Puis on parcourt le tableau à la recherche des autres*)
+            for i=(!au_moins_un +1 ) to Array.length tab-1 do
+                if predicat i then
+                    (* et on les rajoute à la liste des minimums voire on la remplace si on trouve quelquechose de plus petit*)
+                    match compare tab.(List.hd !iminl) tab.(i) with
+                        |0-> iminl := (i::(!iminl))
+                        |1->iminl:=[i]
+                        |_-> ()
+                done;
+            (* enfin on choisit au hasard*)
+            let tmp=Array.of_list !iminl in let n=Array.length tmp in 
+            let choix=tmp.(Random.int n) (*si égalité, le hasard decide*) in
+            Some choix
+        else
+            None
+;;
 
 let mon_vote moi=
-    let victime = get_min_array (fun id-> not (is_dead moi id) ) (<) moi#get_conf in
+    let victime = get_min_array_2 (fun id-> not (is_dead moi id) ) moi#get_conf in
     match victime with
     | Some vict -> (2,[|vict|])
     | None -> assert false (**Aucun risque sinon cela signifie que tout le monde est mort*)
@@ -156,7 +184,7 @@ let action_LG moi tour_de_vote=
 (**c'est presque un doublon de mon_vote, peut etre faut-il la supprimer?*)
     if moi#who_am_i = Loup 
         then  
-            let vict = get_min_array (fun id-> not (is_dead moi id) && not (is_LG moi id) ) (<) moi#get_conf in
+            let vict = get_min_array_2 (fun id-> not (is_dead moi id) && not (is_LG moi id) ) moi#get_conf in
             match vict with
             | Some victime -> (2,[|victime|]) 
             | None -> assert false (**Aucun risque, il y a toujours des joueurs non-LG vivants sinon c'est la fin de la partie*)
@@ -180,7 +208,7 @@ let action_voyante moi=
 
 let action_sorcière moi victime=
 (*La stratégie de la sorcière est de se sauver elle même et de tuer si possible son pire ennemi si elle le hait vraiment*)
-    let vict_potentielle = get_min_array (fun id-> not (is_dead moi id)  ) (<) moi#get_conf in
+    let vict_potentielle = get_min_array_2 (fun id-> not (is_dead moi id)  ) moi#get_conf in
     match vict_potentielle with
     | None -> assert false
     | Some victime_potentielle -> 

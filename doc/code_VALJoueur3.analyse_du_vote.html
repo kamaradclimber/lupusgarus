@@ -1,74 +1,0 @@
-<html><head>
-<link rel="stylesheet" href="style.css" type="text/css">
-<meta content="text/html; charset=iso-8859-1" http-equiv="Content-Type">
-<link rel="Start" href="index.html">
-<link title="Index of values" rel=Appendix href="index_values.html">
-<link title="Index of class attributes" rel=Appendix href="index_attributes.html">
-<link title="Index of class methods" rel=Appendix href="index_methods.html">
-<link title="Index of classes" rel=Appendix href="index_classes.html">
-<link title="Index of modules" rel=Appendix href="index_modules.html">
-<link title="Conteur" rel="Chapter" href="Conteur.html">
-<link title="Ds_commun" rel="Chapter" href="Ds_commun.html">
-<link title="Joueur" rel="Chapter" href="Joueur.html">
-<link title="Joueur2" rel="Chapter" href="Joueur2.html">
-<link title="Joueur3" rel="Chapter" href="Joueur3.html">
-<link title="Perso_olivier" rel="Chapter" href="Perso_olivier.html">
-<link title="Regles" rel="Chapter" href="Regles.html"><title>Joueur3.analyse_du_vote</title>
-</head>
-<body>
-<code class="code"><span class="keyword">let</span>&nbsp;analyse_du_vote&nbsp;moi&nbsp;is_participant_au_vote=&nbsp;<br>
-<span class="comment">(*Si&nbsp;je&nbsp;suis&nbsp;un&nbsp;loup&nbsp;garou,&nbsp;cette&nbsp;évaluation&nbsp;des&nbsp;votes&nbsp;est&nbsp;inutile&nbsp;tant&nbsp;qu'il&nbsp;n'y&nbsp;a&nbsp;pas&nbsp;d'amoureux.<br>
-En&nbsp;effet,&nbsp;je&nbsp;connais&nbsp;tous&nbsp;mes&nbsp;ennemis&nbsp;donc&nbsp;je&nbsp;n'ai&nbsp;pas&nbsp;besoin&nbsp;de&nbsp;savoir&nbsp;qui&nbsp;sont&nbsp;mes&nbsp;ennemis.<br>
-En&nbsp;revanche&nbsp;ce&nbsp;système&nbsp;est&nbsp;efficace&nbsp;contre&nbsp;des&nbsp;villageois&nbsp;qui&nbsp;utilisent&nbsp;aussi&nbsp;un&nbsp;sytème&nbsp;de&nbsp;confiance&nbsp;puisque&nbsp;il&nbsp;permet&nbsp;de&nbsp;detecter&nbsp;lesquels&nbsp;sont&nbsp;'contre&nbsp;moi'&nbsp;et&nbsp;donc&nbsp;d'essayer&nbsp;de&nbsp;les&nbsp;éliminer&nbsp;en&nbsp;priorité,&nbsp;ceci&nbsp;est&nbsp;aussi&nbsp;valable&nbsp;pour&nbsp;détecter&nbsp;la&nbsp;voyante&nbsp;qui&nbsp;m'aurait&nbsp;repéré&nbsp;et&nbsp;voudrait&nbsp;m'éliminer*)</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">let</span>&nbsp;marques&nbsp;=&nbsp;<span class="constructor">Array</span>.make&nbsp;moi<span class="keywordsign">#</span>get_nbjoueurs&nbsp;<span class="keyword">false</span>&nbsp;<span class="keyword">in</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">let</span>&nbsp;bonus_conf&nbsp;=&nbsp;<span class="constructor">Array</span>.make&nbsp;moi<span class="keywordsign">#</span>get_nbjoueurs&nbsp;0&nbsp;<span class="keyword">in</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">let</span>&nbsp;en_cours&nbsp;=&nbsp;ref&nbsp;(<span class="constructor">Stack</span>.create&nbsp;()&nbsp;:&nbsp;int&nbsp;<span class="constructor">Stack</span>.t)&nbsp;<span class="keyword">and</span>&nbsp;a_traiter&nbsp;=&nbsp;(<span class="constructor">Stack</span>.create&nbsp;()&nbsp;:&nbsp;int&nbsp;<span class="constructor">Stack</span>.t)&nbsp;<span class="keyword">in</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">while</span>&nbsp;marques&nbsp;&lt;&gt;&nbsp;<span class="constructor">Array</span>.make&nbsp;moi<span class="keywordsign">#</span>get_nbjoueurs&nbsp;<span class="keyword">true</span>&nbsp;<span class="keyword">do</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span>&nbsp;<span class="constructor">Stack</span>.is_empty&nbsp;a_traiter&nbsp;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">then</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">(*On&nbsp;remplit&nbsp;la&nbsp;pile&nbsp;des&nbsp;gens&nbsp;à&nbsp;traiter&nbsp;avec&nbsp;'nos&nbsp;meilleurs&nbsp;amis'&nbsp;non&nbsp;traités&nbsp;*)</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">begin</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">(*Au&nbsp;début,&nbsp;les&nbsp;meilleurs&nbsp;amis&nbsp;sont&nbsp;les&nbsp;pires...*)</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">let</span>&nbsp;best_conf_non_marquée&nbsp;=&nbsp;ref&nbsp;(-10)&nbsp;<span class="keyword">in</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">for</span>&nbsp;ami_potentiel=0&nbsp;<span class="keyword">to</span>&nbsp;moi<span class="keywordsign">#</span>get_nbjoueurs&nbsp;-1&nbsp;<span class="keyword">do</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">match</span>&nbsp;marques.(ami_potentiel),&nbsp;(compare&nbsp;moi<span class="keywordsign">#</span>get_conf.(ami_potentiel)&nbsp;!best_conf_non_marquée)&nbsp;<span class="keyword">with</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">(*Puis&nbsp;on&nbsp;en&nbsp;découvre&nbsp;d'autres&nbsp;ou&nbsp;des&nbsp;meilleurs*)</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">|</span>&nbsp;<span class="keyword">false</span>,0&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Stack</span>.push&nbsp;ami_potentiel&nbsp;a_traiter<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">|</span>&nbsp;<span class="keyword">false</span>,1&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="keyword">begin</span>&nbsp;best_conf_non_marquée&nbsp;:=&nbsp;moi<span class="keywordsign">#</span>get_conf.(ami_potentiel)&nbsp;;&nbsp;<span class="constructor">Stack</span>.clear&nbsp;a_traiter;&nbsp;<span class="constructor">Stack</span>.push&nbsp;ami_potentiel&nbsp;a_traiter&nbsp;<span class="keyword">end</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">|</span>&nbsp;_&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;()&nbsp;<span class="comment">(*ou&nbsp;pas*)</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">done</span>;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">(*On&nbsp;aime&nbsp;un&nbsp;peu&nbsp;plus&nbsp;nos&nbsp;'meilleurs&nbsp;amis'&nbsp;*)</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">Stack</span>.iter&nbsp;(<span class="keyword">fun</span>&nbsp;friend&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;moi<span class="keywordsign">#</span>mod_conf&nbsp;friend&nbsp;(moi<span class="keywordsign">#</span>get_conf.(friend)&nbsp;+&nbsp;1)&nbsp;)&nbsp;a_traiter;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">end</span>;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">(*On&nbsp;se&nbsp;met&nbsp;au&nbsp;boulot,&nbsp;il&nbsp;faut&nbsp;traiter&nbsp;toute&nbsp;la&nbsp;pile*)</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;en_cours&nbsp;:=&nbsp;<span class="constructor">Stack</span>.copy&nbsp;a_traiter&nbsp;;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">Stack</span>.clear&nbsp;a_traiter;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">while</span>&nbsp;not&nbsp;(<span class="constructor">Stack</span>.is_empty&nbsp;!en_cours)&nbsp;<span class="keyword">do</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">let</span>&nbsp;désigné&nbsp;=&nbsp;<span class="constructor">Stack</span>.pop&nbsp;!en_cours&nbsp;<span class="keyword">in</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span>&nbsp;not&nbsp;marques.(désigné)&nbsp;<span class="keyword">then</span>&nbsp;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;marques.(désigné)&nbsp;&lt;-&nbsp;<span class="keyword">true</span>;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">(*&nbsp;Il&nbsp;faut&nbsp;prendre&nbsp;en&nbsp;compte&nbsp;tout&nbsp;ceux&nbsp;qui&nbsp;ont&nbsp;voté&nbsp;contre&nbsp;ce&nbsp;type&nbsp;là*)</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">List</span>.iter&nbsp;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="keyword">fun</span>&nbsp;votant&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span>&nbsp;votant&nbsp;!=&nbsp;désigné&nbsp;<span class="keyword">then</span>&nbsp;<span class="comment">(*comme&nbsp;ca&nbsp;on&nbsp;n'interprete&nbsp;pas&nbsp;les&nbsp;votes&nbsp;des&nbsp;idiots&nbsp;qui&nbsp;votent&nbsp;contre&nbsp;eux&nbsp;même&nbsp;[règle&nbsp;n°3]*)</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">begin</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">(*On&nbsp;les&nbsp;aime&nbsp;plus&nbsp;ou&nbsp;moins&nbsp;selon&nbsp;qu'on&nbsp;aime&nbsp;ou&nbsp;non&nbsp;la&nbsp;personne&nbsp;contre&nbsp;laquelle&nbsp;ils&nbsp;ont&nbsp;voté*)</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;bonus_conf.(votant)&nbsp;&lt;-&nbsp;bonus_conf.(votant)&nbsp;+&nbsp;2&nbsp;*&nbsp;(compare&nbsp;0&nbsp;bonus_conf.(désigné));<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">(*&nbsp;Si&nbsp;en&nbsp;plus&nbsp;ils&nbsp;n'ont&nbsp;pas&nbsp;étés&nbsp;traités,&nbsp;on&nbsp;s'y&nbsp;met*)</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">(*mais&nbsp;pourquoi&nbsp;les&nbsp;y&nbsp;mets&nbsp;on&nbsp;?&nbsp;on&nbsp;devrait&nbsp;peut&nbsp;etre&nbsp;attendre&nbsp;qu'ils&nbsp;soient&nbsp;nos&nbsp;meilleurs&nbsp;amis&nbsp;...*)</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">(*il&nbsp;s'agit&nbsp;peut&nbsp;être&nbsp;d'une&nbsp;erreur&nbsp;que&nbsp;d'utiliser&nbsp;un&nbsp;parcours&nbsp;de&nbsp;graphe&nbsp;au&nbsp;lieu&nbsp;d'un&nbsp;parcours&nbsp;de&nbsp;liste,&nbsp;triée&nbsp;dns&nbsp;l'ordre&nbsp;décroissant&nbsp;de&nbsp;la&nbsp;confiance*)</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">(*cependant&nbsp;le&nbsp;sys&nbsp;actuel&nbsp;repose&nbsp;sur&nbsp;la&nbsp;confiance&nbsp;temporaire&nbsp;et&nbsp;indirectement&nbsp;seulement&nbsp;sur&nbsp;la&nbsp;confiance,*)</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">(*donc&nbsp;il&nbsp;est&nbsp;plus&nbsp;'up-to-date'...*)</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">(*il&nbsp;vaut&nbsp;mieux&nbsp;le&nbsp;laisser&nbsp;comme&nbsp;tel*)</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span>&nbsp;not&nbsp;marques.(votant)&nbsp;<span class="keyword">then</span>&nbsp;<span class="constructor">Stack</span>.push&nbsp;votant&nbsp;a_traiter<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">end</span>)&nbsp;moi<span class="keywordsign">#</span>get_vote.(désigné)<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">done</span>;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">done</span>;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">(*Enfin,&nbsp;on&nbsp;modifie&nbsp;la&nbsp;confiance&nbsp;en&nbsp;accord&nbsp;avec&nbsp;le&nbsp;vote&nbsp;de&nbsp;tout&nbsp;le&nbsp;monde*)</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">Array</span>.iteri&nbsp;(<span class="keyword">fun</span>&nbsp;id&nbsp;conf_now&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;moi<span class="keywordsign">#</span>mod_conf&nbsp;id&nbsp;(conf_now&nbsp;+&nbsp;bonus_conf.(id))&nbsp;&nbsp;)&nbsp;moi<span class="keywordsign">#</span>get_conf;</code></body></html>

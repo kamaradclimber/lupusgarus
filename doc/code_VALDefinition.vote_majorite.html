@@ -1,31 +1,0 @@
-<html><head>
-<link rel="stylesheet" href="style.css" type="text/css">
-<meta content="text/html; charset=utf-8" http-equiv="Content-Type">
-<link rel="Start" href="index.html">
-<link title="Index of types" rel=Appendix href="index_types.html">
-<link title="Index of values" rel=Appendix href="index_values.html">
-<link title="Index of class attributes" rel=Appendix href="index_attributes.html">
-<link title="Index of class methods" rel=Appendix href="index_methods.html">
-<link title="Index of classes" rel=Appendix href="index_classes.html">
-<link title="Index of modules" rel=Appendix href="index_modules.html">
-<link title="Definition" rel="Chapter" href="Definition.html">
-<link title="Ds_commun" rel="Chapter" href="Ds_commun.html">
-<link title="Joueur" rel="Chapter" href="Joueur.html">
-<link title="Joueur2" rel="Chapter" href="Joueur2.html">
-<link title="Joueur3" rel="Chapter" href="Joueur3.html">
-<link title="Perso_olivier" rel="Chapter" href="Perso_olivier.html">
-<link title="Regles" rel="Chapter" href="Regles.html"><title>Definition.vote_majorite</title>
-</head>
-<body>
-<code class="code"><span class="keyword">let</span>&nbsp;vote_majorite&nbsp;(resultats:int&nbsp;array)=<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">let</span>&nbsp;imaxl=ref&nbsp;[0]&nbsp;<span class="keyword">and</span>&nbsp;sum=ref&nbsp;0&nbsp;<span class="keyword">in</span>&nbsp;<span class="comment">(*on&nbsp;stocke&nbsp;la&nbsp;liste&nbsp;des&nbsp;joueurs&nbsp;les&nbsp;plus&nbsp;plébiscités,&nbsp;qui&nbsp;comporte&nbsp;eventuellement&nbsp;des&nbsp;joueurs&nbsp;à&nbsp;égalité*)</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">for</span>&nbsp;i=1&nbsp;<span class="keyword">to</span>&nbsp;<span class="constructor">Array</span>.length&nbsp;resultats-1&nbsp;<span class="keyword">do</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;sum:=!sum+&nbsp;resultats.(i);&nbsp;<span class="comment">(*on&nbsp;stocke&nbsp;le&nbsp;nombre&nbsp;de&nbsp;votes&nbsp;au&nbsp;total*)</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">match</span>&nbsp;compare&nbsp;resultats.(<span class="constructor">List</span>.hd&nbsp;!imaxl)&nbsp;resultats.(i)&nbsp;<span class="keyword">with</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">|</span>0<span class="keywordsign">-&gt;</span>&nbsp;imaxl&nbsp;:=&nbsp;(i::(!imaxl))<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">|</span>(-1)<span class="keywordsign">-&gt;</span>imaxl:=[i]<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">|</span>_<span class="keywordsign">-&gt;</span>&nbsp;()<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">done</span>;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">let</span>&nbsp;tmp=<span class="constructor">Array</span>.of_list&nbsp;!imaxl&nbsp;<span class="keyword">in</span>&nbsp;<span class="keyword">let</span>&nbsp;n=<span class="constructor">Array</span>.length&nbsp;tmp&nbsp;<span class="keyword">in</span>&nbsp;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">let</span>&nbsp;choix=tmp.(<span class="constructor">Random</span>.int&nbsp;n)&nbsp;<span class="comment">(*si&nbsp;egalite,&nbsp;le&nbsp;hasard&nbsp;decide&nbsp;[règle&nbsp;n°2&nbsp;]&nbsp;+&nbsp;&nbsp;correction&nbsp;issue8&nbsp;*)</span>&nbsp;<span class="keyword">in</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;(choix,&nbsp;resultats.(choix)&nbsp;&gt;&nbsp;(!sum)/2)</code></body></html>
