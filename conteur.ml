@@ -29,10 +29,10 @@ let id_end = ref (-1)
 let id_vote = ref 0
 ;;
 (**Fonction indiquant si, selon le conteur la personne est morte ou non*)
-let c_is_dead id = match c_whoswho.(id) with | Mort _-> true |_-> false
+let c_is_dead id = match c_whoswho.(id) with | Mort _-> true | Amoureux Mort _ -> failwith "j'ai nommé amoureux un mort ce qui est contraire à l'odre normal des évenements !" |_-> false
 ;;
 (**Fonction indiquant si , selon le conteur, la personne est un Loup-Garou vivant ou non*)
-let c_is_LG id = match c_whoswho.(id) with | Loup -> true |_ -> false
+let c_is_LG id = match c_whoswho.(id) with | Loup -> true | Amoureux Loup -> true | _ -> false
 ;;
 (**Fonctions assurant les conversions des joueurs en objets de classe Definition.joueur,
 cette conversion permet la coercion, cest à dire d'indiquer au vérificateur de type d'ocaml que telle sous-classe de joueur sera consideree exclusivement comme un joueur tout court*)
@@ -52,12 +52,12 @@ let morgue=((Stack.create ()): int Stack.t)
 ;;
 (** Tableau contenant un ordre aléatoire pour affecter une personnalité au hasard à chacun des joueurs
 Ce tableau est utilisé lorsque l'on veut parcourir les joueurs afin de ne pas permettre l'identification de la personnalité d'un joueur en regardant le moment où telle personnalité est appelée cf issue14 *)
-let ordre = Definition.generer_ordre_aleatoire c_nbjoueurs;; 
+let ordre = generer_ordre_aleatoire c_nbjoueurs;; 
 
 (**-----------------------------------------------------------------------------------------------*)
 (** Début des fonctions définissant les phases de la partie*)
 
-(**Initialisation du jeu: distribue les roles, demande a chaque joueur de s'initialiser en consequence*) 
+(**Initialisation du jeu: distribue les rôles, demande a chaque joueur de s'initialiser en conséquence*) 
 let initialisation () =
     (**Répartition des joueurs*)
     let reparti = repartition c_nbjoueurs in 
@@ -75,14 +75,37 @@ let initialisation () =
         ( v_print 1 "Arbitre: joueur %i  s'identifie comme %i etant un %s ce qui est %b\n" id reponse.(0) (perso2string ( int2perso reponse.(1))) (int2perso reponse.(1)= reparti.(id) && id=reponse.(0)))
         done;
     
-    if Definition.verbose <= 4 
+    if verbose <= 4 
     then
         let chaine= "Conteur: le jeu commence" in
         let n = String.length chaine in
         let cadre = String.make (n+2) '-' in
         print_string (cadre^"\n"^chaine^" |\n"^cadre^"\n")
         ;
-
+    (*Cupidon ca désigner les amoureux*)
+    v_print_string 3 "Conteur: Cupidon se reveille et décoche une flêche aux deux amoureux\n";
+        let cupidon = ref (-1) in
+        for id=0 to c_nbjoueurs-1 do 
+            if c_whoswho.(id) = Cupidon || c_whoswho.(id) = Amoureux Cupidon then cupidon := id
+            done;
+        if !cupidon <> -1 (*au cas où il n'y a pas de cupidon*)
+            then 
+                let  (_, noms) = joueurs.(!cupidon)#pose_question (7,[||]) in
+                let am1 = noms.(0) and am2 = noms.(1) in
+                if am1 = am2
+                then v_print 2 "Arbitre: %i (Cupidon) est pas malin, il désigne %i comme étant amoureux de lui-même, sa flêche ne sera pas prise en compte\n" !cupidon am1
+                else begin
+                    v_print_string 3 "Je vais prévenir les deux amoureux, ils vont ouvrir les yeux et se reconnaitrent\n";
+                    v_print 4 "Conteur: Les amoureux sont %i (%s) et %i (%s)\n" am1 (perso2string c_whoswho.(am1)) am2 (perso2string c_whoswho.(am2));
+                    (*On lui dit qu'il est amoureux de untel, il doit alors se mettre à jour, mais ne sais pas qu'elle est l'identité de l'autre*) 
+                    joueurs.(am1)#donne_info (7, [|am1;am2|]);
+                    joueurs.(am2)#donne_info (7, [|am1;am2|]);
+                    
+                    (*Le conteur se met à jour*)
+                    c_whoswho.(am1) <- Amoureux c_whoswho.(am1);
+                    c_whoswho.(am2) <- Amoureux c_whoswho.(am2);
+                    v_print_string 3 "Conteur: Les amoureux peuvent désormais se rendormir\n"
+                    end;
     (*Les LG se reconnaissent entre eux, c'est à dire qu'on les informe de l'identité des autres LG*)
     v_print_string 3 "Conteur: Les loups-garous vont se reconnaîtrent, ils ouvrent les yeux\n";
     for id=0 to c_nbjoueurs-1 do
@@ -97,27 +120,40 @@ let initialisation () =
 (**Fonction testant si la partie doit se terminer*)
 let is_it_the_end () =
 (*l'indentation de cette fonction n'est pas canonique mais est plus lisible qu'un escalier*)
-    if array_all ( fun pers->perso_is_dead pers) c_whoswho                    (*tout le monde est mort*)
-        then (id_end := 0; true)  
-    else if array_all (fun pers->pers <> Loup) c_whoswho                      (*tout les loups sont morts*)
-        then (id_end := 1; true) 
-    else if array_all (fun pers->pers = Loup || perso_is_dead pers) c_whoswho (*les loups garous gagnent la partie*)
-        then (id_end := 2; true) 
-    else false                                                                (*la partie n'est pas finie*)
+
+    (*tout le monde est mort*)
+    if array_all ( fun pers->perso_is_dead pers) c_whoswho                    
+        then (id_end := 0; true)
+        
+    (*tout les loups sont morts*)
+    else if array_all (fun pers->not (perso_is_LG pers)) c_whoswho  
+        then (id_end := 1; true)
+        
+    (*les loups garous gagnent la partie*)
+    else if array_all (fun pers->perso_is_LG pers || perso_is_dead pers) c_whoswho 
+        then (id_end := 2; true)
+        
+    (*Les amoureux gagnent la partie*)
+    else if array_all (fun pers -> perso_is_dead pers || perso_is_amoureux pers) c_whoswho 
+        then (id_end := 3; true)
+        
+    (*la partie n'est pas finie*)
+    else false                                                                
 ;;
 
 
-(** Fonction gèrant la fin du jeu: affiche les gagants, le rôle de chacun...*)
+(** Fonction gèrant la fin du jeu: affiche les gagnants, le rôle de chacun...*)
 let epilogue () =
     (match !id_end with
         |0 -> v_print_string 3 "\nConteur: Tout le monde est mort, le village de Salem s'est entretué !\n"
         |1 -> v_print_string 3 "\nConteur: Tous les loups garou sont morts, le village de Salem est sauvé !\n"
         |2 -> v_print_string 3 "\nConteur: Tous les villageois sont morts, le village de Salem est tombé aux mains du mal !\n"
+        |3 -> v_print_string 3 "\nConteur: Seuls les amoureux sont encore vivants, ils vivent heureux, ensemble, pour une longue éternité...\n"
         |_ -> v_print_string 4 "\nArbitre: Le jeu a quitté pour une raison inconnue"
     );
     
     (*Affichage des rôles des participants*)
-    if Definition.verbose <= 3 
+    if verbose <= 3 
     then
         let chaine= "Conteur: La partie est terminée\n les rôles distribués étaient les suivants" in
         let n = String.length chaine in
@@ -128,7 +164,9 @@ let epilogue () =
     (*Affichage équipe par équipe*)
     Array.iteri (fun i-> fun perso ->( if perso = Mort Loup || perso = Loup then v_print 3 "%i était %s, de classe %s\n" i (perso2string perso) joueurs.(i)#get_classe) ) c_whoswho;
     v_print_string 3 "------------------\n";
-    Array.iteri (fun i-> fun perso ->( if  not (perso = Mort Loup || perso = Loup) then v_print 3 "%i était %s, de classe %s\n" i (perso2string perso) joueurs.(i)#get_classe) ) c_whoswho;
+    Array.iteri (fun i-> fun perso ->( if  not (perso = Mort Loup || perso = Loup || perso_is_amoureux perso) then v_print 3 "%i était %s, de classe %s\n" i (perso2string perso) joueurs.(i)#get_classe) ) c_whoswho;
+    v_print_string 3 "------------------\n";
+    Array.iteri (fun i-> fun perso ->( if  perso_is_amoureux perso then v_print 3 "%i était %s, de classe %s\n" i (perso2string perso) joueurs.(i)#get_classe) ) c_whoswho;
     
 ;;
 
@@ -140,7 +178,7 @@ let nuit () =
     (*Réveil des LG*)
     v_print_string 3 "Conteur:les loups-garous se réveillent et rodent pendant la nuit\n";
     let (victime, nb_votants)=
-        Definition.appel_au_vote 
+        appel_au_vote 
             (fun id -> not (c_is_dead id) && (c_is_LG id))            (* Définition des votants*)
             (fun (_,contenu)->c_is_dead (contenu).(0) )               (* Définition d'un vote invalide*)
             c_nbjoueurs                                               (* Nombre de joueurs dans la partie*)
@@ -167,7 +205,7 @@ let nuit () =
         id := ordre.(i);
         
         (* C'est au tour de la sorcière de jouer*)
-        if c_whoswho.(!id) = Sorciere
+        if c_whoswho.(!id) = Sorciere || c_whoswho.(!id) = Amoureux Sorciere
             then 
                 begin
                 v_print_string 3 "Conteur: la Sorcière se réveille\n";
@@ -194,7 +232,7 @@ let nuit () =
                 end;
 
         (*C'est au tour de la voyante de jouer*)
-        if c_whoswho.(!id)=Voyante
+        if c_whoswho.(!id)=Voyante || c_whoswho.(!id)=Amoureux Voyante
             then (*on pourrait utiliser une procedure de vote un peu speciale pour économiser des lignes de code mais ca serait moins clair*)
                 begin
                 v_print_string 3 "Conteur: la Voyante se reveille.. ....et me designe la personne dont elle veut sonder l'identité\n";
@@ -229,21 +267,36 @@ let petit_matin ()=
                 end
             done;
             (*maj des infos du conteur*)
-            c_whoswho.(id_mort)<- Mort c_whoswho.(id_mort); 
+            c_whoswho.(id_mort)<- Mort c_whoswho.(id_mort);
+            
+            (*Traitement de la mort d'un amoureux*)
+            if perso_is_amoureux c_whoswho.(id_mort) 
+                then begin
+                (**Recherche de l'autre amoureux*)
+                let ame_soeur = ref (-1) in
+                for id=0 to c_nbjoueurs-1 do
+                    if perso_is_amoureux c_whoswho.(id) && id <> id_mort then ame_soeur := id
+                    done;
+                if not (c_is_dead !ame_soeur) 
+                    then 
+                        stack_push_sans_doublon !ame_soeur morgue(*Règle n°8*)
+                        (* On ajoute sans doublon pour ne pas remettre dans la morgue un amoureux qui y est déjà (sinon risque de le tuer plusieurs fois*)
+                    else () (*Cela signifie que l'autre amoureux était dans la morgue avant, donc avait déjà été tué*)
+                end
             done
 ;;
 
 
-(**Fonction gérant le jour: mort des personnages, action specifique, pendaison publique.../*)
+(**Fonction gérant le jour: morts des personnages, action specifique, pendaison publique.../*)
 let jour () =
     v_print_string 3 "Conteur: procédons au vote\n";
-    let (suspect,nb_votants)=Definition.appel_au_vote (fun id -> not (c_is_dead id) ) (fun (idq,contenu)->c_is_dead (contenu).(0) (*issue n°6*)) c_nbjoueurs joueurs 2 !id_vote 0 in
+    let (suspect,nb_votants)=appel_au_vote (fun id -> not (c_is_dead id) ) (fun (idq,contenu)->c_is_dead (contenu).(0) (*issue n°6*)) c_nbjoueurs joueurs 2 !id_vote 0 in
     incr id_vote;
     if nb_votants>0 (*issue 10*)
         then begin
             ( v_print 3 "Conteur: %i est donc pendu en place publique\n" suspect);
             ( v_print 3 "Conteur: il révèle avant de monter sur l'échafaud qu'il était %s\n" (perso2string c_whoswho.(suspect)));
-            (*Le conteur informe les joueurs vivant de la mort et de l'identité de la personne exécutée*)
+            (**Le conteur informe les joueurs vivant de la mort et de l'identité de la personne exécutée*)
             for id=0 to c_nbjoueurs-1 do
                 if not (c_is_dead id) then
                     begin
@@ -252,6 +305,29 @@ let jour () =
                     end
                 done;
             c_whoswho.(suspect)<- Mort c_whoswho.(suspect); (*maj des infos du conteur*)
+            if perso_is_amoureux c_whoswho.(suspect) 
+                then begin
+                    v_print 3 "Conteur: %i n'était pas seul dans ce monde, une autre ame vivait en harmonie avec ce %s\n" suspect (perso2string c_whoswho.(suspect));
+                    (**Recherche de l'autre amoureux*)
+                    let ame_soeur = ref (-1) in
+                    for id=0 to c_nbjoueurs-1 do
+                        if perso_is_amoureux c_whoswho.(id) && id <> suspect then ame_soeur := id
+                        done; (*il y a forcement une âme soeur donc ame_soeur ne vaut pas -1 à la fin de cette boucle*)
+                    assert (not (c_is_dead !ame_soeur));
+                    v_print 3 "          %i était l'ame soeur de %i et meurt de chagrin\n" !ame_soeur suspect;
+                    v_print 3 "Conteur : %i était %s\n" !ame_soeur (perso2string c_whoswho.(!ame_soeur));
+                    (**Le conteur informe les joueurs vivant de la mort et de l'identité de la personne exécutée*)
+                    for id=0 to c_nbjoueurs-1 do
+                        if not (c_is_dead id) then
+                            begin
+                            (* TODO Il faudra aussi annoncer que les deux joueurs étaient amoureux par une idi
+                            attention si on utilise l'idi7 car elle n'est concue qu'a etre donné aux joueurs amoureux donc il faudra la modifier*)
+                            joueurs.(id)#donne_info (1,[|!ame_soeur;perso2int c_whoswho.(!ame_soeur)|]);
+                            joueurs.(id)#donne_info (3,[|!ame_soeur;2|])
+                            end
+                        done;
+                    c_whoswho.(!ame_soeur)<- Mort c_whoswho.(!ame_soeur); (*maj des infos du conteur*)
+                    end
             end
         else v_print_string 4 "Arbitre: personne n'est mort, car il n'ya eu aucun votant, il doit yavoir un problème (cf issue10)\n"
 ;;

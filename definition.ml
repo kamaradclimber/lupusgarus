@@ -13,7 +13,7 @@ Le type joueur est défini ici, tous les joueurs doivent hériter de cette class
 
 Cette liste est à jour dans la page du wiki UsingExecutable
 *)
-let verbose=0;;
+let verbose=2;;
 
 (**Initialisation de l'aléatoire*)
 let seed = int_of_float (Unix.time ()) ;;
@@ -29,7 +29,7 @@ let v_print_string level str=if verbose<= level then print_string str;;
 let v_print level=if verbose<= level then Printf.printf else Printf.ifprintf stdout;;
 
 (**Affichage d'une chaîne dans un beau cadre *)
-(*TODO*)
+(*TODO mais assez problématique*)
 
 (**Affichage d'un tableau d'entier, puis passage à la ligne*)
 let print_int_array level tab = 
@@ -37,7 +37,7 @@ if verbose <= level
 then (Array.iter (fun x->Printf.printf "%i " x) tab;
 print_newline () );;
 
-(**Affichage d'un tableau de booléens _unused_*)
+(**Affichage d'un tableau de booléens _unused_ (?) *)
 let print_bool_array level tab=
     if verbose <= level then
     (for i=0 to Array.length tab -1 do if tab.(i) then print_string "true " else print_string "false " done;
@@ -78,7 +78,7 @@ v_print 4 "Arbitre: L'initialisation aléatoire est %i\n" seed;;
 (*Ainsi si un problème apparait, on peut récréer exactement les mêmes conditions pour vérifier si on l'a bien corrigé, il suffit d'imposer la seed à la valeur problématique*)
 
 (**Définition du type des personnalités des joueurs*)
-type perso = Unknown |Loup | Villageois| Voyante| Sorciere|Mort of perso;;
+type perso = Unknown |Loup | Villageois| Voyante|Cupidon | Sorciere|Mort of perso| Amoureux of perso;;
 
 (**Définition de la structure d'une information échangée de la forme id_information * information*)
 type information=int*(int array);;
@@ -86,17 +86,25 @@ type information=int*(int array);;
 (**Conversion d'un type en la personnalité correspondante et réciproquement*)
 (** *)
 let int2perso n=
-    match n with |0->Unknown |1->Loup|2->Villageois|3->Voyante |4->Sorciere|_->assert false
+    match n with |0->Unknown |1->Loup|2->Villageois|3->Voyante |4->Sorciere|5->Cupidon |_->assert false
 ;;
 let rec perso2int pers=
     match pers with 
-        |Unknown -> 0 |Loup->1|Villageois->2 |Voyante->3|Sorciere->4
+        |Unknown -> 0 |Loup->1|Villageois->2 |Voyante->3|Sorciere->4 | Cupidon -> 5
         |Mort sthing ->(v_print_string 4 "vous avez demandé l'identification perso2int d'un mort attention, (issue19 ?)\n";perso2int sthing)
+        |Amoureux sthing->perso2int sthing
 ;;
 
 (**Conversion d'une personnalité en la chaîne associée*)
 let rec perso2string pers=
-    match pers with |Unknown -> "Unknown" | Loup ->"Loup"|Villageois->"Villageois"|Voyante->"Voyante"|Sorciere->"Sorciere"|Mort persbis-> (perso2string persbis)^" (Mort)"
+    match pers with 
+    |Unknown -> "Unknown" 
+    | Loup ->"Loup"|Villageois->"Villageois"
+    |Voyante->"Voyante"
+    |Sorciere->"Sorciere"
+    |Cupidon -> "Cupidon"
+    |Mort persbis-> (perso2string persbis)^" (Mort)" 
+    | Amoureux persbis -> (perso2string persbis)^" (Amoureux)"
 ;;
 
 (**Affichage d'un tableau de personnalités*)
@@ -106,6 +114,12 @@ let print_perso_array tab=
 
 (**Teste si une personnalité est morte ou non*)
 let perso_is_dead  pers=match pers with Mort _->true |_->false;;
+
+(**Teste si une personnalité est loup ou non*)
+let perso_is_LG pers= match pers with Loup -> true | Amoureux Loup -> true | _ -> false;;
+
+(**Teste si une personnalité est un amoureux ou non*)
+let perso_is_amoureux perso=match perso with Amoureux _ -> true | Mort Amoureux _ -> true | _ -> false (*attention à l'identification des morts*)
 
 (**Classe des joueurs: dans chaque module, le joueur définit sa sous classe avec sa manière propre de répondre aux questions et d'assimiler les informations 
 ici sont définies les éléments essentiels utilisés par le conteur
@@ -139,9 +153,9 @@ class virtual joueur c_nbjoueurs numjoueur=
 let carte_LG nb_joueurs =
     (* je sais cette  manière d'écrire est contraire à l'idée CaMLique du match...with mais c'est plus lisible*)
     match nb_joueurs with
-    |_ when nb_joueurs < 12 -> (>) 5 
-    |_ when nb_joueurs < 17 -> (>) 6
-    |_ when nb_joueurs < 22 -> (>) 7
+    |_ when nb_joueurs < 12 -> (>) 6 
+    |_ when nb_joueurs < 17 -> (>) 7
+    |_ when nb_joueurs < 22 -> (>) 8
     |_ -> (>) (2+(nb_joueurs-2)/5)
 
 (**Renvoie un tableau pour un ordre aléatoire des joueurs afin de pouvoir leur donner une personnalité au hasard*)
@@ -166,6 +180,7 @@ let repartition nb_joueurs=
         done;
     rep2.(1)<- Voyante;
     rep2.(2)<- Sorciere;
+    rep2.(3)<- Cupidon;
     let rep3=Array.make nb_joueurs Unknown in
     for i=0 to nb_joueurs-1 do rep3.(rep.(i))<-rep2.(i) done;
     rep3
@@ -243,4 +258,15 @@ let appel_au_vote (condition_de_vote: (int ->bool)) (vote_invalide:information->
 
     (*Renvoi du résultat*)
     ((!victime, !nb_votants):int*int)
+;;
+
+let rec stack_push_sans_doublon id pile=
+(**Insère sans doublon un élément dans une pile \n ceci se fait en placant en O(n) l'élément en bas de la pile*)
+    if Stack.is_empty pile 
+        then Stack.push id pile
+        else
+            let premier = Stack.pop pile in
+            if premier = id 
+            then Stack.push premier pile
+            else (stack_push_sans_doublon id pile; Stack.push premier pile)
 ;;
