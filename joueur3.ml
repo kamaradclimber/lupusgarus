@@ -6,7 +6,7 @@ match (myperso,hisperso) with
 |Amoureux perso, _ |_, Amoureux perso -> false (*Les deux cas peuvent arriver (penser à cupidon qui sait qui sont les amoureux sans forcément en être un)
 avec ce système un amoureux va considérer tout de suite tout le monde comme son ennemi et donc va voter contre les gens sensé être dans son équipe donc se faire reperer, il faudrait donc subtiliser un peu le traitement de cette fonction*) 
 |Mort _,_->failwith "je suis mort ! (soulevée par la fonction \"semble_etre_de_mon_cote\""
-|_, Mort _ -> (v_print_string 4 "Suis-je allié à un mort ? dur de repondre.. ce genre de question ne devrait pas se poser";true)
+|_, Mort _ -> (v_print_string 4 "Suis-je allié à un mort ? dûr de repondre.. ce genre de question ne devrait pas se poser";true)
 |Loup, Loup -> true
 |Loup, _ -> false
 |_, Loup -> false
@@ -16,9 +16,9 @@ avec ce système un amoureux va considérer tout de suite tout le monde comme son 
 
 let is_dead moi id = match moi#get_whoswho.(id) with | Mort _-> true |_-> false;;
 
-let is_LG moi id = match moi#get_whoswho.(id) with | Loup -> true |_ -> false;;
+let is_LG moi id = match moi#get_whoswho.(id) with | Loup| Amoureux Loup -> true |_ -> false;;
 
-let is_unknown moi id = match moi#get_whoswho.(id) with | Unknown -> true |_ -> false;;
+let is_unknown moi id = match moi#get_whoswho.(id) with | Unknown|Amoureux Unknown -> true |_ -> false;;
 
 let get_participants moi= 
     let participants =
@@ -89,14 +89,43 @@ En revanche ce système est efficace contre des villageois qui utilisent aussi un
 
 ;;
 
+(**Permet au joueur d'intégrer la personnalité d'un joueur et modifier sa confiance en lui en conséquence*)
+(*TODO pourrait être grandement factorisée*)
 let assimilation_identité moi id_autre id_identité=
     let identité= int2perso id_identité and ce_que_je_sais = moi#get_whoswho.(id_autre) in
-    if ce_que_je_sais <> Unknown && identité <> ce_que_je_sais
+    if ce_que_je_sais <> Unknown && ce_que_je_sais <> Amoureux Unknown  && identité <> ce_que_je_sais
         then ( v_print 3 "%i: On me dit que %i est %s, or pour moi il est %s\n" (moi#get_id) id_autre (perso2string identité) (perso2string ce_que_je_sais) );
-    moi#mod_whoswho id_autre identité;
-    if semble_etre_de_mon_cote moi#who_am_i identité
-        then moi#mod_conf id_autre 10
-        else moi#mod_conf id_autre (-10)
+    if ce_que_je_sais = Amoureux Unknown
+        then moi#mod_whoswho id_autre (Amoureux identité)
+        else moi#mod_whoswho id_autre identité
+    ;
+    match moi#who_am_i with 
+        |Amoureux ma_perso ->
+            begin
+                (*je suis amoureux mais l'autre ?*)
+                if (match ce_que_je_sais with  Amoureux Unknown->true |_->false)
+                    then 
+                        (* nous sommes amoureux l'un de l'autre*)
+                        moi#mod_conf id_autre 10 (*mais en théorie, la conf en lui est déjà max*)
+                    else
+                        (* ce n'est pas mon amoureux donc je me demande s'il est avec moi ou non*)
+                        if semble_etre_de_mon_cote ma_perso identité
+                            then moi#mod_conf id_autre 5
+                            else moi#mod_conf id_autre (-10)
+            end
+        |_->
+            begin 
+                (*je ne suis pas amoureux et l'autre ?*)
+                if (match ce_que_je_sais with  Amoureux Unknown->true |_->false)
+                    then 
+                        (*je suis donc cupidon et pas amoureux et l'autre est donc un ennemi*)
+                        moi#mod_conf id_autre (-10)
+                    else
+                        (*personne n'est amoureux donc c'est le cas normal*)
+                        if semble_etre_de_mon_cote moi#who_am_i identité
+                            then moi#mod_conf id_autre 10
+                            else moi#mod_conf id_autre (-10)
+            end
 ;;
 
 let assimilation_vote moi id_vote type_vote tour_de_vote votant cible=
@@ -121,6 +150,25 @@ let gestion_vote moi moment_du_vote=
         |_ -> Printf.printf "%i: le vote est dit au %i -ieme moment, ca me parait bizarre\n" moi#get_id moment_du_vote
 ;;
 
+(**Indique au joueur qu'il est amoureux de qq1*)
+let coup_de_foudre moi am1 am2=
+    let autre = 
+    (if moi#get_id <> am1
+    then
+        (*(assert moi#get_id = am2; (*on ne transmet cette information qu'aux amoureux, donc je suis obligatoirement l'un deux*)*)
+        am1
+    else
+        am2
+    )
+    in
+    (*Modification des status*)
+    moi#mod_whoswho autre (Amoureux moi#get_whoswho.(autre));
+    moi#mod_whoswho moi#get_id (Amoureux moi#get_whoswho.(moi#get_id));
+    for id=0 to moi#get_nbjoueurs-1 do moi#mod_conf id (-10) done;
+    moi#mod_conf autre (10);
+    moi#mod_conf moi#get_id (10)
+;;
+
 let rec donne_info moi ((id_info,contenu):information) =
     match id_info with
         |1-> assimilation_identité moi contenu.(0) contenu.(1)
@@ -129,6 +177,7 @@ let rec donne_info moi ((id_info,contenu):information) =
         |3-> moi#mod_whoswho contenu.(0) (Mort (moi#get_whoswho.(contenu.(0))))
         |4-> assimilation_vote moi contenu.(0) contenu.(1) contenu.(2) contenu.(3) contenu.(4)
         |6-> gestion_vote moi contenu.(0);
+        |7->coup_de_foudre moi contenu.(0) contenu.(1)
         | _ -> ();;
 
 (**Renvoie l'indice de l'élément minimum au sens d'une relation de comparaison vérifiant un prédicat d'un tableau*)
@@ -157,7 +206,7 @@ let mon_vote moi=
 
 let action_LG moi tour_de_vote=
 (**c'est presque un doublon de mon_vote, peut etre faut-il la supprimer?*)
-    if moi#who_am_i = Loup 
+    if is_LG moi moi#get_id 
         then  
             let vict = get_min_array (fun id-> not (is_dead moi id) && not (is_LG moi id) ) (<) moi#get_conf in
             match vict with
@@ -168,7 +217,7 @@ let action_LG moi tour_de_vote=
 ;;
 
 let action_voyante moi=
-    if moi#get_whoswho.(moi#get_id) = Voyante 
+    if moi#who_am_i = Voyante || moi#who_am_i = Amoureux Voyante
         then  
             begin
             let inconnu = ref (Random.int moi#get_nbjoueurs) and nb_essais =ref 0 in
@@ -192,6 +241,21 @@ let action_sorcière moi victime=
     (5,[|empoisonner;victime_potentielle;sauver|])
 ;;
 
+(**désigne les deux amoureux et metà jour la confiance concernant les amoureux*)
+let tir_a_larc moi=
+    let am1 = Random.int moi#get_nbjoueurs in
+    let am2 = ref am1 in
+    (*On s'assure que les amoureux sont bien distincts*)
+    while !am2 = am1 do am2 := Random.int moi#get_nbjoueurs done;
+    moi#mod_whoswho am1 (Amoureux moi#get_whoswho.(am1));
+    moi#mod_whoswho !am2 (Amoureux moi#get_whoswho.(!am2));
+    (*On met à jour la confiance*)
+    moi#mod_conf am1 (-10);
+    moi#mod_conf !am2 (-10);
+    (* Si jamais cupidon s'est désigné lui meme ceci risque de poser un problème car il va detester son amoureux mais en sera informé juste après par le conteur et modifera la confiance dans le bon sens à ce moment là*)
+    (7, [|am1; !am2|])
+;;
+
 let rec pose_question moi ((id_info,contenu):information)=
 match id_info with
 |0-> (0,[|moi#get_nbjoueurs;moi#get_id|])
@@ -199,7 +263,9 @@ match id_info with
 |2-> mon_vote moi
 |3-> action_LG moi contenu.(0)
 |4-> action_voyante moi
-|5->action_sorcière moi contenu.(0)
+|5-> action_sorcière moi contenu.(0)
+|6-> failwith "idq6 non attribuée"
+|7-> tir_a_larc moi
 |_-> ((-1),[||])
 
 

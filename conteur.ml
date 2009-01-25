@@ -57,7 +57,7 @@ let ordre = generer_ordre_aleatoire c_nbjoueurs;;
 (**-----------------------------------------------------------------------------------------------*)
 (** Début des fonctions définissant les phases de la partie*)
 
-(**Initialisation du jeu: distribue les roles, demande a chaque joueur de s'initialiser en conséquence*) 
+(**Initialisation du jeu: distribue les rôles, demande a chaque joueur de s'initialiser en conséquence*) 
 let initialisation () =
     (**Répartition des joueurs*)
     let reparti = repartition c_nbjoueurs in 
@@ -84,19 +84,28 @@ let initialisation () =
         ;
     (*Cupidon ca désigner les amoureux*)
     v_print_string 3 "Conteur: Cupidon se reveille et décoche une flêche aux deux amoureux\n";
-
-        let (am1,am2) = (*TODO dès que le perso cupidon sera créé*) (0,1) in
-        v_print_string 3 "Je vais prévenir les deux amoureux, ils vont ouvrir les yeux et se reconnaitrent\n";
-        v_print 4 "Conteur: Les amoureux sont %i (%s) et %i (%s)\n" am1 (perso2string c_whoswho.(am1)) am2 (perso2string c_whoswho.(am2));
-        (*On lui dit qu'il est amoureux de untel, il doit alors se mettre à jour, mais ne sais pas qu'elle est l'identité de l'autre*) 
-        joueurs.(am1)#donne_info (7, [|am1;am2|]);
-        joueurs.(am2)#donne_info (7, [|am1;am2|]);
-        
-        (*Le conteur se met à jour*)
-        c_whoswho.(am1) <- Amoureux c_whoswho.(am1);
-        c_whoswho.(am2) <- Amoureux c_whoswho.(am2);
-        v_print_string 3 "Conteur: Les amoureux peuvent désormais se rendormir\n";
-    
+        let cupidon = ref (-1) in
+        for id=0 to c_nbjoueurs-1 do 
+            if c_whoswho.(id) = Cupidon || c_whoswho.(id) = Amoureux Cupidon then cupidon := id
+            done;
+        if !cupidon <> -1 (*au cas où il n'y a pas de cupidon*)
+            then 
+                let  (_, noms) = joueurs.(!cupidon)#pose_question (7,[||]) in
+                let am1 = noms.(0) and am2 = noms.(1) in
+                if am1 = am2
+                then v_print 2 "Arbitre: %i (Cupidon) est pas malin, il désigne %i comme étant amoureux de lui-même, sa flêche ne sera pas prise en compte\n" !cupidon am1
+                else begin
+                    v_print_string 3 "Je vais prévenir les deux amoureux, ils vont ouvrir les yeux et se reconnaitrent\n";
+                    v_print 4 "Conteur: Les amoureux sont %i (%s) et %i (%s)\n" am1 (perso2string c_whoswho.(am1)) am2 (perso2string c_whoswho.(am2));
+                    (*On lui dit qu'il est amoureux de untel, il doit alors se mettre à jour, mais ne sais pas qu'elle est l'identité de l'autre*) 
+                    joueurs.(am1)#donne_info (7, [|am1;am2|]);
+                    joueurs.(am2)#donne_info (7, [|am1;am2|]);
+                    
+                    (*Le conteur se met à jour*)
+                    c_whoswho.(am1) <- Amoureux c_whoswho.(am1);
+                    c_whoswho.(am2) <- Amoureux c_whoswho.(am2);
+                    v_print_string 3 "Conteur: Les amoureux peuvent désormais se rendormir\n"
+                    end;
     (*Les LG se reconnaissent entre eux, c'est à dire qu'on les informe de l'identité des autres LG*)
     v_print_string 3 "Conteur: Les loups-garous vont se reconnaîtrent, ils ouvrent les yeux\n";
     for id=0 to c_nbjoueurs-1 do
@@ -311,7 +320,8 @@ let jour () =
                     for id=0 to c_nbjoueurs-1 do
                         if not (c_is_dead id) then
                             begin
-                            (* Il faudra aussi annoncer que les deux joueurs étaient amoureux par une idi*)
+                            (* TODO Il faudra aussi annoncer que les deux joueurs étaient amoureux par une idi
+                            attention si on utilise l'idi7 car elle n'est concue qu'a etre donné aux joueurs amoureux donc il faudra la modifier*)
                             joueurs.(id)#donne_info (1,[|!ame_soeur;perso2int c_whoswho.(!ame_soeur)|]);
                             joueurs.(id)#donne_info (3,[|!ame_soeur;2|])
                             end
