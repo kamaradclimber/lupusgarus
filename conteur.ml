@@ -1,6 +1,6 @@
 (** Ce fichier est le coeur du programme car il représente le maître du jeu qui distribue les rôles, gère les parties et narre l'histoire.
 Il peut également servir d'arbitre.
-Lui seul connaît les identités des joueurs et peut les appeler pour les informer ou leur poser des questions. Pour celà, il est compilé en dernier afin de ne pas pouvoir être appelé par les autres joueurs (il est le seul à avoir unpointeur vers tous les joueurs
+Lui seul connaît les identités des joueurs et peut les appeler pour les informer ou leur poser des questions. Pour celà, il est compilé en dernier afin de ne pas pouvoir être appelé par les autres joueurs (il est le seul à avoir un pointeur vers tous les joueurs
 *)
 
 open Definition
@@ -258,6 +258,17 @@ let petit_matin ()=
         while not (Stack.is_empty morgue) do
             let id_mort = Stack.pop morgue in
             ( v_print 3 "Conteur: %i est mort cette nuit, %i était %s\n" id_mort id_mort (perso2string c_whoswho.(id_mort)));
+            
+            (*Traitement de la mort du chasseur*)
+            (* On met cette partie avant d'annoncer sa mort aux autres joueurs car cela evite d'appeler le chasseur alors qu'il se considère comme mort et ainsi de lever des exceptions*)
+            (* TODO ceci suscite un problème car on ne peut pas transmettre aux joueurs la raison de la mort de la personne abattue issue28*)
+            if perso_is_chasseur c_whoswho.(id_mort)
+                then begin
+                    let (_, contenu) = joueurs.(id_mort)#pose_question (2,[|(-1)|]) in
+                    Stack.push contenu.(0) morgue;
+                    v_print 1 "Arbitre: %i abat %i avec son fusil de chasse\n" id_mort contenu.(0)
+                    end;
+            
             (*le conteur informe les joueurs des morts*)
             for id=0 to c_nbjoueurs-1 do 
             if not (c_is_dead id) then
@@ -269,6 +280,7 @@ let petit_matin ()=
             (*maj des infos du conteur*)
             c_whoswho.(id_mort)<- Mort c_whoswho.(id_mort);
             
+
             (*Traitement de la mort d'un amoureux*)
             if perso_is_amoureux c_whoswho.(id_mort) 
                 then begin
@@ -294,8 +306,21 @@ let jour () =
     incr id_vote;
     if nb_votants>0 (*issue 10*)
         then begin
-            ( v_print 3 "Conteur: %i est donc pendu en place publique\n" suspect);
-            ( v_print 3 "Conteur: il révèle avant de monter sur l'échafaud qu'il était %s\n" (perso2string c_whoswho.(suspect)));
+            ( v_print 3 "Conteur: %i va donc être pendu en place publique\n" suspect);
+            
+            (*On gère le cas où le condamné est le chasseur*)
+            if perso_is_chasseur c_whoswho.(suspect)
+            then begin
+                v_print 3 "Conteur: %i se défend, sort son énorme fusil de chasse et tire sur...\n" suspect;
+                let (_, contenu) = joueurs.(suspect)#pose_question (2,[||]) in
+                v_print 3 "         %i qui meurt d'un head-shot\n" contenu.(0);
+                
+                (*Il faut gérer la mort du perso TODO en faisant une fonction qui gère la mort d'un perso et ses conséquences en terme d'amoureux car sinon on s'en sortira pas [cf issue28 en partie]*)
+            end
+            else
+                v_print 3 "Conteur: il révèle avant de monter sur l'échafaud qu'il était %s\n" (perso2string c_whoswho.(suspect));
+            
+            
             (**Le conteur informe les joueurs vivant de la mort et de l'identité de la personne exécutée*)
             for id=0 to c_nbjoueurs-1 do
                 if not (c_is_dead id) then
