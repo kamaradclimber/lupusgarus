@@ -20,6 +20,9 @@ let is_LG moi id = match moi#get_whoswho.(id) with | Loup| Amoureux Loup -> true
 
 let is_unknown moi id = match moi#get_whoswho.(id) with | Unknown|Amoureux Unknown -> true |_ -> false;;
 
+let is_amoureux moi id = match moi#get_whoswho.(id) with |Amoureux _ -> true | Mort Amoureux _ -> assert false (*ca ne devrait pas arriver sinon voir pkoi *)
+|_-> false;;
+
 let get_participants moi= 
     let participants =
         match moi#get_type_vote with
@@ -93,7 +96,7 @@ En revanche ce système est efficace contre des villageois qui utilisent aussi un
 (*TODO pourrait être grandement factorisée*)
 let assimilation_identité moi id_autre id_identité=
     let identité= int2perso id_identité and ce_que_je_sais = moi#get_whoswho.(id_autre) in
-    if ce_que_je_sais <> Unknown && ce_que_je_sais <> Amoureux Unknown  && identité <> ce_que_je_sais
+    if ce_que_je_sais <> Unknown && ce_que_je_sais <> Amoureux Unknown  && identité <> ce_que_je_sais && not (is_amoureux moi id_autre)  
         then ( v_print 3 "%i: On me dit que %i est %s, or pour moi il est %s\n" (moi#get_id) id_autre (perso2string identité) (perso2string ce_que_je_sais) );
     if ce_que_je_sais = Amoureux Unknown
         then moi#mod_whoswho id_autre (Amoureux identité)

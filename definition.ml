@@ -13,10 +13,10 @@ Le type joueur est défini ici, tous les joueurs doivent hériter de cette class
 
 Cette liste est à jour dans la page du wiki UsingExecutable
 *)
-let verbose=0;;
+let verbose=3;;
 
 (**Initialisation de l'aléatoire*)
-let seed = -914147153 (*int_of_float (Unix.time ())*) ;;
+let seed = int_of_float (Unix.time ()) ;;
 
 Random.init (seed);;
 
@@ -123,7 +123,7 @@ let perso_is_LG pers= match pers with Loup -> true | Amoureux Loup -> true | _ -
 let perso_is_amoureux perso=match perso with Amoureux _ -> true | Mort Amoureux _ -> true | _ -> false (*attention à l'identification des morts*)
 
 (**Teste si une personnalité est un chasseur ou non*)
-let perso_is_chasseur perso= match perso with Chasseur -> true| Mort Chasseur -> failwith "On teste si un mort est chasseur, se poser des questions"
+let perso_is_chasseur perso= match perso with Chasseur -> true| Mort Chasseur -> true
 |Amoureux Chasseur -> true | _->false
 
 (**Classe des joueurs: dans chaque module, le joueur définit sa sous classe avec sa manière propre de répondre aux questions et d'assimiler les informations 
@@ -279,4 +279,25 @@ let rec stack_push_sans_doublon id pile=
             if premier = id 
             then Stack.push premier pile
             else (stack_push_sans_doublon id pile; Stack.push premier pile)
+;;
+
+
+let rec stack_push_sans_doublon2 ((cause_deces, id_mort) as cadavre) pile=
+(**Insère sans doublon un élément dans une pile \n ceci se fait en placant en O(n) l'élément en bas de la pile*)
+    if Stack.is_empty pile 
+        then Stack.push cadavre pile
+        else
+            let (cause1,mort1) as premier= Stack.pop pile in
+            if mort1 = id_mort 
+            then Stack.push premier pile
+            else (stack_push_sans_doublon2 cadavre pile; Stack.push premier pile)
+;;
+
+let rec stack_filter predicat morgue=
+(* ne garde que les cadavre verifiant un certain predicat, __attention__ modification in place*)
+    if Stack.is_empty morgue 
+    then ()
+    else
+        let cadavre = Stack.pop morgue in
+        if predicat cadavre then (ignore (stack_filter predicat morgue); Stack.push cadavre morgue) else stack_filter predicat morgue
 ;;

@@ -48,7 +48,7 @@ let joueurs = Array.init c_nbjoueurs ( fun i-> conf2j (new Joueur3.confiant c_nb
 ;;
 (** Pile contenant les morts qui ne sont pas encore enregistrés comme morts mais qui ont étés tués.
 Il s'agit par exemple de la victime des Loup-Garous ou de la sorcière*)
-let morgue=((Stack.create ()): int Stack.t)
+let morgue=((Stack.create ()): (int*int) Stack.t)
 ;;
 (** Tableau contenant un ordre aléatoire pour affecter une personnalité au hasard à chacun des joueurs
 Ce tableau est utilisé lorsque l'on veut parcourir les joueurs afin de ne pas permettre l'identification de la personnalité d'un joueur en regardant le moment où telle personnalité est appelée cf issue14 *)
@@ -171,6 +171,80 @@ let epilogue () =
 ;;
 
 
+let rec autopsie morgue cadavre =
+(* définition de la nouvelle morgue: 
+il s'agit de stocker en plus la raison du décès et si besoin est, comment on en est arrivé là (par exemple un chasseur amoureux qui meurt de chagrin)
+afin de pouvoir adapter les dialogues au mieux
+on aura donc un entier qui expliquera tout (cf raisons de la mort dans synatxeechange[...].wiki *)
+
+(*Ce programme doit suggérer plein de question dans les cas anormaux comme: la mort d'un amoureux tué par le chasseur qui est mort de chagrin...
+en effet, pour le moment on ne vérifie pas certaines réponses comme le fait que le chasseur ne tue pas son amoureux....,
+pour le moment les règles doivent etre suffisament strictes pour que le programmme ne bugge pas mais les affichages ne sont pas forcement optimaux*)
+
+(*Peut etre faudra-t-il indiquer en arguement le moment où l'autopsie est appelée entre jour / petit matin pour mieux adapter l'affichage <- en fait pas besoin car les cas de décès sont suffisament explicites*)
+    let (cause_du_deces, id_mort) =  cadavre in
+    assert (not (perso_is_dead c_whoswho.(id_mort) ));
+    
+    (*Affichage de la cause de la mort du joueur*)
+    begin
+    match cause_du_deces with
+        |1-> v_print 3 "Conteur: %i (%s) est mort pendant la nuit, son cadavre est découvert au matin sur le pas de sa porte\n" id_mort (perso2string c_whoswho.(id_mort))
+        |2-> v_print 3 "Conteur: %i (%s) est donc pendu en place publique, sa mort est lente et douloureuse et tous les membres du village, en dansant autour\n        de la potence, espèrent avoir éradiqué le mal qui rôde dans le village\n" id_mort (perso2string c_whoswho.(id_mort))
+        |3-> v_print 3 "Conteur: Dans son ultime agonie, le chasseur (%i) a pris son fusil et fait un head-shot sur %i (%s)\n" (-1) (*TODO*) id_mort (perso2string c_whoswho.(id_mort))
+        |4-> v_print 3 "Conteur: Lorsque les villageois sont venus chercher le chasseur (%i), celui-ci a dégainé son fusil et abattu %i (%s)\n" (-1) (*TODO*) id_mort (perso2string c_whoswho.(id_mort))
+        |5-> v_print 3 "Conteur: Lorsque %i (%s) a découvert le cadavre de son amoureux %i, une grande tristesse s'est emparée de lui et il va mettre fin à ses jours seul dans la forêt\n" id_mort (perso2string c_whoswho.(id_mort)) (-1) (*TODO*)
+        |6-> v_print 3 "Conteur: Après que %i aie été pendu par l'ensemble du village, %i (%s) s'est retiré, seul, dans la forêt et nepouvant vivre sans %i a mis fin à ses jours\n" (-1) (*TODO*) id_mort (perso2string c_whoswho.(id_mort)) (-1) (*TODO*)
+        |7-> v_print 3 "Conteur: %i ayant été abattu par le chasseur, %i (%s) se fane de chagrin et se retire dans du monde discretement dans la forêt\n" (-1) (*TODO*) id_mort (perso2string c_whoswho.(id_mort))
+        |8-> v_print 3 "Conteur: Avant d'aller se suicider, %i a sorti son fusil et exprimé son désespoir en tirant sur %i (%s)\n" (-1) (*TODO*) id_mort (perso2string c_whoswho.(id_mort))
+        |_ -> failwith (Printf.sprintf "%i est mort pour une raison inconnue (soulevé par autopsie dans conteur.ml)" id_mort)
+    end;
+    (*le conteur informe les joueurs des morts*)
+    for id=0 to c_nbjoueurs-1 do 
+    if not (c_is_dead id) then
+        begin
+        joueurs.(id)#donne_info (1,[|id_mort;perso2int c_whoswho.(id_mort)|]);
+        joueurs.(id)#donne_info (3,[|id_mort;cause_du_deces|]);
+        v_print_string 0 "information dun joueur\n"
+        end
+    done;
+    (*maj des infos du conteur*)
+    c_whoswho.(id_mort)<- Mort c_whoswho.(id_mort);
+
+    (*Maintenant on gère les cas particuliers de mort*)
+    if perso_is_amoureux c_whoswho.(id_mort) && (match cause_du_deces with 5|6|7->false|_->true)
+        then begin
+            (**Recherche de l'autre amoureux*)
+            let ame_soeur = ref (-1) in
+            for id=0 to c_nbjoueurs-1 do
+                if perso_is_amoureux c_whoswho.(id) && id <> id_mort then ame_soeur := id
+                done;        
+            assert (!ame_soeur <> (-1));
+            (*On a désormais l'amoureux, on va le tuer en ajoutant la cause de mort en fonction de celle de l'autre amoureux*)
+            (*On regarde d'abord si l'amoureux est déjà dans la morgue*)
+            stack_filter (fun (c,id)-> id <> !ame_soeur) morgue;
+            match cause_du_deces with
+                |1-> Stack.push (5,!ame_soeur) morgue
+                |2-> Stack.push (6,!ame_soeur) morgue
+                |3|4-> Stack.push (7,!ame_soeur) morgue
+                |5|6|7|8-> failwith "Si on en arrive là c'est que l'autre amoureux est mort car son amoureux est mort"
+                |_-> failwith "type de mort inconnu ! (cf autopsie dans conteur.ml)"
+            end;
+            (*on met des point-virgule entre les tests si jamais il y a plusieurs cas qui se présentent par exemple chasseur amoureux*)
+    if perso_is_chasseur c_whoswho.(id_mort)
+        then begin
+            let (_,reponse)= joueurs.(id_mort)#pose_question (2,[||]) in
+            let id_gibier = reponse.(0) in
+            stack_filter (fun (c,id)-> id <> id_gibier) morgue;
+            match cause_du_deces with
+                |1-> Stack.push (3,id_gibier) morgue
+                |2-> Stack.push (4,id_gibier) morgue
+                |5|6-> Stack.push (8,id_gibier) morgue
+                |3|4-> failwith "Si on en arrive là c'est qu'il y a deux chasseur ou un gros bug"
+                |7|8 -> failwith "Si on en arrive là cest que le chasseur a tué son amoureux ou alors il y a plusieurs chasseur ou un gros bug"
+                |_-> failwith "type de mort inconnu ! (cf autopsie dans conteur.ml"
+            end
+;;
+
 (**Fonction gérant la nuit: ordre des perso à faire jouer, actions de chacun*)
 let nuit () =
     v_print_string 3 "Conteur:La nuit tombe\n";
@@ -193,7 +267,7 @@ let nuit () =
     
     (* Test pour prendre ou non le vote en compte*)
     if nb_votants>0 (*issue 10*) 
-        then Stack.push victime morgue 
+        then Stack.push (1,victime) morgue 
         else v_print_string 4 "Arbitre: il n'y a eu aucun votants pour le vote des loups-garous, la partie devrait être terminée\n";
 
 
@@ -224,7 +298,7 @@ let nuit () =
                         begin
                         c_potions.(1)<- c_potions.(1) - 1; (*on enlève de toute facon meme si la cible est morte [règle n°7] *)
                         if not (c_is_dead reponse.(1))
-                            then (Stack.push reponse.(1) morgue; v_print 2 "Arbitre: Sorcière utilise poison contre %i\n" reponse.(1))
+                            then (Stack.push (1,reponse.(1)) morgue; v_print 2 "Arbitre: Sorcière utilise poison contre %i\n" reponse.(1))
                             else v_print 2 "Arbitre: Sorcière (%i) utilise poison contre %i qui est mort, une potion lui est retirée [règle n°7]\n" !id reponse.(1);
                         end;
                         
@@ -255,47 +329,10 @@ let nuit () =
 (** Fonction gérant le lever du soleil (et oui c'est compliqué !) c'est à dire annoncer les morts et officialiser les décès*)
 let petit_matin ()=
     v_print_string 3 "Conteur: Le jour se lève...\n";
-        while not (Stack.is_empty morgue) do
-            let id_mort = Stack.pop morgue in
-            ( v_print 3 "Conteur: %i est mort cette nuit, %i était %s\n" id_mort id_mort (perso2string c_whoswho.(id_mort)));
-            
-            (*Traitement de la mort du chasseur*)
-            (* On met cette partie avant d'annoncer sa mort aux autres joueurs car cela evite d'appeler le chasseur alors qu'il se considère comme mort et ainsi de lever des exceptions*)
-            (* TODO ceci suscite un problème car on ne peut pas transmettre aux joueurs la raison de la mort de la personne abattue issue28*)
-            if perso_is_chasseur c_whoswho.(id_mort)
-                then begin
-                    let (_, contenu) = joueurs.(id_mort)#pose_question (2,[|(-1)|]) in
-                    Stack.push contenu.(0) morgue;
-                    v_print 1 "Arbitre: %i abat %i avec son fusil de chasse\n" id_mort contenu.(0)
-                    end;
-            
-            (*le conteur informe les joueurs des morts*)
-            for id=0 to c_nbjoueurs-1 do 
-            if not (c_is_dead id) then
-                begin
-                joueurs.(id)#donne_info (1,[|id_mort;perso2int c_whoswho.(id_mort)|]);
-                joueurs.(id)#donne_info (3,[|id_mort;1|])
-                end
-            done;
-            (*maj des infos du conteur*)
-            c_whoswho.(id_mort)<- Mort c_whoswho.(id_mort);
-            
-
-            (*Traitement de la mort d'un amoureux*)
-            if perso_is_amoureux c_whoswho.(id_mort) 
-                then begin
-                (**Recherche de l'autre amoureux*)
-                let ame_soeur = ref (-1) in
-                for id=0 to c_nbjoueurs-1 do
-                    if perso_is_amoureux c_whoswho.(id) && id <> id_mort then ame_soeur := id
-                    done;
-                if not (c_is_dead !ame_soeur) 
-                    then 
-                        stack_push_sans_doublon !ame_soeur morgue(*Règle n°8*)
-                        (* On ajoute sans doublon pour ne pas remettre dans la morgue un amoureux qui y est déjà (sinon risque de le tuer plusieurs fois*)
-                    else () (*Cela signifie que l'autre amoureux était dans la morgue avant, donc avait déjà été tué*)
-                end
-            done
+    while not (Stack.is_empty morgue) do
+        let cadavre = Stack.pop morgue in
+        autopsie morgue cadavre
+        done
 ;;
 
 
@@ -306,53 +343,11 @@ let jour () =
     incr id_vote;
     if nb_votants>0 (*issue 10*)
         then begin
-            ( v_print 3 "Conteur: %i va donc être pendu en place publique\n" suspect);
-            
-            (*On gère le cas où le condamné est le chasseur*)
-            if perso_is_chasseur c_whoswho.(suspect)
-            then begin
-                v_print 3 "Conteur: %i se défend, sort son énorme fusil de chasse et tire sur...\n" suspect;
-                let (_, contenu) = joueurs.(suspect)#pose_question (2,[||]) in
-                v_print 3 "         %i qui meurt d'un head-shot\n" contenu.(0);
-                
-                (*Il faut gérer la mort du perso TODO en faisant une fonction qui gère la mort d'un perso et ses conséquences en terme d'amoureux car sinon on s'en sortira pas [cf issue28 en partie]*)
-            end
-            else
-                v_print 3 "Conteur: il révèle avant de monter sur l'échafaud qu'il était %s\n" (perso2string c_whoswho.(suspect));
-            
-            
-            (**Le conteur informe les joueurs vivant de la mort et de l'identité de la personne exécutée*)
-            for id=0 to c_nbjoueurs-1 do
-                if not (c_is_dead id) then
-                    begin
-                    joueurs.(id)#donne_info (1,[|suspect;perso2int c_whoswho.(suspect)|]);
-                    joueurs.(id)#donne_info (3,[|suspect;2|])
-                    end
-                done;
-            c_whoswho.(suspect)<- Mort c_whoswho.(suspect); (*maj des infos du conteur*)
-            if perso_is_amoureux c_whoswho.(suspect) 
-                then begin
-                    v_print 3 "Conteur: %i n'était pas seul dans ce monde, une autre ame vivait en harmonie avec ce %s\n" suspect (perso2string c_whoswho.(suspect));
-                    (**Recherche de l'autre amoureux*)
-                    let ame_soeur = ref (-1) in
-                    for id=0 to c_nbjoueurs-1 do
-                        if perso_is_amoureux c_whoswho.(id) && id <> suspect then ame_soeur := id
-                        done; (*il y a forcement une âme soeur donc ame_soeur ne vaut pas -1 à la fin de cette boucle*)
-                    assert (not (c_is_dead !ame_soeur));
-                    v_print 3 "          %i était l'ame soeur de %i et meurt de chagrin\n" !ame_soeur suspect;
-                    v_print 3 "Conteur : %i était %s\n" !ame_soeur (perso2string c_whoswho.(!ame_soeur));
-                    (**Le conteur informe les joueurs vivant de la mort et de l'identité de la personne exécutée*)
-                    for id=0 to c_nbjoueurs-1 do
-                        if not (c_is_dead id) then
-                            begin
-                            (* TODO Il faudra aussi annoncer que les deux joueurs étaient amoureux par une idi
-                            attention si on utilise l'idi7 car elle n'est concue qu'a etre donné aux joueurs amoureux donc il faudra la modifier*)
-                            joueurs.(id)#donne_info (1,[|!ame_soeur;perso2int c_whoswho.(!ame_soeur)|]);
-                            joueurs.(id)#donne_info (3,[|!ame_soeur;2|])
-                            end
-                        done;
-                    c_whoswho.(!ame_soeur)<- Mort c_whoswho.(!ame_soeur); (*maj des infos du conteur*)
-                    end
+            Stack.push (2,suspect) morgue;
+            while not (Stack.is_empty morgue) do
+                let cadavre=Stack.pop morgue in
+                autopsie morgue cadavre
+                done
             end
         else v_print_string 4 "Arbitre: personne n'est mort, car il n'ya eu aucun votant, il doit yavoir un problème (cf issue10)\n"
 ;;
