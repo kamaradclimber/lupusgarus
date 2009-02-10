@@ -74,7 +74,7 @@ let array_all_2 predicat tab= not (array_exists_2 (fun x->not (predicat x)) tab)
 (**----------------------------------------------------------------*)
 (** Début des définitions *)
 
-v_print 4 "Arbitre: L'initialisation aléatoire est %i\n" seed;;
+v_print 4 "Arbitre: L'initialisation al\130atoire est %i\n" seed;;
 (*Ainsi si un problème apparait, on peut récréer exactement les mêmes conditions pour vérifier si on l'a bien corrigé, il suffit d'imposer la seed à la valeur problématique*)
 
 (**Définition du type des personnalités des joueurs*)
@@ -91,7 +91,7 @@ let int2perso n=
 let rec perso2int pers=
     match pers with 
         |Unknown -> 0 |Loup->1|Villageois->2 |Voyante->3|Sorciere->4 | Cupidon -> 5 | Chasseur->6
-        |Mort sthing ->(v_print_string 4 "vous avez demandé l'identification perso2int d'un mort attention, (issue19 ?)\n";perso2int sthing)
+        |Mort sthing ->(v_print_string 4 "vous avez demand\130 l'identification perso2int d'un mort attention, (issue19 ?)\n";perso2int sthing)
         |Amoureux sthing->perso2int sthing
 ;;
 
@@ -241,7 +241,7 @@ let appel_au_vote (condition_de_vote: (int ->bool)) (vote_invalide:information->
                     
                 (* Application de la règle n°3 : vote contre soi-même*)
                 if !nbessais = Regles.nb_vote_max
-                    then (urne.(id)<-urne.(id)+1;( v_print 3 "Arbitre: %i vote contre lui-même car il a dépassé la barre des %i votes incorrects\n" id Regles.nb_vote_max))
+                    then (urne.(id)<-urne.(id)+1;( v_print 3 "Arbitre: %i vote contre lui-même car il a d\130passé la barre des %i votes incorrects\n" id Regles.nb_vote_max))
                     else
                         (*Prise en compte du vote*)
                         begin
@@ -257,7 +257,7 @@ let appel_au_vote (condition_de_vote: (int ->bool)) (vote_invalide:information->
         let (vict,maj) = vote_majorite urne in 
         majorite_absolue :=maj ; 
         victime:=vict;
-        ( v_print 3 "Conteur: majorité: %b, tour: %i\n" !majorite_absolue !tour);
+        ( v_print 3 "Conteur: majorit\130: %b, tour: %i\n" !majorite_absolue !tour);
         (*on informe que le tour est fini*)
         for id=0 to c_nbjoueurs -1 do if condition_de_vote id then joueurs.(id)#donne_info (6,[|!tour|]) done;
         incr tour

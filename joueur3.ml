@@ -5,8 +5,8 @@ match (myperso,hisperso) with
 |Amoureux _, Amoureux _ -> true
 |Amoureux perso, _ |_, Amoureux perso -> false (*Les deux cas peuvent arriver (penser à cupidon qui sait qui sont les amoureux sans forcément en être un)
 avec ce système un amoureux va considérer tout de suite tout le monde comme son ennemi et donc va voter contre les gens sensé être dans son équipe donc se faire reperer, il faudrait donc subtiliser un peu le traitement de cette fonction*) 
-|Mort _,_->failwith "je suis mort ! (soulevée par la fonction \"semble_etre_de_mon_cote\""
-|_, Mort _ -> (v_print_string 4 "Suis-je allié à un mort ? dûr de repondre.. ce genre de question ne devrait pas se poser";true)
+|Mort _,_->failwith "je suis mort ! (soulev\130e par la fonction \"semble_etre_de_mon_cote\""
+|_, Mort _ -> (v_print_string 4 "Suis-je alli\130 \133 un mort ? dûr de repondre.. ce genre de question ne devrait pas se poser";true)
 |Loup, Loup -> true
 |Loup, _ -> false
 |_, Loup -> false
@@ -28,7 +28,7 @@ let get_participants moi=
         match moi#get_type_vote with
         | 0 -> Array.make moi#get_nbjoueurs true
         | 1 -> Array.init moi#get_nbjoueurs (fun id -> moi#get_whoswho.(id) = Loup)
-        | _ -> (v_print_string 4 "Type de vote inconnu (soulevé par joueur3 dans get_participants)";Array.make moi#get_nbjoueurs true)
+        | _ -> (v_print_string 4 "Type de vote inconnu (soulev\130 par joueur3 dans get_participants)";Array.make moi#get_nbjoueurs true)
     in
     (fun id -> participants.(id))
 ;;
@@ -48,12 +48,12 @@ En revanche ce système est efficace contre des villageois qui utilisent aussi un
             (*On remplit la pile des gens à traiter avec 'nos meilleurs amis' non traités *)
             begin
             (*Au début, les meilleurs amis sont les pires...*)
-            let best_conf_non_marquée = ref (-10) in
+            let best_conf_non_marqué = ref (-10) in
             for ami_potentiel=0 to moi#get_nbjoueurs -1 do
-                match marques.(ami_potentiel), (compare moi#get_conf.(ami_potentiel) !best_conf_non_marquée) with
+                match marques.(ami_potentiel), (compare moi#get_conf.(ami_potentiel) !best_conf_non_marqué) with
                 (*Puis on en découvre d'autres ou des meilleurs*)
                 | false,0 -> Stack.push ami_potentiel a_traiter
-                | false,1 -> begin best_conf_non_marquée := moi#get_conf.(ami_potentiel) ; Stack.clear a_traiter; Stack.push ami_potentiel a_traiter end
+                | false,1 -> begin best_conf_non_marqué := moi#get_conf.(ami_potentiel) ; Stack.clear a_traiter; Stack.push ami_potentiel a_traiter end
                 | _ -> () (*ou pas*)
                 done;
             
@@ -138,7 +138,7 @@ let assimilation_vote moi id_vote type_vote tour_de_vote votant cible=
 ;;
 
 let fin_du_vote moi = 
-    v_print 0 "   %i : voilà mon tableau de confiance : \n" moi#get_id;
+    v_print 0 "   %i : voil\133 mon tableau de confiance : \n" moi#get_id;
     print_int_array  0 moi#get_conf
 ;;
 
@@ -244,7 +244,7 @@ let action_LG moi tour_de_vote=
             | Some victime -> (2,[|victime|]) 
             | None -> assert false (**Aucun risque, il y a toujours des joueurs non-LG vivants sinon c'est la fin de la partie*)
         else 
-            failwith (Printf.sprintf "%i dit: ERREUR je ne suis pas un loup garou, une telle erreur n'aurait pas du arriver\n vérifier la fonction passée en argument à la procédure de vote " moi#get_id)
+            failwith (Printf.sprintf "%i dit: ERREUR je ne suis pas un loup garou, une telle erreur n'aurait pas du arriver\n v\130rifier la fonction pass\130e en argument \133 la proc\130dure de vote " moi#get_id)
 ;;
 
 let action_voyante moi=
@@ -258,7 +258,7 @@ let action_voyante moi=
                 done;
             (2,[|!inconnu|]) 
             end
-        else failwith (Printf.sprintf "%i dit: ERREUR je ne suis pas la voyante, une telle erreur n'aurait pas du arriver\n verifier la fonction passe en argument à la procedure de vote " moi#get_id)
+        else failwith (Printf.sprintf "%i dit: ERREUR je ne suis pas la voyante, une telle erreur n'aurait pas du arriver\n verifier la fonction passe en argument \133 la procedure de vote " moi#get_id)
 ;;
 
 let action_sorcière moi victime=
@@ -295,7 +295,7 @@ match id_info with
 |3-> action_LG moi contenu.(0)
 |4-> action_voyante moi
 |5-> action_sorcière moi contenu.(0)
-|6-> failwith "idq6 non attribuée"
+|6-> failwith "idq6 non attribu\130e"
 |7-> tir_a_larc moi
 |_-> ((-1),[||])
 
