@@ -88,7 +88,9 @@ type information=int*(int array);;
 let int2perso n=
     match n with |0->Unknown |1->Loup|2->Villageois|3->Voyante |4->Sorciere|5->Cupidon|6->Chasseur |_->assert false
 ;;
+(**Conversion d'une perso en entier*)
 let rec perso2int pers=
+(**De cette conversion dépend l'ordre de l'idi8, attention à bien mettre à jour à chaque modif !*)
     match pers with 
         |Unknown -> 0 |Loup->1|Villageois->2 |Voyante->3|Sorciere->4 | Cupidon -> 5 | Chasseur->6
         |Mort sthing ->(v_print_string 4 "vous avez demand\130 l'identification perso2int d'un mort attention, (issue19 ?)\n";perso2int sthing)
@@ -194,6 +196,18 @@ let repartition nb_joueurs=
     let rep3=Array.make nb_joueurs Unknown in
     for i=0 to nb_joueurs-1 do rep3.(rep.(i))<-rep2.(i) done;
     rep3
+;;
+
+(**Calcule le nombre de joueurs interprétant chaque perso d'après le tableau de répartition des persos*)
+let idi8 repartition=
+    (**Cette fonction dépend de l'ordre donné par perso2int*)
+    let idi8_tab= Array.make (1+1+1+1+1+1) 0 in
+    for id=1 to Array.length repartition -1 do
+        let id_perso= perso2int repartition.(id) in
+        idi8_tab.(id_perso) <- idi8_tab.(id_perso)+1
+        done;
+    idi8_tab.(0) <- 2* idi8_tab.(perso2int Cupidon);
+    idi8_tab
 ;;
 
 (** Détermine si le vote se conclue par une majorité absolue et de toute façon le joueur plébiscité*)

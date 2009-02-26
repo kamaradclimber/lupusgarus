@@ -40,7 +40,7 @@ cette conversion permet la coercion, cest à dire d'indiquer au vérificateur de
 let reliable2j reliable = (reliable: Joueur2.reliable :> Definition.joueur)
 let conf2j confiant = (confiant: Joueur3.confiant :> Definition.joueur) 
 let jdb j = (j: Joueur.joueur_de_base :> Definition.joueur)
-
+(*let prob2j conf = (conf: Joueur4.probabiliste :> Definition.joueur)*)
 ;;
 (** Tableau contenant un pointeur vers chaque joueur,
 il est ici initialisé avec des joueurs de type confiant*)
@@ -63,9 +63,11 @@ let initialisation () =
     let reparti = repartition c_nbjoueurs in 
     v_print_string 2 "Conteur: R\130partition des joueurs:\n";
     print_perso_array reparti;
-    
-    (*Information des joueurs de leur affectation*)
+    let idi8_tab = idi8 reparti in
+    print_int_array 2 idi8_tab;
+    (*Information des joueurs de leur affectation et du nombre de joueurs interprétant chaque personnalité*)
     for id=0 to c_nbjoueurs-1 do 
+        joueurs.(id)#donne_info (8,idi8_tab);
         joueurs.(id)#donne_info (1,[|id;perso2int reparti.(id)|]);
         c_whoswho.(id) <- reparti.(id);
         
@@ -189,12 +191,14 @@ pour le moment les r\138gles doivent etre suffisament strictes pour que le progr
     begin
     match cause_du_deces with
         |1-> v_print 3 "Conteur: %i (%s) est mort pendant la nuit, son cadavre est d\130couvert au matin sur le pas de sa porte\n" id_mort (perso2string c_whoswho.(id_mort))
-        |2-> v_print 3 "Conteur: %i (%s) est donc pendu en place publique, sa mort est lente et douloureuse et tous les membres du village, en dansant autour\n        de la potence, esp\138rent avoir \130radiqu\130 le mal qui r\147de dans le village\n" id_mort (perso2string c_whoswho.(id_mort))
+        |2-> if c_is_LG id_mort 
+        then v_print 3 "Conteur: %i (%s) est donc pendu en place publique, sa mort est lente et douloureuse et tous les membres du village, en dansant autour\n        de la potence, esp\138rent avoir \130radiqu\130 le mal qui r\147de dans le village\n" id_mort (perso2string c_whoswho.(id_mort))
+        else v_print 3 "Conteur: %i (%s) est donc pendu en place publique, sa mort est lente et douloureuse mais le village est d\130sesp\130r\130 d'avoir condamn\130 un innocent\n          alors que le mal r\147de toujours dans le village.\n" id_mort (perso2string c_whoswho.(id_mort))
         |3-> v_print 3 "Conteur: Dans son ultime agonie, le chasseur (%i) a pris son fusil et fait un head-shot sur %i (%s)\n" (-1) (*TODO*) id_mort (perso2string c_whoswho.(id_mort))
         |4-> v_print 3 "Conteur: Lorsque les villageois sont venus chercher le chasseur (%i), celui-ci a d\130gain\130 son fusil et abattu %i (%s)\n" (-1) (*TODO*) id_mort (perso2string c_whoswho.(id_mort))
         |5-> v_print 3 "Conteur: Lorsque %i (%s) a d\130couvert le cadavre de son amoureux %i, une grande tristesse s'est empar\130e de lui et il va mettre fin \133 ses jours seul dans la forêt\n" id_mort (perso2string c_whoswho.(id_mort)) (-1) (*TODO*)
         |6-> v_print 3 "Conteur: Apr\138s que %i aie \130t\130 pendu par l'ensemble du village, %i (%s) s'est retir\130, seul, dans la forêt et nepouvant vivre sans %i a mis fin \133 ses jours\n" (-1) (*TODO*) id_mort (perso2string c_whoswho.(id_mort)) (-1) (*TODO*)
-        |7-> v_print 3 "Conteur: %i ayant \130t\130 abattu par le chasseur, %i (%s) se fane de chagrin et se retire dans du monde discretement dans la forêt\n" (-1) (*TODO*) id_mort (perso2string c_whoswho.(id_mort))
+        |7-> v_print 3 "Conteur: %i ayant \130t\130 abattu par le chasseur, %i (%s) se fane de chagrin et se retire dans du monde discretement dans la for\136t\n" (-1) (*TODO*) id_mort (perso2string c_whoswho.(id_mort))
         |8-> v_print 3 "Conteur: Avant d'aller se suicider, %i a sorti son fusil et exprim\130 son d\130sespoir en tirant sur %i (%s)\n" (-1) (*TODO*) id_mort (perso2string c_whoswho.(id_mort))
         |_ -> failwith (Printf.sprintf "%i est mort pour une raison inconnue (soulev\130 par autopsie dans conteur.ml)" id_mort)
     end;
