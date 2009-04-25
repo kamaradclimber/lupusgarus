@@ -21,7 +21,7 @@ type 'a matrice_triangulaire = 'a array array;;
 let make n (defaut:'a)=
   let matrice = Array.make n [|defaut|] in
     for ligne=1 to n-1 do
-      matrice.(ligne) <- Array.make (ligne+1) defaut
+      matrice.(ligne) <- Array.make ligne defaut
     done;
     (matrice:'a matrice_triangulaire)
 ;;
@@ -33,7 +33,7 @@ let dim (mat: 'a matrice_triangulaire)=
 let get (mat: 'a matrice_triangulaire) i j=
   let a= min i j and b=max i j in
   let length = dim mat in
-    if a>=length || b>=length || a<0 || b<0 then failwith "acces à une case inexistante !";
+    if a>=length || b>=length || a<0 || b<=0 then failwith (Printf.sprintf "acces à une case inexistante ! case : %i %i" a b);
     Array.unsafe_get (Array.unsafe_get mat b) a
 ;;
 
@@ -60,7 +60,17 @@ let get_norme_colonne mat col=
     !somme
 ;;
 
+let get_norme mat element=
+    let somme = ref 0. in
+    for el2=0 to dim mat -1 do somme := !somme +. (get mat element el2) done;
+    !somme
+;;
 
+let norme mat element=
+    let norme_el = get_norme mat element in
+    for el2=0 to dim mat -1 do m mat element el2 ((get mat element el2) /. norme_el) done
+;;
+    
 
 (*let norme_colonne mat col norme=
   let norme_actuelle =get_norme_colonne mat col in

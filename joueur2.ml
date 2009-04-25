@@ -35,14 +35,14 @@ match id_info with
 |2-> if objet#who_am_i = Loup
     then
         let victime=ref (objet#get_id) and count=ref 0 in
-        while !count< 100 && (objet#get_whoswho (!victime)=Loup || perso_is_dead (objet#get_whoswho (!victime)) ) do
+        while !count< 100 && (objet#get_whoswho (!victime)=Loup || (Definition.is CMort) (objet#get_whoswho (!victime)) ) do
             victime := Random.int objet#get_nbjoueurs;
             incr count
             done;
         (2,[|!victime|])
     else
         let victime=ref (objet#get_id) and count=ref 0 in
-        while !count< 100 && (perso_is_dead (objet#get_whoswho (!victime)) || semble_etre_de_mon_cote objet#who_am_i (objet#get_whoswho  !victime) ) do
+        while !count< 100 && ((Definition.is CMort) (objet#get_whoswho (!victime)) || semble_etre_de_mon_cote objet#who_am_i (objet#get_whoswho  !victime) ) do
             victime := Random.int objet#get_nbjoueurs;
             incr count
             done;
@@ -50,7 +50,7 @@ match id_info with
 |3->if objet#who_am_i = Loup
     then
         let victime=ref (objet#get_id) and count=ref 0 in
-            while !count< 100 && (objet#get_whoswho (!victime)=Loup || perso_is_dead (objet#get_whoswho (!victime)) ) do
+            while !count< 100 && (objet#get_whoswho (!victime)=Loup || (Definition.is CMort) (objet#get_whoswho (!victime)) ) do
                 victime := Random.int objet#get_nbjoueurs;
                 incr count
                 done;

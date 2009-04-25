@@ -56,4 +56,29 @@ let norme_ligne mat ligne norme=
 
 let norme_lignes mat =
     for ligne=0 to snd (dim mat)-1 do norme_ligne mat ligne 1. done
-    ;;
+;;
+
+let get_col mat col=
+    let n=fst (dim mat) in
+    let colonne = Array.make n 0. in
+    for ligne=0 to n-1 do colonne.(ligne) <- mat.(ligne).(col) done;
+    colonne
+;;
+
+let get_ligne mat ligne=
+    let n=snd (dim mat) in
+    let line = Array.make n 0. in
+    for colonne=0 to n-1 do line.(colonne) <- mat.(ligne).(colonne) done;
+    ligne
+;;
+
+let copy mat=
+let (n,m) = dim mat in
+let cp = make n m 0. in
+for ligne=0 to n-1 do
+for col=0 to m-1 do
+cp.(ligne).(col) <- mat.(ligne).(col)
+done
+done;
+cp
+;;

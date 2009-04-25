@@ -70,6 +70,16 @@ let array_exists_2 predicat tab=
 (*Attention le prédicat porte sur l'indice du tableau*)
 let array_all_2 predicat tab= not (array_exists_2 (fun x->not (predicat x)) tab);;
 
+(**Trouve l'indice correspondant au max au sens d'une certaine relation*)
+let array_max_i tab (<)=
+    let n=Array.length tab in
+    let i_best=ref 0 in
+    for i=0 to n-1 do
+        if tab.(!i_best) < tab.(i) then i_best := i
+        done;
+    !i_best
+    ;;
+
 
 (**----------------------------------------------------------------*)
 (** Début des définitions *)
@@ -115,18 +125,25 @@ let print_perso_array tab=
     Array.iter (fun x->( v_print 2 "%s " (perso2string x)) ) tab;print_newline ()
 ;;
 
-(**Teste si une personnalité est morte ou non*)
-let perso_is_dead  pers=match pers with Mort _->true |_->false;;
 
-(**Teste si une personnalité est loup ou non*)
-let perso_is_LG pers= match pers with Loup -> true | Amoureux Loup -> true | _ -> false;;
+(**La fonction c_is nécessite un type particulier qui ne doit pas être utilisé ailleurs à cause de son ambiguité*)
+type perso_caution = C of perso|CMort| CAmoureux;;
+(**Fonction indiquant si, selon le conteur, la personne est de telle perso*)
+let is (cperso:perso_caution) (pers:perso)=
+    match cperso with
+    |CAmoureux -> (match pers with Amoureux _ -> true | Mort Amoureux _ -> true | _ -> false (*attention à l'identification des morts*))
+    |CMort -> (match pers with Mort _->true |Amoureux Mort _ -> failwith "j'ai nomm\130 amoureux un mort ce qui est contraire \133 l'odre normal des \130venements !" |_->false)
+    |C Loup -> (match pers with | Loup -> true | Amoureux Loup -> true | _ -> false)
+    |C Villageois -> (match pers with | Villageois -> true | Amoureux Villageois -> true | _ -> false)
+    |C Voyante -> (match pers with | Voyante -> true | Amoureux Voyante -> true | _ -> false)
+    |C Cupidon ->(match pers with | Cupidon -> true | Amoureux Cupidon -> true | _ -> false)
+    |C Sorciere -> (match pers with | Sorciere -> true | Amoureux Sorciere -> true | _ -> false)
+    |C Chasseur -> (match pers with | Chasseur | Amoureux Chasseur | Mort Chasseur-> true | _ -> false)
+    |C (Amoureux sth) ->pers = Amoureux sth
+    |C (Mort sth) -> pers= Mort sth
+    |C Unknown -> pers = Unknown
+;;
 
-(**Teste si une personnalité est un amoureux ou non*)
-let perso_is_amoureux perso=match perso with Amoureux _ -> true | Mort Amoureux _ -> true | _ -> false (*attention à l'identification des morts*)
-
-(**Teste si une personnalité est un chasseur ou non*)
-let perso_is_chasseur perso= match perso with Chasseur -> true| Mort Chasseur -> true
-|Amoureux Chasseur -> true | _->false
 
 (**Classe des joueurs: dans chaque module, le joueur définit sa sous classe avec sa manière propre de répondre aux questions et d'assimiler les informations 
 ici sont définies les éléments essentiels utilisés par le conteur
@@ -201,7 +218,7 @@ let repartition nb_joueurs=
 (**Calcule le nombre de joueurs interprétant chaque perso d'après le tableau de répartition des persos*)
 let idi8 repartition=
     (**Cette fonction dépend de l'ordre donné par perso2int*)
-    let idi8_tab= Array.make (1+1+1+1+1+1) 0 in
+    let idi8_tab= Array.make (1+1+1+1+1+1+1) 0 in
     for id=1 to Array.length repartition -1 do
         let id_perso= perso2int repartition.(id) in
         idi8_tab.(id_perso) <- idi8_tab.(id_perso)+1
