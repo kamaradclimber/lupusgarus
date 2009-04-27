@@ -13,7 +13,7 @@ Le type joueur est défini ici, tous les joueurs doivent hériter de cette class
 
 Cette liste est à jour dans la page du wiki UsingExecutable
 *)
-let verbose=3;;
+let verbose=ref 3;;
 
 (**Initialisation de l'aléatoire*)
 let seed = int_of_float (Unix.time ()) ;;
@@ -24,22 +24,22 @@ Random.init (seed);;
 (**Fonctions d'affichage*)
 
 (**Affichage d'une chaîne standard*)
-let v_print_string level str=if verbose<= level then print_string str;;
+let v_print_string level str=if !verbose<= level then print_string str;;
 (**Affichage des chaînes acceptant la syntaxe des Printf.printf c'est à dire avec paramètres*)
-let v_print level=if verbose<= level then Printf.printf else Printf.ifprintf stdout;;
+let v_print level=if !verbose<= level then Printf.printf else Printf.ifprintf stdout;;
 
 (**Affichage d'une chaîne dans un beau cadre *)
 (*TODO mais assez problématique*)
 
 (**Affichage d'un tableau d'entier, puis passage à la ligne*)
 let print_int_array level tab = 
-if verbose <= level
+if !verbose <= level
 then (Array.iter (fun x->Printf.printf "%i " x) tab;
 print_newline () );;
 
 (**Affichage d'un tableau de booléens _unused_ (?) *)
 let print_bool_array level tab=
-    if verbose <= level then
+    if !verbose <= level then
     (for i=0 to Array.length tab -1 do if tab.(i) then print_string "true " else print_string "false " done;
     print_string "\n";
     flush stdout)
