@@ -5,12 +5,14 @@
 <meta content="text/html; charset=iso-8859-1" http-equiv="Content-Type">
 <link rel="Start" href="index.html">
 <link rel="Up" href="Joueur3.html">
+<link title="Index of types" rel=Appendix href="index_types.html">
 <link title="Index of values" rel=Appendix href="index_values.html">
 <link title="Index of class attributes" rel=Appendix href="index_attributes.html">
 <link title="Index of class methods" rel=Appendix href="index_methods.html">
 <link title="Index of classes" rel=Appendix href="index_classes.html">
 <link title="Index of modules" rel=Appendix href="index_modules.html">
 <link title="Conteur" rel="Chapter" href="Conteur.html">
+<link title="Definition" rel="Chapter" href="Definition.html">
 <link title="Ds_commun" rel="Chapter" href="Ds_commun.html">
 <link title="Joueur" rel="Chapter" href="Joueur.html">
 <link title="Joueur2" rel="Chapter" href="Joueur2.html">
@@ -24,13 +26,13 @@
 <center><h1>Class <a href="type_Joueur3.confiant.html">Joueur3.confiant</a></h1></center>
 <br>
 <pre><span class="keyword">class</span> <a name="TYPEconfiant"></a>confiant : <code class="type">int -> int -> </code><code class="code">object</code> <a href="Joueur3.confiant.html">..</a> <code class="code">end</code></pre><b>Inherits</b><ul>
-<li><code class="code">Definition.joueur</code>    Méthodes principales</li>
+<li><a href="Definition.joueur.html"><code class="code">Definition.joueur</code></a>    Méthodes principales</li>
 </ul>
 <hr width="100%">
 <pre><span class="keyword">val</span> <a name="ATTclasse"></a><a href="code_ATTJoueur3.confiant.classe.html">classe</a> : <code class="type">string</code></pre><div class="info">
 Classe confiant<br>
 </div>
-<pre><span class="keyword">val</span> <a name="ATTwhoswho"></a><a href="code_ATTJoueur3.confiant.whoswho.html">whoswho</a> : <code class="type">Definition.perso array</code></pre><div class="info">
+<pre><span class="keyword">val</span> <a name="ATTwhoswho"></a><a href="code_ATTJoueur3.confiant.whoswho.html">whoswho</a> : <code class="type"><a href="Definition.html#TYPEperso">Definition.perso</a> array</code></pre><div class="info">
 Tableau des personnalités connues des autres joueurs<br>
 </div>
 <pre><span class="keyword">val</span> <a name="ATTconf"></a><a href="code_ATTJoueur3.confiant.conf.html">conf</a> : <code class="type">int array</code></pre><div class="info">
@@ -40,12 +42,12 @@ Confiance de -10 à +10 envers les autres joueurs<br>
 <h2>Stockage temporaire des votes</h2><pre><span class="keyword">val</span> <a name="ATTvote"></a><a href="code_ATTJoueur3.confiant.vote.html">vote</a> : <code class="type">int list array</code></pre><div class="info">
 </div>
 <pre><span class="keyword">val</span> <a name="ATTtype_vote"></a><a href="code_ATTJoueur3.confiant.type_vote.html">type_vote</a> : <code class="type">int Pervasives.ref</code></pre><a name="2_Mthodesvirtuelleshrites"></a>
-<h2>Méthodes virtuelles héritées</h2><pre><span class="keyword">method</span> <a name="METHODdonne_info"></a><a href="code_METHODJoueur3.confiant.donne_info.html">donne_info</a> : <code class="type">Definition.information -> unit</code></pre><div class="info">
+<h2>Méthodes virtuelles héritées</h2><pre><span class="keyword">method</span> <a name="METHODdonne_info"></a><a href="code_METHODJoueur3.confiant.donne_info.html">donne_info</a> : <code class="type"><a href="Definition.html#TYPEinformation">Definition.information</a> -> unit</code></pre><div class="info">
 </div>
-<pre><span class="keyword">method</span> <a name="METHODpose_question"></a><a href="code_METHODJoueur3.confiant.pose_question.html">pose_question</a> : <code class="type">Definition.information -> Definition.information</code></pre><a name="2_Mthodesdemodification"></a>
-<h2>Méthodes de modification</h2><pre><span class="keyword">method</span> <a name="METHODmod_whoswho"></a><a href="code_METHODJoueur3.confiant.mod_whoswho.html">mod_whoswho</a> : <code class="type">int -> Definition.perso -> unit</code></pre><div class="info">
+<pre><span class="keyword">method</span> <a name="METHODpose_question"></a><a href="code_METHODJoueur3.confiant.pose_question.html">pose_question</a> : <code class="type"><a href="Definition.html#TYPEinformation">Definition.information</a> -> <a href="Definition.html#TYPEinformation">Definition.information</a></code></pre><a name="2_Mthodesdemodification"></a>
+<h2>Méthodes de modification</h2><pre><span class="keyword">method</span> <a name="METHODmod_whoswho"></a><a href="code_METHODJoueur3.confiant.mod_whoswho.html">mod_whoswho</a> : <code class="type">int -> <a href="Definition.html#TYPEperso">Definition.perso</a> -> unit</code></pre><div class="info">
 </div>
 <pre><span class="keyword">method</span> <a name="METHODmod_conf"></a><a href="code_METHODJoueur3.confiant.mod_conf.html">mod_conf</a> : <code class="type">int -> int -> unit</code></pre><pre><span class="keyword">method</span> <a name="METHODmod_vote"></a><a href="code_METHODJoueur3.confiant.mod_vote.html">mod_vote</a> : <code class="type">int -> int -> unit</code></pre><pre><span class="keyword">method</span> <a name="METHODreset_vote"></a><a href="code_METHODJoueur3.confiant.reset_vote.html">reset_vote</a> : <code class="type">unit</code></pre><pre><span class="keyword">method</span> <a name="METHODmod_type_vote"></a><a href="code_METHODJoueur3.confiant.mod_type_vote.html">mod_type_vote</a> : <code class="type">int -> unit</code></pre><a name="2_Mthodesdaccesauxinfosget"></a>
-<h2>Méthodes d'acces aux infos (get_...)</h2><pre><span class="keyword">method</span> <a name="METHODget_whoswho"></a><a href="code_METHODJoueur3.confiant.get_whoswho.html">get_whoswho</a> : <code class="type">Definition.perso array</code></pre><div class="info">
+<h2>Méthodes d'acces aux infos (get_...)</h2><pre><span class="keyword">method</span> <a name="METHODget_whoswho"></a><a href="code_METHODJoueur3.confiant.get_whoswho.html">get_whoswho</a> : <code class="type"><a href="Definition.html#TYPEperso">Definition.perso</a> array</code></pre><div class="info">
 </div>
-<pre><span class="keyword">method</span> <a name="METHODwho_am_i"></a><a href="code_METHODJoueur3.confiant.who_am_i.html">who_am_i</a> : <code class="type">Definition.perso</code></pre><pre><span class="keyword">method</span> <a name="METHODget_conf"></a><a href="code_METHODJoueur3.confiant.get_conf.html">get_conf</a> : <code class="type">int array</code></pre><pre><span class="keyword">method</span> <a name="METHODget_vote"></a><a href="code_METHODJoueur3.confiant.get_vote.html">get_vote</a> : <code class="type">int list array</code></pre><pre><span class="keyword">method</span> <a name="METHODget_type_vote"></a><a href="code_METHODJoueur3.confiant.get_type_vote.html">get_type_vote</a> : <code class="type">int</code></pre></body></html>
+<pre><span class="keyword">method</span> <a name="METHODwho_am_i"></a><a href="code_METHODJoueur3.confiant.who_am_i.html">who_am_i</a> : <code class="type"><a href="Definition.html#TYPEperso">Definition.perso</a></code></pre><pre><span class="keyword">method</span> <a name="METHODget_conf"></a><a href="code_METHODJoueur3.confiant.get_conf.html">get_conf</a> : <code class="type">int array</code></pre><pre><span class="keyword">method</span> <a name="METHODget_vote"></a><a href="code_METHODJoueur3.confiant.get_vote.html">get_vote</a> : <code class="type">int list array</code></pre><pre><span class="keyword">method</span> <a name="METHODget_type_vote"></a><a href="code_METHODJoueur3.confiant.get_type_vote.html">get_type_vote</a> : <code class="type">int</code></pre></body></html>

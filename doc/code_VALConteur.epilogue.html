@@ -1,0 +1,41 @@
+<html><head>
+<link rel="stylesheet" href="style.css" type="text/css">
+<meta content="text/html; charset=iso-8859-1" http-equiv="Content-Type">
+<link rel="Start" href="index.html">
+<link title="Index of types" rel=Appendix href="index_types.html">
+<link title="Index of values" rel=Appendix href="index_values.html">
+<link title="Index of class attributes" rel=Appendix href="index_attributes.html">
+<link title="Index of class methods" rel=Appendix href="index_methods.html">
+<link title="Index of classes" rel=Appendix href="index_classes.html">
+<link title="Index of modules" rel=Appendix href="index_modules.html">
+<link title="Conteur" rel="Chapter" href="Conteur.html">
+<link title="Definition" rel="Chapter" href="Definition.html">
+<link title="Ds_commun" rel="Chapter" href="Ds_commun.html">
+<link title="Joueur" rel="Chapter" href="Joueur.html">
+<link title="Joueur2" rel="Chapter" href="Joueur2.html">
+<link title="Joueur3" rel="Chapter" href="Joueur3.html">
+<link title="Perso_olivier" rel="Chapter" href="Perso_olivier.html">
+<link title="Regles" rel="Chapter" href="Regles.html"><title>Conteur.epilogue</title>
+</head>
+<body>
+<code class="code"><span class="keyword">let</span>&nbsp;epilogue&nbsp;()&nbsp;=<br>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="keyword">match</span>&nbsp;!id_end&nbsp;<span class="keyword">with</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">|</span>0&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;v_print_string&nbsp;3&nbsp;<span class="string">"\nConteur:&nbsp;Tout&nbsp;le&nbsp;monde&nbsp;est&nbsp;mort,&nbsp;le&nbsp;village&nbsp;de&nbsp;Salem&nbsp;s'est&nbsp;entretué&nbsp;!\n"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">|</span>1&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;v_print_string&nbsp;3&nbsp;<span class="string">"\nConteur:&nbsp;Tous&nbsp;les&nbsp;loups&nbsp;garou&nbsp;sont&nbsp;morts,&nbsp;le&nbsp;village&nbsp;de&nbsp;Salem&nbsp;est&nbsp;sauvé&nbsp;!\n"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">|</span>2&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;v_print_string&nbsp;3&nbsp;<span class="string">"\nConteur:&nbsp;Tous&nbsp;les&nbsp;villageois&nbsp;sont&nbsp;morts,&nbsp;le&nbsp;village&nbsp;de&nbsp;Salem&nbsp;est&nbsp;tombé&nbsp;aux&nbsp;mains&nbsp;du&nbsp;mal&nbsp;!\n"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">|</span>_&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;v_print_string&nbsp;4&nbsp;<span class="string">"\nArbitre:&nbsp;Le&nbsp;jeu&nbsp;a&nbsp;quitté&nbsp;pour&nbsp;une&nbsp;raison&nbsp;inconnue"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">(*Affichage&nbsp;des&nbsp;rôles&nbsp;des&nbsp;participants*)</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span>&nbsp;!<span class="constructor">Definition</span>.verbose&nbsp;&lt;=&nbsp;3&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">then</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">let</span>&nbsp;chaine=&nbsp;<span class="string">"Conteur:&nbsp;La&nbsp;partie&nbsp;est&nbsp;terminée\n&nbsp;les&nbsp;rôles&nbsp;distribués&nbsp;étaient&nbsp;les&nbsp;suivants"</span>&nbsp;<span class="keyword">in</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">let</span>&nbsp;n&nbsp;=&nbsp;<span class="constructor">String</span>.length&nbsp;chaine&nbsp;<span class="keyword">in</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">let</span>&nbsp;cadre&nbsp;=&nbsp;<span class="constructor">String</span>.make&nbsp;(n+2)&nbsp;<span class="string">'-'</span>&nbsp;<span class="keyword">in</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;print_string&nbsp;(cadre^<span class="string">"\n"</span>^chaine^<span class="string">"&nbsp;|\n"</span>^cadre^<span class="string">"\n"</span>)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">(*Affichage&nbsp;équipe&nbsp;par&nbsp;équipe*)</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">Array</span>.iteri&nbsp;(<span class="keyword">fun</span>&nbsp;i<span class="keywordsign">-&gt;</span>&nbsp;<span class="keyword">fun</span>&nbsp;perso&nbsp;<span class="keywordsign">-&gt;</span>(&nbsp;<span class="keyword">if</span>&nbsp;perso&nbsp;=&nbsp;<span class="constructor">Mort</span>&nbsp;<span class="constructor">Loup</span>&nbsp;<span class="keywordsign">||</span>&nbsp;perso&nbsp;=&nbsp;<span class="constructor">Loup</span>&nbsp;<span class="keyword">then</span>&nbsp;v_print&nbsp;3&nbsp;<span class="string">"%i&nbsp;était&nbsp;%s,&nbsp;de&nbsp;classe&nbsp;%s\n"</span>&nbsp;i&nbsp;(perso2string&nbsp;perso)&nbsp;joueurs.(i)<span class="keywordsign">#</span>get_classe)&nbsp;)&nbsp;c_whoswho;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;v_print_string&nbsp;3&nbsp;<span class="string">"------------------\n"</span>;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">Array</span>.iteri&nbsp;(<span class="keyword">fun</span>&nbsp;i<span class="keywordsign">-&gt;</span>&nbsp;<span class="keyword">fun</span>&nbsp;perso&nbsp;<span class="keywordsign">-&gt;</span>(&nbsp;<span class="keyword">if</span>&nbsp;&nbsp;not&nbsp;(perso&nbsp;=&nbsp;<span class="constructor">Mort</span>&nbsp;<span class="constructor">Loup</span>&nbsp;<span class="keywordsign">||</span>&nbsp;perso&nbsp;=&nbsp;<span class="constructor">Loup</span>)&nbsp;<span class="keyword">then</span>&nbsp;v_print&nbsp;3&nbsp;<span class="string">"%i&nbsp;était&nbsp;%s,&nbsp;de&nbsp;classe&nbsp;%s\n"</span>&nbsp;i&nbsp;(perso2string&nbsp;perso)&nbsp;joueurs.(i)<span class="keywordsign">#</span>get_classe)&nbsp;)&nbsp;c_whoswho;</code></body></html>

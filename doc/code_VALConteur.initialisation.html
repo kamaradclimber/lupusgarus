@@ -2,12 +2,14 @@
 <link rel="stylesheet" href="style.css" type="text/css">
 <meta content="text/html; charset=iso-8859-1" http-equiv="Content-Type">
 <link rel="Start" href="index.html">
+<link title="Index of types" rel=Appendix href="index_types.html">
 <link title="Index of values" rel=Appendix href="index_values.html">
 <link title="Index of class attributes" rel=Appendix href="index_attributes.html">
 <link title="Index of class methods" rel=Appendix href="index_methods.html">
 <link title="Index of classes" rel=Appendix href="index_classes.html">
 <link title="Index of modules" rel=Appendix href="index_modules.html">
 <link title="Conteur" rel="Chapter" href="Conteur.html">
+<link title="Definition" rel="Chapter" href="Definition.html">
 <link title="Ds_commun" rel="Chapter" href="Ds_commun.html">
 <link title="Joueur" rel="Chapter" href="Joueur.html">
 <link title="Joueur2" rel="Chapter" href="Joueur2.html">
@@ -33,9 +35,14 @@
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(&nbsp;v_print&nbsp;1&nbsp;<span class="string">"Arbitre:&nbsp;joueur&nbsp;%i&nbsp;&nbsp;s'identifie&nbsp;comme&nbsp;%i&nbsp;etant&nbsp;un&nbsp;%s&nbsp;ce&nbsp;qui&nbsp;est&nbsp;%b\n"</span>&nbsp;id&nbsp;reponse.(0)&nbsp;(perso2string&nbsp;(&nbsp;int2perso&nbsp;reponse.(1)))&nbsp;(int2perso&nbsp;reponse.(1)=&nbsp;reparti.(id)&nbsp;<span class="keywordsign">&amp;&amp;</span>&nbsp;id=reponse.(0)))<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">done</span>;<br>
 &nbsp;&nbsp;&nbsp;&nbsp;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;v_print_string&nbsp;4&nbsp;<span class="string">"--------------------------\nConteur:&nbsp;le&nbsp;jeu&nbsp;commence&nbsp;|\n--------------------------\n"</span>;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span>&nbsp;!<span class="constructor">Definition</span>.verbose&nbsp;&lt;=&nbsp;4&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">then</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">let</span>&nbsp;chaine=&nbsp;<span class="string">"Conteur:&nbsp;le&nbsp;jeu&nbsp;commence"</span>&nbsp;<span class="keyword">in</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">let</span>&nbsp;n&nbsp;=&nbsp;<span class="constructor">String</span>.length&nbsp;chaine&nbsp;<span class="keyword">in</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">let</span>&nbsp;cadre&nbsp;=&nbsp;<span class="constructor">String</span>.make&nbsp;(n+2)&nbsp;<span class="string">'-'</span>&nbsp;<span class="keyword">in</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;print_string&nbsp;(cadre^<span class="string">"\n"</span>^chaine^<span class="string">"&nbsp;|\n"</span>^cadre^<span class="string">"\n"</span>)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;<br>
+<br>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">(*Les&nbsp;LG&nbsp;se&nbsp;reconnaissent&nbsp;entre&nbsp;eux,&nbsp;c'est&nbsp;à&nbsp;dire&nbsp;qu'on&nbsp;les&nbsp;informe&nbsp;de&nbsp;l'identité&nbsp;des&nbsp;autres&nbsp;LG*)</span><br>
 &nbsp;&nbsp;&nbsp;&nbsp;v_print_string&nbsp;3&nbsp;<span class="string">"Conteur:&nbsp;Les&nbsp;loups-garous&nbsp;vont&nbsp;se&nbsp;reconnaîtrent,&nbsp;ils&nbsp;ouvrent&nbsp;les&nbsp;yeux\n"</span>;<br>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">for</span>&nbsp;id=0&nbsp;<span class="keyword">to</span>&nbsp;c_nbjoueurs-1&nbsp;<span class="keyword">do</span><br>
