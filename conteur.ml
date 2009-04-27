@@ -75,7 +75,7 @@ let initialisation () =
         ( v_print 1 "Arbitre: joueur %i  s'identifie comme %i etant un %s ce qui est %b\n" id reponse.(0) (perso2string ( int2perso reponse.(1))) (int2perso reponse.(1)= reparti.(id) && id=reponse.(0)))
         done;
     
-    if Definition.verbose <= 4 
+    if !Definition.verbose <= 4 
     then
         let chaine= "Conteur: le jeu commence" in
         let n = String.length chaine in
@@ -117,7 +117,7 @@ let epilogue () =
     );
     
     (*Affichage des rôles des participants*)
-    if Definition.verbose <= 3 
+    if !Definition.verbose <= 3 
     then
         let chaine= "Conteur: La partie est terminée\n les rôles distribués étaient les suivants" in
         let n = String.length chaine in
@@ -256,6 +256,10 @@ let jour () =
         else v_print_string 4 "Arbitre: personne n'est mort, car il n'ya eu aucun votant, il doit yavoir un problème (cf issue10)\n"
 ;;
 
+
+(** On parse la ligne de commande pour éventuellement spécifier quelques paramètres*)
+    let speclist= [("-v",Arg.Int (fun verbose->Printf.printf "Mutisme du conteur : %i \n" verbose; Definition.verbose := verbose),"définit le niveau de mutisme du conteur et de l'arbitre, un entier est attendu, (0 volubile, 3 normal, 6 muet)")] in
+      Arg.parse speclist (fun str->Printf.printf "%s\n" str) "Description des quelques options proposées par le programme:";
 
 (**Début du jeu*)
 initialisation ();
