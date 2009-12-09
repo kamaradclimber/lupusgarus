@@ -232,7 +232,7 @@ let appel_au_vote (condition_de_vote: (int ->bool)) (vote_invalide:information->
         let (vict,maj) = vote_majorite urne in 
         majorite_absolue :=maj ; 
         victime:=vict;
-        ( v_print 3 "Conteur: majorité: %b, tour: %i\n" !majorite_absolue !tour);
+        ( v_print 3 "Conteur: %s, tour: %i\n" (if !majorite_absolue then "Majorité absolue" else "Pas de majorité absolue") !tour);
         (*on informe que le tour est fini*)
         for id=0 to c_nbjoueurs -1 do if condition_de_vote id then joueurs.(id)#donne_info (6,[|!tour|]) done;
         incr tour
