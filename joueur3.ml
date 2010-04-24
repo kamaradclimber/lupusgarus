@@ -134,11 +134,14 @@ let get_min_array predicat comp tab=
     if array_exists_2 predicat tab
      then 
         begin
-            let i_best = ref 0 in
+            let i_best = ref [0] in
             for i=0 to Array.length tab -1 do
-                if (comp tab.(i) tab.(!i_best) && predicat i && predicat !i_best) || (predicat i && not (predicat !i_best) ) || (tab.(i)=tab.(!i_best) && predicat i && predicat !i_best && Random.bool ()) then i_best := i
+                if (comp tab.(i) tab.(List.hd !i_best) && predicat i && predicat (List.hd !i_best)) 
+                || (predicat i && not (predicat (List.hd !i_best)) ) then i_best := [i] else if
+                (tab.(i)=tab.(List.hd !i_best) && predicat i && predicat (List.hd !i_best) ) 
+                then i_best := i :: !i_best
                 done;
-            Some !i_best
+            Some (List.nth !i_best (Random.int (List.length !i_best))   )
         end
     else
         None

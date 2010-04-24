@@ -52,12 +52,16 @@ let idq4 ()=
     ;;
 
 let idq5 victime=
-    (**Pas encore implemente completement !*)
     Printf.printf "Conteur : Sorciere, veux tu tuer un individu ? [oui/non]\n";
     flush stdout;
+    let qui=ref 0 in
     let tuer = Scanf.fscanf  stdin "%s\n" (fun s->match String.lowercase s with "oui"->1 |_->0) in
+    if tuer=1 then (Printf.printf "qui veux tu tuer ? \n"; flush stdout; qui := Scanf.fscanf  stdin "%i\n" (fun i->i));
+    Printf.printf "La victime des LG est pour le moment %i, veux tu la sauver ? [oui/non]\n" victime;
+    flush stdout;
+    let sauver = Scanf.fscanf  stdin "%s\n" (fun s->match String.lowercase s with "oui"->1 |_->0) in
     
-    [|0;0;0|]
+    [|tuer;!qui;sauver|]
 
 let rec pose_question moi ((id_info,contenu):information)=
 match id_info with
