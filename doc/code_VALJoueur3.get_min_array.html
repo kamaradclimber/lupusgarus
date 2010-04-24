@@ -9,7 +9,8 @@
 <link title="Index of modules" rel=Appendix href="index_modules.html">
 <link title="Joueur" rel="Chapter" href="Joueur.html">
 <link title="Joueur2" rel="Chapter" href="Joueur2.html">
-<link title="Joueur3" rel="Chapter" href="Joueur3.html"><title>Joueur3.get_min_array</title>
+<link title="Joueur3" rel="Chapter" href="Joueur3.html">
+<link title="Joueur4" rel="Chapter" href="Joueur4.html"><title>Joueur3.get_min_array</title>
 </head>
 <body>
 <code class="code"><span class="keyword">let</span>&nbsp;get_min_array&nbsp;predicat&nbsp;comp&nbsp;tab=<br>
@@ -19,7 +20,7 @@
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">begin</span><br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">let</span>&nbsp;i_best&nbsp;=&nbsp;ref&nbsp;0&nbsp;<span class="keyword">in</span><br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">for</span>&nbsp;i=0&nbsp;<span class="keyword">to</span>&nbsp;<span class="constructor">Array</span>.length&nbsp;tab&nbsp;-1&nbsp;<span class="keyword">do</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span>&nbsp;(comp&nbsp;tab.(i)&nbsp;tab.(!i_best)&nbsp;<span class="keywordsign">&amp;&amp;</span>&nbsp;predicat&nbsp;i&nbsp;<span class="keywordsign">&amp;&amp;</span>&nbsp;predicat&nbsp;!i_best)&nbsp;<span class="keywordsign">||</span>&nbsp;(predicat&nbsp;i&nbsp;<span class="keywordsign">&amp;&amp;</span>&nbsp;not&nbsp;(predicat&nbsp;!i_best)&nbsp;)&nbsp;<span class="keyword">then</span>&nbsp;i_best&nbsp;:=&nbsp;i<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span>&nbsp;(comp&nbsp;tab.(i)&nbsp;tab.(!i_best)&nbsp;<span class="keywordsign">&amp;&amp;</span>&nbsp;predicat&nbsp;i&nbsp;<span class="keywordsign">&amp;&amp;</span>&nbsp;predicat&nbsp;!i_best)&nbsp;<span class="keywordsign">||</span>&nbsp;(predicat&nbsp;i&nbsp;<span class="keywordsign">&amp;&amp;</span>&nbsp;not&nbsp;(predicat&nbsp;!i_best)&nbsp;)&nbsp;<span class="keywordsign">||</span>&nbsp;(tab.(i)=tab.(!i_best)&nbsp;<span class="keywordsign">&amp;&amp;</span>&nbsp;predicat&nbsp;i&nbsp;<span class="keywordsign">&amp;&amp;</span>&nbsp;predicat&nbsp;!i_best&nbsp;<span class="keywordsign">&amp;&amp;</span>&nbsp;<span class="constructor">Random</span>.bool&nbsp;())&nbsp;<span class="keyword">then</span>&nbsp;i_best&nbsp;:=&nbsp;i<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">done</span>;<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">Some</span>&nbsp;!i_best<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">end</span><br>

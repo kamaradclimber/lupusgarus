@@ -99,6 +99,11 @@ let rec perso2string pers=
     match pers with |Unknown -> "Unknown" | Loup ->"Loup"|Villageois->"Villageois"|Voyante->"Voyante"|Sorciere->"Sorciere"|Mort persbis-> (perso2string persbis)^" (Mort)"
 ;;
 
+let rec string2perso str=
+    match String.lowercase str with
+    |"unknown" -> Unknown | "loup" -> Loup | "villageois" -> Villageois | "voyante" -> Voyante | "sorciere" -> Sorciere | _ -> failwith (Printf.sprintf "string2perso : %s n'est pas reconnu" str)
+;;
+
 (**Affichage d'un tableau de personnalités*)
 let print_perso_array tab=
     Array.iter (fun x->( v_print 2 "%s " (perso2string x)) ) tab;print_newline ()

@@ -46,7 +46,7 @@ Fonctions assurant les conversions des joueurs en objets de classe Definition.jo
 cette conversion permet la coercion, cest à dire d'indiquer au vérificateur de type d'ocaml que telle sous-classe de joueur sera consideree exclusivement comme un joueur tout court<br>
 <pre><span class="keyword">val</span> <a name="VALreliable2j"></a><a href="code_VALConteur.reliable2j.html">reliable2j</a> : <code class="type">Joueur2.reliable -> Definition.joueur</code></pre><div class="info">
 </div>
-<pre><span class="keyword">val</span> <a name="VALconf2j"></a><a href="code_VALConteur.conf2j.html">conf2j</a> : <code class="type">Joueur3.confiant -> Definition.joueur</code></pre><pre><span class="keyword">val</span> <a name="VALjdb"></a><a href="code_VALConteur.jdb.html">jdb</a> : <code class="type">Joueur.joueur_de_base -> Definition.joueur</code></pre><pre><span class="keyword">val</span> <a name="VALjoueurs"></a><a href="code_VALConteur.joueurs.html">joueurs</a> : <code class="type">Definition.joueur array</code></pre><div class="info">
+<pre><span class="keyword">val</span> <a name="VALconf2j"></a><a href="code_VALConteur.conf2j.html">conf2j</a> : <code class="type">Joueur3.confiant -> Definition.joueur</code></pre><pre><span class="keyword">val</span> <a name="VALjdb"></a><a href="code_VALConteur.jdb.html">jdb</a> : <code class="type">Joueur.joueur_de_base -> Definition.joueur</code></pre><pre><span class="keyword">val</span> <a name="VALhumain2j"></a><a href="code_VALConteur.humain2j.html">humain2j</a> : <code class="type">Joueur4.humain -> Definition.joueur</code></pre><pre><span class="keyword">val</span> <a name="VALjoueurs"></a><a href="code_VALConteur.joueurs.html">joueurs</a> : <code class="type">Definition.joueur array</code></pre><div class="info">
 Tableau contenant un pointeur vers chaque joueur,
 il est ici initialisé avec des joueurs de type confiant<br>
 </div>
@@ -62,7 +62,7 @@ Ce tableau est utilisé lorsque l'on veut parcourir les joueurs afin de ne pas p
 -----------------------------------------------------------------------------------------------<br>
 <br>
 Début des fonctions définissant les phases de la partie<br>
-<pre><span class="keyword">val</span> <a name="VALinitialisation"></a><a href="code_VALConteur.initialisation.html">initialisation</a> : <code class="type">unit -> unit</code></pre><div class="info">
+<pre><span class="keyword">val</span> <a name="VALinitialisation"></a><a href="code_VALConteur.initialisation.html">initialisation</a> : <code class="type">bool -> unit</code></pre><div class="info">
 Initialisation du jeu: distribue les roles, demande a chaque joueur de s'initialiser en consequence<br>
 </div>
 <pre><span class="keyword">val</span> <a name="VALis_it_the_end"></a><a href="code_VALConteur.is_it_the_end.html">is_it_the_end</a> : <code class="type">unit -> bool</code></pre><div class="info">
@@ -80,4 +80,4 @@ Fonction gérant le lever du soleil (et oui c'est compliqué !) c'est à dire an
 <pre><span class="keyword">val</span> <a name="VALjour"></a><a href="code_VALConteur.jour.html">jour</a> : <code class="type">unit -> unit</code></pre><div class="info">
 Fonction gérant le jour: mort des personnages, action specifique, pendaison publique.../<br>
 </div>
-</body></html>
+<pre><span class="keyword">val</span> <a name="VALhumain"></a><a href="code_VALConteur.humain.html">humain</a> : <code class="type">bool Pervasives.ref</code></pre></body></html>

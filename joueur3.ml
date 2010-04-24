@@ -136,7 +136,7 @@ let get_min_array predicat comp tab=
         begin
             let i_best = ref 0 in
             for i=0 to Array.length tab -1 do
-                if (comp tab.(i) tab.(!i_best) && predicat i && predicat !i_best) || (predicat i && not (predicat !i_best) ) then i_best := i
+                if (comp tab.(i) tab.(!i_best) && predicat i && predicat !i_best) || (predicat i && not (predicat !i_best) ) || (tab.(i)=tab.(!i_best) && predicat i && predicat !i_best && Random.bool ()) then i_best := i
                 done;
             Some !i_best
         end

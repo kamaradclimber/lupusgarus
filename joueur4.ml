@@ -1,7 +1,7 @@
 open Definition
 
 let cause_mort id_mort=
-    match id_mort=
+    match id_mort with
     |1->	"tue pendant la nuit"
     |2->	"execute par les villageois"
     |3->	 "abattu par le chasseur qui est mort pendant la nuit"
@@ -10,6 +10,7 @@ let cause_mort id_mort=
     |6->	"mort de chagrin le soir (amoureux pendu)"
     |7->	 "mort de chagrin car son amoureux a été abattu"
     |8->	 "abattu car le chasseur est mort de chagrin"
+    |_ -> "pour une autre raison"
 
 
 let rec donne_info moi ((id_info,contenu):information) =
@@ -26,58 +27,46 @@ let rec donne_info moi ((id_info,contenu):information) =
 
 
 
-let mon_vote moi=
-    let victime = get_min_array (fun id-> not (is_dead moi id) ) (<) moi#get_conf in
-    match victime with
-    | Some vict -> (2,[|vict|])
-    | None -> assert false (**Aucun risque sinon cela signifie que tout le monde est mort*)
-;;
+let idq1 untel=
+    Printf.printf "Donne moi l'identite de %i selon toi\n" untel;
+    flush stdout;
+    Scanf.fscanf stdin "%s\n" (fun s->string2perso s)
+    ;;
 
-let action_LG moi tour_de_vote=
-(**c'est presque un doublon de mon_vote, peut etre faut-il la supprimer?*)
-    if moi#who_am_i = Loup 
-        then  
-            let vict = get_min_array (fun id-> not (is_dead moi id) && not (is_LG moi id) ) (<) moi#get_conf in
-            match vict with
-            | Some victime -> (2,[|victime|]) 
-            | None -> assert false (**Aucun risque, il y a toujours des joueurs non-LG vivants sinon c'est la fin de la partie*)
-        else 
-            failwith (Printf.sprintf "%i dit: ERREUR je ne suis pas un loup garou, une telle erreur n'aurait pas du arriver\n vérifier la fonction passée en argument à la procédure de vote " moi#get_id)
-;;
-
-let action_voyante moi=
-    if moi#get_whoswho.(moi#get_id) = Voyante 
-        then  
-            begin
-            let inconnu = ref (Random.int moi#get_nbjoueurs) and nb_essais =ref 0 in
-            while !nb_essais < 100 && is_dead moi !inconnu && is_unknown moi !inconnu do 
-                inconnu := Random.int moi#get_nbjoueurs;
-                incr nb_essais
-                done;
-            (2,[|!inconnu|]) 
-            end
-        else failwith (Printf.sprintf "%i dit: ERREUR je ne suis pas la voyante, une telle erreur n'aurait pas du arriver\n verifier la fonction passe en argument à la procedure de vote " moi#get_id)
-;;
-
-let action_sorcière moi victime=
-(*La stratégie de la sorcière est de se sauver elle même et de tuer si possible son pire ennemi si elle le hait vraiment*)
-    let vict_potentielle = get_min_array (fun id-> not (is_dead moi id)  ) (<) moi#get_conf in
-    match vict_potentielle with
-    | None -> assert false
-    | Some victime_potentielle -> 
-    let empoisonner = (if moi#get_conf.(victime_potentielle) < (-3) then 1 else 0) and sauver = (if victime=moi#get_id then 1 else 0) in
+let idq2 ()=
+    Printf.printf "Qui veux-tu tuer ?\n";
+    flush stdout;
     
-    (5,[|empoisonner;victime_potentielle;sauver|])
-;;
+    Scanf.fscanf stdin  "%s\n" (fun i->int_of_string i)
+    ;;
+
+let idq3 ()=
+    Printf.printf "Tu es LG qui veux tu devorer ?\n";
+    idq2 ()
+    ;;
+
+let idq4 ()=
+    Printf.printf "Conteur : Tu es la voyante, quelle identite veux tu connaitre ?\n";
+    flush stdout;
+    Scanf.fscanf  stdin "%i\n" (fun i->i)
+    ;;
+
+let idq5 victime=
+    (**Pas encore implemente completement !*)
+    Printf.printf "Conteur : Sorciere, veux tu tuer un individu ? [oui/non]\n";
+    flush stdout;
+    let tuer = Scanf.fscanf  stdin "%s\n" (fun s->match String.lowercase s with "oui"->1 |_->0) in
+    
+    [|0;0;0|]
 
 let rec pose_question moi ((id_info,contenu):information)=
 match id_info with
 |0-> (0,[|moi#get_nbjoueurs;moi#get_id|])
-|1-> (1, [|contenu.(0) ; perso2int (moi#get_whoswho.(contenu.(0)) )|])
-|2-> mon_vote moi
-|3-> action_LG moi contenu.(0)
-|4-> action_voyante moi
-|5->action_sorcière moi contenu.(0)
+|1-> (1, [|contenu.(0) ; perso2int (idq1 contenu.(0) )|])
+|2-> (2, [|idq2 ()|] )
+|3-> (2, [|idq3 () |])
+|4-> (2, [|idq4 () |])
+|5-> (5, idq5 contenu.(0) )
 |_-> ((-1),[||])
 
 
@@ -88,34 +77,11 @@ class humain c_nbjoueurs numjoueur=
         inherit Definition.joueur c_nbjoueurs numjoueur
         (**Classe confiant*)
         val classe = "Humain"
-        (**Tableau des personnalités connues des autres joueurs*)
-        val whoswho = Array.make c_nbjoueurs (Unknown : perso)
-        (** Confiance de -10 à +10 envers les autres joueurs*)
-        val conf = Array.make c_nbjoueurs 0
-        
-        (**Stockage temporaire des votes*)
-        (** *)
-        val vote = Array.make c_nbjoueurs []
-        val type_vote = ref 0
         
         (**Méthodes virtuelles héritées*)
         (** *)
         method donne_info = donne_info self
         method pose_question = pose_question self
         
-        (**Méthodes de modification*)
-        (** *)
-        method mod_whoswho indice nvelle_valeur                     = whoswho.(indice) <- nvelle_valeur
-        method mod_conf indice nvelle_valeur                        = conf.(indice) <- max (min nvelle_valeur 10) (-10)
-        method mod_vote indice nw                                   = vote.(indice) <-  nw::vote.(indice)
-        method reset_vote                                           = for i=0 to c_nbjoueurs -1 do vote.(i) <- [] done
-        method mod_type_vote nw_type_vote                            = type_vote := nw_type_vote
-        
-        (**Méthodes d'acces aux infos (get_...) *)
-        (** *)
-        method get_whoswho                                          = whoswho
-        method who_am_i                                             = whoswho.(self#get_id)
-        method get_conf                                             = conf
-        method get_vote                                             = (vote: int list array)
-        method get_type_vote                                        = !type_vote
+       
     end;;

@@ -40,6 +40,7 @@ cette conversion permet la coercion, cest à dire d'indiquer au vérificateur de
 let reliable2j reliable = (reliable: Joueur2.reliable :> Definition.joueur)
 let conf2j confiant = (confiant: Joueur3.confiant :> Definition.joueur) 
 let jdb j = (j: Joueur.joueur_de_base :> Definition.joueur)
+let humain2j j= (j: Joueur4.humain :> Definition.joueur)
 
 ;;
 (** Tableau contenant un pointeur vers chaque joueur,
@@ -63,7 +64,7 @@ let initialisation humain =
     let reparti = repartition c_nbjoueurs in 
     v_print_string 2 "Conteur: Répartition des joueurs:\n";
     print_perso_array reparti;
-    if humain then joueurs.(0) <- humain2j (new Joueur4.humain c_nbjoueurs i)
+    if humain then joueurs.(0) <- humain2j (new Joueur4.humain c_nbjoueurs 0);
     
     (*Information des joueurs de leur affectation*)
     for id=0 to c_nbjoueurs-1 do 
@@ -261,8 +262,8 @@ let humain = ref false;;
 
 (** On parse la ligne de commande pour éventuellement spécifier quelques paramètres*)
     let speclist= [("-v",Arg.Int (fun verbose->Printf.printf "Mutisme du conteur : %i \n" verbose; Definition.verbose := verbose),"définit le niveau de mutisme du conteur et de l'arbitre, un entier est attendu, (0 volubile, 3 normal, 6 muet)");
-                   ("-s",Arg.Int (fun seed->Random.init (seed);v_print 5 "Arbitre: La nouvelle initialisation aléatoire est %i\n" seed),"met remet l'aléatoire à une graine donnée")
-                   ("-p",Arg.Unit (fun ()->humain := true),"Permet a un humain de jouer")
+                   ("-s",Arg.Int (fun seed->Random.init (seed);v_print 5 "Arbitre: La nouvelle initialisation aléatoire est %i\n" seed),"met remet l'aléatoire à une graine donnée");
+                   ("-p",Arg.Unit (fun ()->humain := true; Definition.verbose := 3),"Permet a un humain de jouer")
                    ] in
       Arg.parse speclist (fun (_:string)->()) "Description des quelques options proposées par le programme:";
 
