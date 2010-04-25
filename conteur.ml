@@ -260,12 +260,23 @@ let jour () =
 
 let humain = ref false;;
 
+
+(**Initialisation de l'aléatoire*)
+let seed = int_of_float (Unix.time ()) ;;
+Random.init (seed);;
+
+v_print 4 "Arbitre: L'initialisation aléatoire est %i\n" seed;;
+(*Ainsi si un problème apparait, on peut récréer exactement les mêmes conditions pour vérifier si on l'a bien corrigé, il suffit d'imposer la seed à la valeur problématique*)
+
+
 (** On parse la ligne de commande pour éventuellement spécifier quelques paramètres*)
     let speclist= [("-v",Arg.Int (fun verbose->Printf.printf "Mutisme du conteur : %i \n" verbose; Definition.verbose := verbose),"définit le niveau de mutisme du conteur et de l'arbitre, un entier est attendu, (0 volubile, 3 normal, 6 muet)");
-                   ("-s",Arg.Int (fun seed->Random.init (seed);v_print 5 "Arbitre: La nouvelle initialisation aléatoire est %i\n" seed),"met remet l'aléatoire à une graine donnée");
+                   ("-s",Arg.Int (fun nseed->Random.init (nseed);v_print 5 "Arbitre: La nouvelle initialisation aléatoire est %i\n" nseed),"met remet l'aléatoire à une graine donnée");
                    ("-p",Arg.Unit (fun ()->humain := true; Definition.verbose := 3),"Permet a un humain de jouer")
                    ] in
       Arg.parse speclist (fun (_:string)->()) "Description des quelques options proposées par le programme:";
+
+
 
 (**Début du jeu*)
 initialisation !humain;

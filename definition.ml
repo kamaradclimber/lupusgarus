@@ -14,10 +14,7 @@ Le type joueur est défini ici, tous les joueurs doivent hériter de cette class
 Cette liste est à jour dans la page du wiki UsingExecutable
 *)
 let verbose=ref 1;;
-(**Initialisation de l'aléatoire*)
-let seed = int_of_float (Unix.time ()) ;;
 
-Random.init (seed);;
 
 
 (**Fonctions d'affichage*)
@@ -74,8 +71,6 @@ let array_all_2 predicat tab= not (array_exists_2 (fun x->not (predicat x)) tab)
 (**----------------------------------------------------------------*)
 (** Début des définitions *)
 
-v_print 4 "Arbitre: L'initialisation aléatoire est %i\n" seed;;
-(*Ainsi si un problème apparait, on peut récréer exactement les mêmes conditions pour vérifier si on l'a bien corrigé, il suffit d'imposer la seed à la valeur problématique*)
 
 (**Définition du type des personnalités des joueurs*)
 type perso = Unknown |Loup | Villageois| Voyante| Sorciere|Mort of perso;;
