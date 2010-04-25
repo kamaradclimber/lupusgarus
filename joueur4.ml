@@ -27,28 +27,33 @@ let rec donne_info moi ((id_info,contenu):information) =
 
 
 
-let idq1 untel=
+let rec idq1 untel=
+    try
     Printf.printf "Donne moi l'identite de %i selon toi\n" untel;
     flush stdout;
     Scanf.fscanf stdin "%s\n" (fun s->string2perso s)
+    with _ -> idq1 untel
     ;;
 
-let idq2 ()=
-    Printf.printf "Qui veux-tu tuer ?\n";
+let rec idq2 ()=
+    try
+    Printf.printf "Conteur : Qui veux-tu tuer ?\n";
     flush stdout;
-    
     Scanf.fscanf stdin  "%s\n" (fun i->int_of_string i)
+    with _ -> idq2 ()
     ;;
 
 let idq3 ()=
-    Printf.printf "Tu es LG qui veux tu devorer ?\n";
+    Printf.printf "Conteur : Tu es LG qui veux tu devorer ?\n";
     idq2 ()
     ;;
 
-let idq4 ()=
+let rec idq4 ()=
+    try
     Printf.printf "Conteur : Tu es la voyante, quelle identite veux tu connaitre ?\n";
     flush stdout;
     Scanf.fscanf  stdin "%i\n" (fun i->i)
+    with _ ->idq4 ()
     ;;
 
 let idq5 victime=

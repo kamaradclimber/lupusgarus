@@ -173,7 +173,7 @@ let repartition nb_joueurs=
 
 (** Détermine si le vote se conclue par une majorité absolue et de toute façon le joueur plébiscité*)
 let vote_majorite (resultats:int array)=
-    let imaxl=ref [0] and sum=ref 0 in (*on stocke la liste des joueurs les plus plébiscités, qui comporte eventuellement des joueurs à égalité*)
+    let imaxl=ref [0] and sum=ref resultats.(0) in (*on stocke la liste des joueurs les plus plébiscités, qui comporte eventuellement des joueurs à égalité*)
     for i=1 to Array.length resultats-1 do
         sum:=!sum+ resultats.(i); (*on stocke le nombre de votes au total*)
         match compare resultats.(List.hd !imaxl) resultats.(i) with
